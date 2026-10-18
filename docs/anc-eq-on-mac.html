@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Change OnePlus Buds EQ &amp; ANC on a Mac (No Phone Needed)</title>
+<meta name="description" content="macOS has no control for OPPO, OnePlus or realme earbuds' noise cancelling and equalizer. Here is why, what macOS does and does not expose, and how to change ANC, EQ, BassWave and touch gestures from a Mac without the phone.">
+<link rel="canonical" href="https://shashank99928.github.io/BudsDesk/anc-eq-on-mac.html">
+<meta name="theme-color" content="#0e1013">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BudsDesk">
+<meta property="og:title" content="How to change OnePlus Buds EQ and ANC on a Mac">
+<meta property="og:description" content="Why macOS cannot do it, what it can do, and the two-minute version that works.">
+<meta property="og:url" content="https://shashank99928.github.io/BudsDesk/anc-eq-on-mac.html">
+<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
+
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/icon.png" type="image/png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "BudsDesk", "item": "https://shashank99928.github.io/BudsDesk/" },
+        { "@type": "ListItem", "position": 2, "name": "ANC and EQ on a Mac", "item": "https://shashank99928.github.io/BudsDesk/anc-eq-on-mac.html" }
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "name": "Change OPPO, OnePlus or realme earbuds noise cancelling and equalizer from a Mac",
+      "description": "Pair the earbuds with the Mac once, then change the on-device settings from a native macOS app rather than from a phone.",
+      "totalTime": "PT3M",
+      "tool": [{ "@type": "HowToTool", "name": "BudsDesk for macOS" }],
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "Pair the earbuds with the Mac",
+          "text": "Put the earbuds in pairing mode and pair them in System Settings > Bluetooth. They connect as ordinary audio devices; no extra software is needed for playback."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Install BudsDesk",
+          "text": "Download the disk image from GitHub Releases, drag BudsDesk into Applications, and open it. macOS will ask for Bluetooth access — allow it."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Change the mode or the equalizer",
+          "text": "Open BudsDesk's window or its menu-bar item and choose a noise control mode or an equalizer preset. The app writes the setting and then reads it back off the earbuds."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Confirm it stuck",
+          "text": "What the app displays after the change is the value the earbuds reported, not the button you pressed. If the setting is not accepted, the control returns to what the earbuds actually hold."
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why can't macOS change the noise cancelling on these earbuds?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because the setting does not travel over the audio connection. The earbuds expose a separate vendor control service over Bluetooth, and every setting — noise mode, equalizer, gestures, battery, wear state — is exchanged there. macOS's Bluetooth support handles audio, input devices and battery reporting, and does not open vendor control services, so there is no Apple control to find."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can Audio MIDI Setup change my earbuds' equalizer instead?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Only in a different sense. Audio MIDI Setup and apps like it can apply an equalizer on the Mac to the audio the Mac is playing. The earbuds' own equalizer is stored on the earbuds and applies to every device connected to them, including the phone. They are not the same control and one does not change the other."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do the settings I change from the Mac stay set?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The settings are stored on the earbuds, not in the app: BudsDesk writes a value and then reads it back from the earbuds, and the same value is what the phone app will show. The app keeps no settings of its own and needs no account."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I run the phone app on the Mac in an Android emulator to do this?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We have not tested specific emulators and will not claim that none can pass a Bluetooth radio through to a guest system. What is certain is that these settings are exchanged over a Bluetooth channel, so an app running without a real radio has nothing to talk to. Emulator downloads of the phone app are widely advertised for exactly this purpose; the settings themselves are what such a route would need to reach."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+    <nav class="site" aria-label="Main">
+      <a href="/BudsDesk/">Home</a>
+      <a href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4</a>
+      <a href="/BudsDesk/anc-eq-on-mac.html" aria-current="page">ANC &amp; EQ on Mac</a>
+      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
+      <a href="/BudsDesk/models.html">Models</a>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+  <nav class="crumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li aria-current="page">ANC &amp; EQ on a Mac</li>
+    </ol>
+  </nav>
+
+  <h1>How to change the equalizer and noise cancelling on OPPO, OnePlus or realme earbuds from a Mac</h1>
+
+  <p class="lede">
+    Short answer: macOS has no control for it, and nothing in System Settings is hiding one. The
+    settings live on the earbuds and travel over a separate Bluetooth channel that Apple's software
+    never opens. An app that opens that channel can change them, and on a Mac that means installing
+    one.
+  </p>
+
+  <section>
+    <h2>First, why there is no setting to find</h2>
+
+    <p>
+      It is easy to spend an hour in the Bluetooth pane looking for a noise-control switch that is not
+      there. It is not there because of how the earbuds talk.
+    </p>
+
+    <p>
+      When you pair these earbuds, macOS sets up an audio link — the part that plays sound. The
+      settings are somewhere else: the earbuds also advertise a separate <em>vendor control
+      service</em>, and everything configurable travels across that. Battery, wear state, which mode
+      the cancellation is in, the equalizer preset, the touch gestures, the firmware string, the
+      multi-connect list. macOS supports audio, input devices and a little battery reporting, and it
+      does not open vendor control services, so there is no Apple-side control to expose and never
+      will be.
+    </p>
+
+    <div class="note">
+      <p>This is also why the phone app is not replaceable by a Mac preference pane: it is not an
+      audio setting, it is a device conversation.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What macOS does give you</h2>
+
+    <ul>
+      <li><strong>Pairing and connection.</strong> System Settings &rarr; Bluetooth. The earbuds play
+      audio on the Mac fine, with no extra software at all.</li>
+      <li><strong>Microphone and output selection.</strong> The Sound pane and per-app output
+      selection.</li>
+      <li><strong>Codec visibility</strong> — for some devices, not all, and not with any useful
+      control over which codec is chosen.</li>
+      <li><strong>Battery</strong> — for some third-party earbuds macOS shows nothing, or one merged
+      figure covering both buds.</li>
+    </ul>
+
+    <p>That is the whole list. Nothing above changes a setting on the earbuds.</p>
+  </section>
+
+  <section>
+    <h2>The two-minute version that works</h2>
+
+    <ol>
+      <li><strong>Pair the earbuds with the Mac once</strong> in System Settings &rarr; Bluetooth. If
+      they are already paired from a phone-only setup, they may need putting into pairing mode
+      again.</li>
+      <li><strong>Install BudsDesk</strong> from
+      <a href="https://github.com/shashank99928/BudsDesk/releases/latest">GitHub Releases</a> and
+      open it. macOS asks for Bluetooth access the first time; the permission is tied to the app, so
+      it survives updates.</li>
+      <li><strong>Change the mode or the preset</strong> in the window, or straight from the
+      menu-bar item if you only want the noise mode.</li>
+      <li><strong>Watch what it settles on.</strong> The app writes the setting and then reads the
+      value back off the earbuds. If the earbuds decline, the control returns to what they actually
+      hold — which is the honest behaviour, and the reason a stuck setting never looks applied when
+      it is not.</li>
+    </ol>
+
+    <p>
+      The settings are stored on the earbuds. Change the equalizer from the Mac and the phone app will
+      show the same value, and vice versa. BudsDesk keeps no settings of its own.
+    </p>
+  </section>
+
+  <section>
+    <h2>Does the equalizer on the earbuds beat an equalizer on the Mac?</h2>
+
+    <p>
+      They are different things and both are legitimate.
+    </p>
+
+    <ul>
+      <li><strong>On-device (the earbuds' own presets and BassWave)</strong> applies to whatever
+      source is playing — the Mac, the phone, a TV. It is stored in the earbuds, and it is what the
+      phone app's equalizer screen changes.</li>
+      <li><strong>On the Mac (Audio MIDI Setup, or a player's own equalizer)</strong> shapes only the
+      audio the Mac is playing. It disappears when you switch source.</li>
+    </ul>
+
+    <p>
+      So a Mac-side equalizer cannot substitute for the earbuds' own curve, and a preset on the
+      earbuds does not replace per-app shaping on the Mac. If you want the sound changed everywhere,
+      it has to be changed on the earbuds.
+    </p>
+  </section>
+
+  <section>
+    <h2>If it does not connect</h2>
+
+    <ul>
+      <li><strong>The earbuds are asleep in the case, or out of range.</strong> This is the most common
+      one by a distance. BudsDesk will say exactly that rather than showing stale values.</li>
+      <li><strong>Another device is holding them.</strong> These earbuds accept one active source;
+      if the phone is playing, the Mac may be refused or will take over. Some models allow two
+      connected devices — the app lists what the earbuds report as linked.</li>
+      <li><strong>Bluetooth permission was declined.</strong> macOS returns an <em>empty device
+      list</em> rather than an error when a process lacks Bluetooth access, which looks identical to
+      "no earbuds paired". Check System Settings &rarr; Privacy &amp; Security &rarr; Bluetooth.</li>
+      <li><strong>The model is not catalogued.</strong> It will still connect and read, but nothing
+      will be writable until that model has been recorded. See
+      <a href="/BudsDesk/models.html">models</a>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <dl class="faq">
+      <dt>Why can't macOS change the noise cancelling?</dt>
+      <dd>Because the setting does not travel over the audio connection. It goes over a separate
+      vendor control service that Apple's Bluetooth stack does not open.</dd>
+
+      <dt>Can I use an Android emulator to run the phone app instead?</dt>
+      <dd>We have not tested specific emulators, and we will not claim none can pass a real Bluetooth
+      radio into a guest system. What is certain is that these settings travel over a Bluetooth
+      channel, so an app running without a real radio has nothing to talk to.</dd>
+
+      <dt>Will the changes survive a reconnect?</dt>
+      <dd>Yes — they are stored on the earbuds. Re-pairing the earbuds does not reset them.</dd>
+
+      <dt>Which models does this work with?</dt>
+      <dd>OnePlus Buds 4 is measured end to end. Other OPPO, OnePlus and realme models that advertise
+      the same control service connect and read; they have no write path until someone records
+      them.</dd>
+    </dl>
+  </section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p class="fineprint">
+      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as factual
+      device names.
+    </p>
+    <p>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a>
+    </p>
+    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+  </div>
+</footer>
+
+</body>
+</html>

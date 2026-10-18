@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HeyMelody for Mac? A Native Alternative — BudsDesk</title>
+<meta name="description" content="HeyMelody is a phone app with no desktop build. What that means on macOS, what we have and have not tested, and how BudsDesk differs — including where the phone app does more than BudsDesk does.">
+<link rel="canonical" href="https://shashank99928.github.io/BudsDesk/heymelody-on-mac.html">
+<meta name="theme-color" content="#0e1013">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BudsDesk">
+<meta property="og:title" content="HeyMelody for Mac? An honest look, and a native alternative">
+<meta property="og:description" content="What the phone app does on a Mac, what BudsDesk does instead, and where the phone app still does more.">
+<meta property="og:url" content="https://shashank99928.github.io/BudsDesk/heymelody-on-mac.html">
+<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
+
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/icon.png" type="image/png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "BudsDesk", "item": "https://shashank99928.github.io/BudsDesk/" },
+        { "@type": "ListItem", "position": 2, "name": "HeyMelody on Mac", "item": "https://shashank99928.github.io/BudsDesk/heymelody-on-mac.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is there a Mac version of HeyMelody?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "There is no desktop build. It is a phone app published for iPhone and Android. Some storefronts offer it for Apple silicon Macs as an iPhone app, which Apple makes possible for apps that have not been withdrawn from Mac availability; whether it can reach the earbuds' control channel when run that way is not something this project has tested, and this page does not claim either way."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does BudsDesk use the phone app's code?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. BudsDesk shares no code, no assets and no extracted data with it. It was written by recording the traffic between the phone app and real earbuds, then writing an independent client for what the wire carries. No vendor code is decompiled into the app, and no vendor asset is redistributed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does BudsDesk update the firmware like the phone app does?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No, and it never will. Firmware updates travel over a separate service that BudsDesk never opens. If updating firmware matters to you, the phone app is the only tool here that does it, and that is a real advantage it has."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use both?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The settings live on the earbuds, so a change made in one shows up in the other. Use the phone app for firmware and for models BudsDesk has not catalogued, and BudsDesk when the earbuds are at the computer."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+    <nav class="site" aria-label="Main">
+      <a href="/BudsDesk/">Home</a>
+      <a href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4</a>
+      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
+      <a href="/BudsDesk/heymelody-on-mac.html" aria-current="page">HeyMelody on Mac</a>
+      <a href="/BudsDesk/models.html">Models</a>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+  <nav class="crumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li aria-current="page">HeyMelody on Mac</li>
+    </ol>
+  </nav>
+
+  <h1>HeyMelody on a Mac, honestly</h1>
+
+  <p class="lede">
+    People search for this because the phone app is the only thing that ever worked. So here is what
+    is actually true, including the parts that are not flattering to BudsDesk.
+  </p>
+
+  <section>
+    <h2>What we can state, and what we will not</h2>
+
+    <p>
+      HeyMelody is published for iPhone and Android. There is no desktop build. Some App Store
+      storefronts offer it for Apple silicon Macs, which is Apple's standard mechanism for running an
+      unmodified iPhone app on a Mac.
+    </p>
+
+    <div class="note warn">
+      <p><strong>What we have not tested:</strong> whether it can reach the earbuds' control channel
+      when running that way. Bluetooth access for an iPhone app on a Mac goes through a compatibility
+      layer, and the honest answer is that we do not know what it does here. Any page that states
+      flatly that the phone app "does not work on a Mac" is asserting something it has not checked,
+      and we are not going to.</p>
+    </div>
+
+    <p>
+      What follows is about architecture, not about which app wins a test nobody has run.
+    </p>
+  </section>
+
+  <section>
+    <h2>Where the phone app does more than BudsDesk</h2>
+
+    <ul>
+      <li><strong>Firmware updates.</strong> It does them. BudsDesk will not, ever — the update channel
+      is never opened by this app. If your earbuds need a fix from the vendor, that app is the only
+      tool here that can apply it.</li>
+      <li><strong>Model coverage.</strong> It knows dozens of models. BudsDesk has one measured end to
+      end.</li>
+      <li><strong>Editing a custom equalizer curve.</strong> The phone app builds one; BudsDesk only
+      offers the custom slot once a curve already exists on the earbuds.</li>
+    </ul>
+
+    <p>
+      None of that is a small list. If those are what you need, use the phone app — and the rest of
+      this page is about the times when the phone is not the machine you are sitting at.
+    </p>
+  </section>
+
+  <section>
+    <h2>Where they are simply different</h2>
+
+    <div class="scroll-x">
+    <table>
+      <thead>
+        <tr><th scope="col"></th><th scope="col">Phone app on a phone</th><th scope="col">BudsDesk on a Mac</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Runs on</td><td>iPhone, Android</td><td>macOS 26+, Apple silicon</td></tr>
+        <tr><td>Changing ANC / EQ</td><td class="yes">Yes</td><td class="yes">Yes, on the measured model</td></tr>
+        <tr><td>Firmware updates</td><td class="yes">Yes</td><td class="no">Never — out of scope</td></tr>
+        <tr><td>Find my earbuds</td><td class="yes">Yes</td><td class="no">Cannot be confirmed, so not offered</td></tr>
+        <tr><td>Model coverage</td><td class="yes">Dozens</td><td class="partial">One measured, others read-only</td></tr>
+        <tr><td>Menu-bar access</td><td class="no">No</td><td class="yes">Battery and mode in the menu bar</td></tr>
+        <tr><td>Scriptable / CLI</td><td class="no">No</td><td class="yes">Same binary has CLI modes</td></tr>
+        <tr><td>Account required</td><td class="partial">Vendor account for some features</td><td class="yes">No account at all</td></tr>
+        <tr><td>Network access</td><td class="partial">Yes</td><td class="yes">None</td></tr>
+        <tr><td>Source auditable</td><td class="no">No</td><td class="yes">MIT licensed, public</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>
+      "Network access: none" is worth spelling out. BudsDesk has no telemetry, no analytics, no
+      account and no update check. It can be run with the network down and behaves identically. That
+      is a consequence of it being a small, single-purpose tool, and it is checkable in the source
+      rather than promised in a policy.
+    </p>
+  </section>
+
+  <section>
+    <h2>Shared settings, not competing ones</h2>
+
+    <p>
+      The settings live on the earbuds. Change the noise mode from the Mac and the phone app will show
+      the same mode; change a preset on the phone and BudsDesk will read it back the next time it
+      polls. There is no sync, because there is nothing to sync — one device holds the state, and both
+      apps read it.
+    </p>
+
+    <p>
+      That also means using both is normal, and the intended way to use BudsDesk: the phone for
+      firmware, the Mac for everything you touch during a working day.
+    </p>
+  </section>
+
+  <section>
+    <h2>Why this is not a wrapper</h2>
+
+    <p>
+      BudsDesk does not contain the phone app, does not call it, and does not read its data. There is
+      no decompiled code in it and no extracted asset. It was built by recording what the earbuds
+      exchanged with the phone app and then writing an independent client for that conversation —
+      which is why it can state which parts are measured and which are not, and why it can tell you
+      when a setting was declined instead of showing you a button that lies.
+    </p>
+
+    <p>
+      <a href="/BudsDesk/models.html">How a model gets added to BudsDesk &rarr;</a>
+    </p>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <dl class="faq">
+      <dt>Is there a Mac version of HeyMelody?</dt>
+      <dd>No desktop build exists. Some storefronts offer the iPhone app for Apple silicon Macs. We
+      have not tested what it can reach from there.</dd>
+
+      <dt>Does BudsDesk reuse anything from it?</dt>
+      <dd>No code, no assets, no data files. It was written independently from recordings of the
+      wire.</dd>
+
+      <dt>Does BudsDesk do firmware updates?</dt>
+      <dd>No, and it will not. That is a genuine advantage the phone app keeps.</dd>
+
+      <dt>Can I use both?</dt>
+      <dd>Yes, and most people who try BudsDesk probably will.</dd>
+    </dl>
+  </section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p class="fineprint">
+      HeyMelody is named here only to describe the situation truthfully; this page makes no claim to
+      speak for it or about its internals beyond what its public store listing shows. BudsDesk is not
+      made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK Electronics, or the
+      publisher of that app. If anything on this page is wrong, an issue with a correction is welcome.
+    </p>
+    <p>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a>
+    </p>
+    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+  </div>
+</footer>
+
+</body>
+</html>

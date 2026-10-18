@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supported Earbuds Models — BudsDesk for macOS</title>
+<meta name="description" content="Which OPPO, OnePlus and realme earbuds BudsDesk controls on a Mac, what read-only means, what the capability registry enforces, and how to add a model by recording it.">
+<link rel="canonical" href="https://shashank99928.github.io/BudsDesk/models.html">
+<meta name="theme-color" content="#0e1013">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BudsDesk">
+<meta property="og:title" content="Supported models — BudsDesk">
+<meta property="og:description" content="One model measured end to end, the whole family read-only, and how a model gets added.">
+<meta property="og:url" content="https://shashank99928.github.io/BudsDesk/models.html">
+<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
+
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/icon.png" type="image/png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "BudsDesk", "item": "https://shashank99928.github.io/BudsDesk/" },
+        { "@type": "ListItem", "position": 2, "name": "Supported models", "item": "https://shashank99928.github.io/BudsDesk/models.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Will BudsDesk work with my OPPO Enco, OnePlus Buds or realme Buds?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If your model advertises the vendor's control service, BudsDesk will connect and show everything it reports: battery where per-bud data exists, wear state, the active noise-control mode, the equalizer preset, the codec and the firmware string. It will not write any setting until that exact model has been recorded, because writing a value nobody has observed on your model risks putting it in a state the app cannot explain."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does a model become fully supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Somebody records it. Run the app with tracing on, set each control in turn while the traffic is captured, and commit the recording with its provenance: model, firmware string, date and tool. Then add one JSON file to devices/ describing what that recording shows, with each capability marked measured, inferred or unconfirmed and citing its evidence. No compiler change is involved."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why not just enable the controls for every model in the family?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because a setting that is written and not understood can leave the earbuds in a state the app cannot describe or undo. The app offers exactly what has been observed to work on that model. That restraint is the product: an app that says it changed something and did not is worse than an app with fewer buttons."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+    <nav class="site" aria-label="Main">
+      <a href="/BudsDesk/">Home</a>
+      <a href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4</a>
+      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
+      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
+      <a href="/BudsDesk/models.html" aria-current="page">Models</a>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+  <nav class="crumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li aria-current="page">Supported models</li>
+    </ol>
+  </nav>
+
+  <h1>Which earbuds BudsDesk works with</h1>
+
+  <p class="lede">
+    One model is measured end to end. The rest of the family is expected to connect and read, and
+    none of it is writable yet. This page explains exactly what that does and does not mean, because
+    the difference is the whole point of the project.
+  </p>
+
+  <section>
+    <h2>The three levels, and why they are not the same</h2>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Measured</h3>
+        <p>A recording of that model shows the behaviour, frame by frame. These are the only
+        capabilities with a write path.</p>
+      </div>
+      <div class="card">
+        <h3>Inferred</h3>
+        <p>Read out of the vendor app's own constants, and <em>not</em> yet confirmed against
+        hardware. Useful as a map, not as a permission slip.</p>
+      </div>
+      <div class="card">
+        <h3>Unconfirmed</h3>
+        <p>Plausible from the protocol's shape and nothing more. Shown as a reading when the device
+        reports it; never written to.</p>
+      </div>
+    </div>
+
+    <p>
+      A capability marked <code>writable: true</code> must be <em>measured</em>, and the registry
+      enforces that: a profile claiming a write path on inferred evidence fails to load, and the app
+      says why instead of starting with a control that might not work.
+    </p>
+  </section>
+
+  <section>
+    <h2>The list</h2>
+
+    <div class="scroll-x">
+    <table>
+      <thead>
+        <tr><th scope="col">Model</th><th scope="col">State</th><th scope="col">What that means</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>OnePlus Buds 4</strong></td>
+          <td class="yes">Measured</td>
+          <td>Full surface: noise control, equalizer, BassWave and touch gestures write; battery,
+          wear, codec, firmware string and multi-connect read. <a href="/BudsDesk/oneplus-buds-4.html">Details</a>.</td>
+        </tr>
+        <tr>
+          <td>Any other OPPO / OnePlus / realme model advertising the control service</td>
+          <td class="partial">Read-only</td>
+          <td>Connects, identifies itself, and shows everything it reports. No control is enabled,
+          and the app labels each one rather than hiding it.</td>
+        </tr>
+        <tr>
+          <td>A model that does not advertise the service</td>
+          <td class="no">No connection</td>
+          <td>Nothing is sent. The app says it found no earbuds rather than guessing at a device.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="note warn">
+      <p><strong>What this page will not do is list model names as supported.</strong> The protocol
+      is shared across the family, which is why a read-only connection is a reasonable expectation —
+      but a list of forty model numbers that nobody has recorded would be a claim the project cannot
+      stand behind, and it would be the same overreach this app exists to avoid. If your model
+      connects and reads, the app will tell you what it found. That is a real answer; a model-name
+      list would not be.</p>
+    </div>
+
+    <p>
+      If yours says "read-only" and you want it writable, the next section is the whole recipe, and
+      it takes about twenty minutes.
+    </p>
+  </section>
+
+  <section>
+    <h2>Adding a model</h2>
+
+    <ol>
+      <li>
+        <strong>Record it.</strong> Run the app with tracing enabled so every frame in both
+        directions is written out as hex, then change one setting at a time, slowly, and note what
+        you changed. A recording without a note is only half the evidence.
+      </li>
+      <li>
+        <strong>Freeze it into the corpus.</strong> The recording becomes
+        <code>captures/&lt;id&gt;/frames.hex</code> with a <code>capture.json</code> carrying its
+        provenance: model, firmware string, date, tool and channel. The Swift corpus is generated
+        from that file, and a test asserts the two agree, so a fixture cannot be edited out of step
+        with its provenance.
+      </li>
+      <li>
+        <strong>Write the profile.</strong> One JSON file in <code>devices/</code>. Each capability
+        gets <code>read</code>, <code>writable</code> and a <code>confidence</code>, and the
+        confidence has to cite its evidence — a capture for measured, a class and method in the
+        vendor app for inferred, and nothing at all for unconfirmed.
+      </li>
+      <li>
+        <strong>Run the tests.</strong> <code>swift test</code> replays the corpus through the real
+        session and checks the state it lands in; the registry has its own rules and refuses
+        profiles that break them.
+      </li>
+      <li>
+        <strong>Open a pull request.</strong> Model, firmware string, what you set, what came back.
+      </li>
+    </ol>
+
+    <p>
+      Nothing in that list involves touching the Swift, which is the point of the registry being a
+      file rather than a set of model checks in the source. A model nobody has catalogued still
+      connects, still reads, and simply draws no controls that could lie.
+    </p>
+  </section>
+
+  <section>
+    <h2>What the registry refuses</h2>
+
+    <p>
+      The registry is not documentation, it is enforced. A profile that breaks any of these does not
+      load, and the app prints the reason:
+    </p>
+
+    <ul>
+      <li>A capability key that is not in the vocabulary.</li>
+      <li>A value the protocol does not have, or values where none belong and none where one does.</li>
+      <li><code>measured</code> citing anything other than a capture or a hardware loop-back.</li>
+      <li><code>inferred</code> not citing the vendor app, or <code>unconfirmed</code> citing
+      anything at all.</li>
+      <li><code>writable: true</code> on anything that is not measured.</li>
+      <li>Two fallback profiles, or none.</li>
+    </ul>
+
+    <p>
+      The rules were verified by breaking the shipped profile deliberately and confirming each one
+      produced the named error, rather than by reading the code and assuming.
+    </p>
+  </section>
+
+  <section>
+    <h2>Related work worth knowing</h2>
+
+    <p>
+      This is not the first project to notice that these earbuds deserve a desktop client. If yours
+      is not a BudsDesk model, one of these may be exactly what you need, and all of them are
+      somebody's unpaid work:
+    </p>
+
+    <ul>
+      <li><a href="https://github.com/anikket-b/Realme-TWS-Mac-Controller">Realme TWS Mac
+      Controller</a> — a macOS client for realme earbuds, MIT licensed, and independently documented
+      the same thing this project did: that macOS exposes no control at all.</li>
+      <li><a href="https://github.com/timschneeb/GalaxyBudsClient">GalaxyBudsClient</a> and
+      <a href="https://github.com/nikiomori/nothing-x-macos">nothing-x-macos</a> — the same idea for
+      Samsung and Nothing, and both worth reading if you want to see how far a reverse-engineered
+      companion client can go.</li>
+      <li><a href="https://github.com/TheLastGimbus/FreeBuddy">FreeBuddy</a> — the same problem for
+      Huawei FreeBuds.</li>
+    </ul>
+
+    <p>
+      Different protocols, different vendors, same missing piece. None of them shares code with
+      BudsDesk.
+    </p>
+  </section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p class="fineprint">
+      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as factual
+      device names. The projects listed above are independent and are named here as acknowledgements,
+      not as affiliations.
+    </p>
+    <p>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a>
+    </p>
+    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+  </div>
+</footer>
+
+</body>
+</html>

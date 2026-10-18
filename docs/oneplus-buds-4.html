@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OnePlus Buds 4 on Mac: ANC, EQ &amp; Battery — BudsDesk</title>
+<meta name="description" content="Control OnePlus Buds 4 from a Mac: noise cancelling modes and levels, equalizer presets, BassWave, touch gesture remapping, per-bud battery, codec and multi-connect state. What works, what does not, and how it was measured.">
+<link rel="canonical" href="https://shashank99928.github.io/BudsDesk/oneplus-buds-4.html">
+<meta name="theme-color" content="#0e1013">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BudsDesk">
+<meta property="og:title" content="OnePlus Buds 4 on Mac: ANC, EQ and battery">
+<meta property="og:description" content="Every OnePlus Buds 4 setting reachable from the Mac, and the two that are not — with the reason for each.">
+<meta property="og:url" content="https://shashank99928.github.io/BudsDesk/oneplus-buds-4.html">
+<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
+
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/icon.png" type="image/png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "BudsDesk", "item": "https://shashank99928.github.io/BudsDesk/" },
+        { "@type": "ListItem", "position": 2, "name": "OnePlus Buds 4", "item": "https://shashank99928.github.io/BudsDesk/oneplus-buds-4.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://shashank99928.github.io/BudsDesk/oneplus-buds-4.html#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Can the OnePlus Buds 4 firmware be updated from a Mac?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not with BudsDesk, and not by design. Firmware updates travel over a separate vendor service that BudsDesk never opens. A failed firmware write can leave the earbuds unusable, so the feature is permanently out of scope rather than merely unimplemented."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does BudsDesk show the OnePlus Buds 4 charging case battery?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The earbuds report exactly two battery slots, left and right, on the control channel BudsDesk uses — even while a separate reply names the case as present. The case's charge never appears here, so the app states that instead of showing an empty battery."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a find-my-earbuds button?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The command exists and the earbuds acknowledge it, but the acknowledgement is byte-identical whether or not a tone actually plays, so nothing here can verify that it worked. An app whose whole point is not to guess does not ship a button it cannot confirm."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which noise cancelling modes can be set from the Mac?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Off, Noise Cancellation at High, Moderate, Low or Auto, Transparency, and Adaptive. The cancellation levels are separate values from the modes, and the four level values were each set and read back in turn to confirm they work as they appear to."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "name": "Change OnePlus Buds 4 noise cancelling and equalizer from a Mac",
+      "totalTime": "PT2M",
+      "tool": [{ "@type": "HowToTool", "name": "BudsDesk for macOS" }],
+      "step": [
+        { "@type": "HowToStep", "name": "Pair the earbuds", "text": "In System Settings > Bluetooth, put the OnePlus Buds 4 in pairing mode and pair them with the Mac. They will connect as audio devices." },
+        { "@type": "HowToStep", "name": "Install and open BudsDesk", "text": "Drag BudsDesk into Applications and open it, allowing Bluetooth access when macOS asks." },
+        { "@type": "HowToStep", "name": "Change the mode", "text": "Pick a noise control mode in the window or from the menu-bar item. The app sends the command and then reads the value back; what you see is what the earbuds reported, not what was requested." }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+    <nav class="site" aria-label="Main">
+      <a href="/BudsDesk/">Home</a>
+      <a href="/BudsDesk/oneplus-buds-4.html" aria-current="page">OnePlus Buds 4</a>
+      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
+      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
+      <a href="/BudsDesk/models.html">Models</a>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+  <nav class="crumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li aria-current="page">OnePlus Buds 4</li>
+    </ol>
+  </nav>
+
+  <h1>Control the OnePlus Buds 4 from your Mac</h1>
+
+  <p class="lede">
+    The OnePlus Buds 4 is the one model BudsDesk has been measured against end to end. Every setting
+    below was sent to the earbuds, read back off the wire, and recorded — so this page can be
+    specific about what works, and equally specific about the two things that do not.
+  </p>
+
+  <div class="buttons">
+    <a class="button primary" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download for macOS</a>
+    <a class="button" href="/BudsDesk/models.html">Other models</a>
+  </div>
+
+  <section>
+    <h2>Noise control: every mode the phone app has</h2>
+
+    <p>
+      macOS gives you no way to change this, so it is the reason most people go looking. BudsDesk
+      offers the whole set:
+    </p>
+
+    <div class="scroll-x">
+    <table>
+      <thead>
+        <tr><th scope="col">Mode</th><th scope="col">What it does</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Off</td><td>No processing. Full outside sound.</td></tr>
+        <tr><td>Noise Cancellation — High</td><td>Strongest cancellation: planes, trains.</td></tr>
+        <tr><td>Noise Cancellation — Moderate</td><td>Streets and malls.</td></tr>
+        <tr><td>Noise Cancellation — Low</td><td>Home and office.</td></tr>
+        <tr><td>Noise Cancellation — Auto</td><td>The earbuds pick a level as your surroundings change.</td></tr>
+        <tr><td>Transparency</td><td>Outside sound let in deliberately, for conversation.</td></tr>
+        <tr><td>Adaptive</td><td>Balances cancellation and transparency continuously.</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>
+      Those seven are not one list of seven values on the wire, and that distinction turned out to
+      matter. <em>Auto</em> is a cancellation <strong>level</strong>; <em>Adaptive</em> is a separate
+      <strong>mode</strong> with no level at all. The four levels were each set and read back in
+      turn — they are not in strength order, and none of the four values could have been guessed from
+      the others.
+    </p>
+
+    <div class="note">
+      <p>Because a level only means anything while cancellation is on, leaving cancellation clears
+      it. This is not a cosmetic detail: a level left behind on screen reads as
+      &ldquo;Adaptive (Auto)&rdquo;, which is a setting the earbuds are not using. That was a real bug
+      in this app until a replay of the recording caught it.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Equalizer and BassWave</h2>
+
+    <p>
+      Preset switching works, including the earbuds' own custom slot when one has been saved from the
+      phone app. BudsDesk does not build a custom equalizer curve of its own: it reports whether a
+      custom profile exists and offers the slot if it does.
+    </p>
+
+    <p>
+      BassWave is the bass dial, and it comes with a trap. The usable range is not a constant in the
+      app — it is read from the earbuds, and the control is drawn from the value the device reports.
+      On this model that is <strong>&minus;5 to +5</strong>, and the level the earbuds reported was
+      <strong>+2</strong>. Had the app assumed a range, the dial would have been wrong on any model
+      that disagrees.
+    </p>
+  </section>
+
+  <section>
+    <h2>Touch gestures</h2>
+
+    <p>
+      Double tap, triple tap, touch and hold, and slide can each be remapped. What you can assign is
+      bounded by what the hardware has been observed to store rather than by a wish list: the app
+      offers the actions it has seen the earbuds accept for that gesture, and refuses the rest. A
+      gesture setting that silently does nothing is exactly the failure this project exists to avoid.
+    </p>
+
+    <p>
+      A full recording of the gesture table came back with <strong>18 records</strong> — one per
+      gesture slot the earbuds keep — and the app's own picker is built from the observed set.
+    </p>
+  </section>
+
+  <section>
+    <h2>Battery, wear, codec and the rest</h2>
+
+    <ul>
+      <li><strong>Battery</strong> is reported per bud, never merged. In the reference recording both
+      were at 20%. macOS shows one merged figure; this shows which bud is running down.</li>
+      <li><strong>Wear state</strong> says which bud is in your ear and whether the case is shut —
+      useful when one bud is draining while the other sits in its slot.</li>
+      <li><strong>Codec</strong> is read from the earbuds and shown, which is the difference between
+      knowing you are on AAC and assuming it.</li>
+      <li><strong>Firmware string</strong> is shown verbatim, exactly as the earbuds report it, rather
+      than tidied into a format that could hide a mismatch. The reference device reports
+      <code>1,2,138,2,2,138,3,1,01,3,2,105</code>.</li>
+      <li><strong>Multi-connect</strong> lists every device the earbuds are linked to, with each
+      one's connection state and which is current. It is read-only: switching which device is active
+      has not been measured on this channel, so no control is offered for it.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What does not work, and why</h2>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Charging case battery</h3>
+        <p>Not a missing feature — a missing report. Every battery reply in a full session carried
+        exactly two slots, left and right, even while the wear reply named the case on every poll.
+        The app prints that the case has not reported a charge rather than drawing an empty battery.</p>
+      </div>
+      <div class="card">
+        <h3>Find my earbuds</h3>
+        <p>The command exists and the earbuds answer it. But the acknowledgement is the same single
+        byte whether or not a tone actually plays, so nothing on this side can tell success from
+        silence. A button that might do nothing is worse than no button.</p>
+      </div>
+      <div class="card">
+        <h3>Firmware updates</h3>
+        <p>Out of scope permanently. Firmware travels over a different service that this app never
+        opens — not for discovery, not for testing, not out of curiosity.</p>
+      </div>
+      <div class="card">
+        <h3>Switching the active device</h3>
+        <p>The multi-connect list is read-only here. Writing it has not been observed, so no control
+        is drawn.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How this was measured</h2>
+
+    <p>
+      Not by reading a specification — there isn't one. The vendor's Android app was run against real
+      earbuds with its Bluetooth traffic recorded, and the frames it exchanged became the reference.
+      Those recordings are in the repository as plain hex with provenance: model, firmware string,
+      date and channel.
+    </p>
+
+    <p>
+      The app is then checked against the recording on every build. A recording is a fixture, and the
+      Swift corpus is generated from it, so the two cannot drift apart. The frame layout, the command
+      ids and every decoded field are documented in the repository — including a section listing what
+      is <em>not</em> verified, which is the part most projects leave out.
+    </p>
+
+    <p>
+      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Read the protocol notes</a>
+      or <a href="https://github.com/shashank99928/BudsDesk/tree/main/captures">the recordings themselves</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <dl class="faq">
+      <dt>Is there an official OnePlus app for the Mac?</dt>
+      <dd>No vendor ships a desktop app for these earbuds. BudsDesk is an independent, open-source
+      project and is not affiliated with OnePlus.</dd>
+
+      <dt>Will it work with the OnePlus Buds Pro 3, or the Nord Buds?</dt>
+      <dd>They will connect and show what they report, but no settings will be writable until that
+      model has been recorded. See <a href="/BudsDesk/models.html">models</a>.</dd>
+
+      <dt>Why is the build ad-hoc signed?</dt>
+      <dd>Because it is distributed outside the App Store without a paid developer account.
+      Notarisation is a real cost and this says so rather than hiding it.</dd>
+    </dl>
+  </section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p class="fineprint">
+      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as factual
+      device names. The firmware string on this page is a value read from a device, not a claim about
+      which version is current.
+    </p>
+    <p>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a>
+    </p>
+    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+  </div>
+</footer>
+
+</body>
+</html>
