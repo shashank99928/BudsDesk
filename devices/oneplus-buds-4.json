@@ -1,0 +1,141 @@
+{
+  "id": "oneplus-buds-4",
+  "model": "OnePlus Buds 4",
+  "vendor": "OnePlus",
+  "notes": "Measured on the unit in captures/oneplus-buds-4-2026-10-17. The name is matched exactly against what macOS reports, and the service UUID is the gate every member of the family passes.",
+  "match": {
+    "names": ["OnePlus Buds 4"],
+    "serviceUUIDs": ["0000799a-d102-11e1-9b23-00025b00a5a5"],
+    "fallback": false
+  },
+  "capabilities": {
+    "stateRead": {
+      "read": true,
+      "writable": false,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "hello-reply",
+        "note": "The session HELLO is answered with a static 8-byte value, so the control channel is up and the device is answering it."
+      }
+    },
+    "battery": {
+      "read": true,
+      "writable": false,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "battery-reply",
+        "note": "0x8106: a count then (slot, level) pairs. Levels arrive as multiples of 10 on this unit; the app reports the raw byte."
+      }
+    },
+    "caseBattery": {
+      "read": false,
+      "writable": false,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "battery-reply",
+        "note": "Measured as a negative: across a full session every 0x8106 reply carried count = 2, left and right, even while the wear reply named slot 3 on every poll. The case's charge reaches the phone app by some path this channel does not show."
+      },
+      "note": "read: false is the finding, not a gap. The app says the case has not reported a charge rather than drawing an empty percentage."
+    },
+    "wear": {
+      "read": true,
+      "writable": false,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "wear-reply",
+        "note": "0x8109: a count then (slot, placement). Slot 3 names the case, which is the cheapest honest signal that one is present and awake."
+      }
+    },
+    "noiseControl": {
+      "read": true,
+      "writable": true,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "anc-reply-nc-high",
+        "note": "Each mask was set and read back one at a time: off 0x0008, transparency 0x0100, adaptive 0x0800, cancellation high 0x0010 / moderate 0x0020 / low 0x0040 / auto 0x0080. The setter writes a 16-bit little-endian mask; the single-byte conveniences the vendor app also has are never sent, because they map to the wrong modes."
+      },
+      "values": ["off", "noiseCancellation", "high", "moderate", "low", "auto", "transparency", "adaptive"]
+    },
+    "equalizer": {
+      "read": true,
+      "writable": true,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "eq-reply-bass",
+        "note": "0x00 and 0x02 were set and read back. 0x03 is skipped by the firmware entirely; 0x04 is the custom slot."
+      },
+      "values": ["balanced", "clearVocals", "bass", "custom"],
+      "note": "The custom slot exists as a preset but cannot be selected until a saved profile does, so this app offers it only when the device reports one. Writing a custom profile is a file transfer and is out of scope."
+    },
+    "bassWave": {
+      "read": true,
+      "writable": true,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "basswave-reply-2",
+        "note": "0x8124 answers [min][max][current], all signed: this unit reports -5...+5. The setter writes back the bounds it was given, which is why the registry does not restate the range."
+      }
+    },
+    "gestures": {
+      "read": true,
+      "writable": true,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "touch-reply",
+        "note": "The 18 four-byte records behind a count. The setter is the same 18-record table, and this app only offers action codes that have been seen stored."
+      },
+      "values": ["doubleTap", "tripleTap", "touchAndHold", "slide"],
+      "note": "The in-call context (type 0x06) is deliberately not offered: its action codes are unnamed in every description of this protocol, and guessing between answer and decline risks ending someone's call."
+    },
+    "multipoint": {
+      "read": true,
+      "writable": false,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "multiconnect-reply",
+        "note": "The 0x8112 getter answers with the same body the 0x0204 push carries: a count, then records of [address 6][length][state][flags][nameLength][name]. The SDK's own parser strides by the same length byte, which is what makes the layout more than a fit to one sample."
+      },
+      "note": "writable is false although the vendor SDK does implement a setter (0x0429, operateMultiConnectHandheldDevice). It has never been exercised on this hardware and no capture shows it, so there is no write path here."
+    },
+    "findMyEarbuds": {
+      "read": false,
+      "writable": false,
+      "confidence": "inferred",
+      "evidence": {
+        "source": "apk",
+        "ref": "dex:com.oplus.melody.btsdk.protocol.commands.i#setFindMode",
+        "note": "The setter exists (0x0400) and its ack (0x8400) has been seen answering with a single result byte. Nothing distinguishes accept from reject on that ack, and no recording of a ring was kept."
+      },
+      "note": "read: false and writable: false is a deliberate gap against the phone app, which does have a Ring button. Ringing is a write with no read-back and no capture behind it here, so BudsDesk offers none until there is a recording and an ear test. See DECISIONS D5."
+    },
+    "firmware": {
+      "read": true,
+      "writable": false,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "firmware-reply",
+        "note": "0x8105 answers a comma-separated ASCII string, shown verbatim. It is not a dotted version and this project does not invent one."
+      }
+    },
+    "codec": {
+      "read": true,
+      "writable": false,
+      "confidence": "measured",
+      "evidence": {
+        "source": "capture",
+        "ref": "codec-reply",
+        "note": "0x8114 answers the id the vendor's own list is built from; 02 is AAC by that list. Read-only: the vendor setter (0x041a) changes the phone's link, not the Mac's."
+      }
+    }
+  }
+}

@@ -14,15 +14,15 @@ import os
 /// those bytes command *Noise cancellation* and *Off* respectively, so two of the three
 /// buttons sent a different mode than they claimed. The values below were each set and read
 /// back one at a time.
-enum NoiseMode: String, CaseIterable, Identifiable {
+public enum NoiseMode: String, CaseIterable, Identifiable {
     case noiseCancellation
     case adaptive
     case transparency
     case off
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var label: String {
+    public var label: String {
         switch self {
         case .noiseCancellation: return "Noise cancellation"
         case .adaptive: return "Adaptive"
@@ -38,7 +38,7 @@ enum NoiseMode: String, CaseIterable, Identifiable {
     /// nothing at all for an unknown symbol, so the pill rendered with a blank where its
     /// icon should be, and nothing failed. Every name here is checked against the running OS
     /// by `Tools/check-symbols.swift`.
-    var symbol: String {
+    public var symbol: String {
         switch self {
         case .noiseCancellation: return "waveform.slash"
         case .adaptive: return "waveform.badge.magnifyingglass"
@@ -50,7 +50,7 @@ enum NoiseMode: String, CaseIterable, Identifiable {
     /// The mask the firmware stores for this mode. Noise cancellation is reported at
     /// whichever level it is on, so this is its High level — the same default the phone
     /// sends; `ANCLevel` carries the rest.
-    var mask: UInt16 {
+    public var mask: UInt16 {
         switch self {
         case .noiseCancellation: return ANCLevel.high.mask
         case .adaptive: return 0x0800
@@ -79,15 +79,15 @@ enum NoiseMode: String, CaseIterable, Identifiable {
 ///
 /// Declared strongest-first, matching the phone's own order — `allCases` is what the
 /// picker renders, and it is deliberately not the wire order.
-enum ANCLevel: String, CaseIterable, Identifiable {
+public enum ANCLevel: String, CaseIterable, Identifiable {
     case high
     case moderate
     case low
     case auto
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var label: String {
+    public var label: String {
         switch self {
         case .high: return "High"
         case .moderate: return "Moderate"
@@ -96,7 +96,7 @@ enum ANCLevel: String, CaseIterable, Identifiable {
         }
     }
 
-    var detail: String {
+    public var detail: String {
         switch self {
         case .high: return "Very noisy places — planes and trains"
         case .moderate: return "Noisy places — streets and malls"
@@ -105,7 +105,7 @@ enum ANCLevel: String, CaseIterable, Identifiable {
         }
     }
 
-    var mask: UInt16 {
+    public var mask: UInt16 {
         switch self {
         case .high: return 0x0010
         case .moderate: return 0x0020
@@ -132,15 +132,15 @@ enum ANCLevel: String, CaseIterable, Identifiable {
 /// `0x00` and `0x02` are measured; the names come from the vendor SDK's own preset table, and
 /// which of the slots a given model actually fills is a capability-registry question, not one
 /// this enum can answer.
-enum EQPreset: String, CaseIterable, Identifiable {
+public enum EQPreset: String, CaseIterable, Identifiable {
     case balanced
     case clearVocals
     case bass
     case custom
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var label: String {
+    public var label: String {
         switch self {
         case .balanced: return "Balanced"
         case .clearVocals: return "Clear Vocals"
@@ -149,7 +149,7 @@ enum EQPreset: String, CaseIterable, Identifiable {
         }
     }
 
-    var value: UInt8 {
+    public var value: UInt8 {
         switch self {
         case .balanced: return 0x00
         case .clearVocals: return 0x01
@@ -179,15 +179,15 @@ enum EQPreset: String, CaseIterable, Identifiable {
 /// `len` is a base-128 varint counting every byte after itself, so a frame is
 /// `1 + len(varint) + len` bytes. There is no checksum: the two length fields are the only
 /// integrity check, and agreeing on both is what tells a real frame from a stray sync byte.
-enum BudsProtocol {
+public enum BudsProtocol {
 
-    static let sync: UInt8 = 0xaa
+    public static let sync: UInt8 = 0xaa
 
     /// Byte 5 of a frame. Byte 4 is the command and byte 5 the message type — *not* one
     /// little-endian 16-bit code, which mis-reads REGISTER (`00 85`) as "command 0x8500".
     /// The `0x0404`-style labels used in the reverse-engineering write-ups are just
     /// `(messageType << 8) | cmd`.
-    enum MessageType: UInt8 {
+    public enum MessageType: UInt8 {
         case request = 0x01
         case notification = 0x02
         case set = 0x04
@@ -208,7 +208,7 @@ enum BudsProtocol {
     /// per-model server config builds. This app has no screen that would need one, so the id
     /// stays named and unsent. `0x2f` is named by nothing on their side and has never been asked
     /// here either; it is kept so the id is not silently the app's own invention.
-    enum Command: UInt8 {
+    public enum Command: UInt8 {
         case firmware = 0x05
         case battery = 0x06
         case touch = 0x08
@@ -236,7 +236,7 @@ enum BudsProtocol {
     /// the commands the vendor's SDK logs as unsupported, so nothing here sends it. An id the
     /// table does not name parses to nothing and the row reads as unknown, rather than being
     /// rounded to a codec the hardware never reported.
-    enum Codec: UInt8 {
+    public enum Codec: UInt8 {
         case sbc = 0x01
         case aac = 0x02
         case ldac = 0x03
@@ -246,7 +246,7 @@ enum BudsProtocol {
         case lhdc = 0x07
         case lhdcV5 = 0x08
 
-        var label: String {
+        public var label: String {
             switch self {
             case .sbc: return "SBC"
             case .aac: return "AAC"
@@ -266,7 +266,7 @@ enum BudsProtocol {
     /// getter of `0x24`, and touch's is `0x01` against `0x08`. Deriving one from the other
     /// looks plausible and simply does nothing — the firmware would not even acknowledge the
     /// wrong id in the one case tested.
-    enum Setter: UInt8 {
+    public enum Setter: UInt8 {
         case find = 0x00
         case touch = 0x01
         case anc = 0x04
@@ -274,17 +274,17 @@ enum BudsProtocol {
         case bassWave = 0x1b
     }
 
-    struct Frame {
+    public struct Frame {
         /// Byte 4: which subject.
-        var cmd: UInt8
+        public var cmd: UInt8
         /// Byte 5: request / reply / set / notification.
-        var messageType: UInt8
-        var sequence: UInt8
-        var payload: [UInt8]
-        var raw: [UInt8]
+        public var messageType: UInt8
+        public var sequence: UInt8
+        public var payload: [UInt8]
+        public var raw: [UInt8]
 
         /// `(messageType << 8) | cmd`, the label the protocol write-ups use.
-        var opcode: UInt16 { UInt16(messageType) << 8 | UInt16(cmd) }
+        public var opcode: UInt16 { UInt16(messageType) << 8 | UInt16(cmd) }
 
         /// Unsolicited status push. Family 1 of the three notification families: the command
         /// byte is `0x04` and the type is `0x02`, and `payload[0]` selects the topic.
@@ -293,7 +293,7 @@ enum BudsProtocol {
         /// one family-1 frame this unit actually sends unprompted — the connected-device
         /// table — carries `0x04`, so the test rejected the only real example it had and every
         /// status push was silently ignored.
-        var isStatusNotification: Bool {
+        public var isStatusNotification: Bool {
             cmd == BudsProtocol.statusNotificationCommand
                 && messageType == MessageType.notification.rawValue
         }
@@ -301,9 +301,9 @@ enum BudsProtocol {
 
     /// Byte 4 of a family-1 notification. Shared by set-ANC and family-2 pushes, which are
     /// told apart by the message type rather than by this byte.
-    static let statusNotificationCommand: UInt8 = 0x04
+    public static let statusNotificationCommand: UInt8 = 0x04
 
-    enum Update: Equatable {
+    public enum Update: Equatable {
         case noiseMode(NoiseMode)
         case ancLevel(ANCLevel)
         /// One slot at a time, and nil means "reported as unknown" — not "absent".
@@ -327,7 +327,7 @@ enum BudsProtocol {
         case codec(Codec)
     }
 
-    enum BatterySlot: UInt8 {
+    public enum BatterySlot: UInt8 {
         case left = 0x01
         case right = 0x02
         case enclosure = 0x03
@@ -343,15 +343,15 @@ enum BudsProtocol {
     /// This is what stops a bud charging in the case from being drawn as one in use, and it
     /// covers a gap in the battery report: a bud in the case drops out of that report
     /// entirely rather than reporting as unknown.
-    enum BudPlacement: UInt8 {
+    public enum BudPlacement: UInt8 {
         case notPresent = 0x00
         case inCase = 0x04
         /// Out of the case but not in an ear — being held, or worn on a cord.
         case outOfCase = 0x05
         case inEar = 0x07
 
-        var isStowed: Bool { self == .inCase }
-        var isWorn: Bool { self == .inEar }
+        public var isStowed: Bool { self == .inCase }
+        public var isWorn: Bool { self == .inEar }
     }
 
     /// One device in the buds' multi-connect table — the phone app's "Dual connection" list.
@@ -364,28 +364,28 @@ enum BudsProtocol {
     /// The field order and meanings are the vendor SDK's — `MultiConnectInformationElement` and
     /// the parser in its `CommandUtil` — not an inference from one sample. Under that layout the
     /// corpus frame consumes exactly to its last byte, which is what a wrong stride would not do.
-    struct LinkedDevice: Equatable {
+    public struct LinkedDevice: Equatable {
         /// The address the buds know the peer by. Phones and Macs use a private address that can
         /// change between sessions, so this is identity for drawing only: `isCurrentDevice` is
         /// what says which entry is this Mac.
-        var address: String
-        var name: String
+        public var address: String
+        public var name: String
         /// `nil` when the byte is a value the vendor numbering does not name.
-        var state: ConnectionState?
+        public var state: ConnectionState?
         /// The entry the buds are talking to on this link — in practice, this Mac.
-        var isCurrentDevice: Bool
+        public var isCurrentDevice: Bool
         /// The entry currently carrying the audio.
-        var isMainAudioDevice: Bool
-        var isAudioActive: Bool
+        public var isMainAudioDevice: Bool
+        public var isAudioActive: Bool
         /// What the peer is, from the vendor's own icon table, or `nil` where it has none.
-        var deviceType: DeviceType?
+        public var deviceType: DeviceType?
     }
 
     /// The connection states the vendor's multi-device screen switches on. `0` is the state its
     /// list treats as available to connect, the others are named in its own messages ("handheld
     /// is in connecting state", "in disconnecting state"). Values outside these fall out of
     /// `init?(rawValue:)` rather than being guessed into a state.
-    enum ConnectionState: Int, Equatable {
+    public enum ConnectionState: Int, Equatable {
         case notConnected = 0
         case connecting = 1
         case connected = 2
@@ -395,7 +395,7 @@ enum BudsProtocol {
     /// What a peer is, per the vendor's icon selection: `1` phone, `2` computer, `3` tablet,
     /// `4` watch, everything else its default icon. All three bits were zero in the one capture
     /// this app has, so the app draws the default too rather than assuming a laptop.
-    enum DeviceType: Int, Equatable {
+    public enum DeviceType: Int, Equatable {
         case phone = 1
         case computer = 2
         case tablet = 3
@@ -404,7 +404,7 @@ enum BudsProtocol {
         /// The vendor's icon table, said in this platform's vocabulary. The names live here
         /// rather than at the call site so `check-symbols.swift` can see them: SwiftUI draws
         /// nothing at all for a name the OS does not know.
-        var symbol: String {
+        public var symbol: String {
             switch self {
             case .phone: return "iphone"
             case .computer: return "laptopcomputer"
@@ -425,15 +425,15 @@ enum BudsProtocol {
     /// their `button`, `gesture` their `buttonAction` and `action` their `function`. The names
     /// here are this app's reading of what the values mean on this hardware; the layout is the
     /// SDK's.
-    struct TouchRule: Equatable {
-        var side: UInt8
-        var type: UInt8
-        var gesture: UInt8
-        var action: UInt8
+    public struct TouchRule: Equatable {
+        public var side: UInt8
+        public var type: UInt8
+        public var gesture: UInt8
+        public var action: UInt8
 
-        static let left: UInt8 = 0x01
-        static let right: UInt8 = 0x02
-        static let media: UInt8 = 0x01
+        public static let left: UInt8 = 0x01
+        public static let right: UInt8 = 0x02
+        public static let media: UInt8 = 0x01
     }
 
     /// The gestures the phone's "Earbud controls" screen offers.
@@ -444,15 +444,15 @@ enum BudsProtocol {
     /// and the reference unit store values for them that nothing documents. Guessing between
     /// "answer" and "decline" and writing the guess to the buds risks ending someone's call,
     /// which is not worth the feature.
-    enum MediaGesture: UInt8, CaseIterable, Identifiable {
+    public enum MediaGesture: UInt8, CaseIterable, Identifiable {
         case doubleTap = 0x02
         case tripleTap = 0x03
         case touchAndHold = 0x04
         case slide = 0x05
 
-        var id: UInt8 { rawValue }
+        public var id: UInt8 { rawValue }
 
-        var label: String {
+        public var label: String {
             switch self {
             case .doubleTap: return "Double tap"
             case .tripleTap: return "Triple tap"
@@ -461,7 +461,7 @@ enum BudsProtocol {
             }
         }
 
-        var symbol: String {
+        public var symbol: String {
             switch self {
             case .doubleTap: return "hand.tap"
             case .tripleTap: return "hand.tap.fill"
@@ -477,7 +477,7 @@ enum BudsProtocol {
         ///
         /// Every code below was read off the reference hardware: they are the actions this app
         /// has actually seen stored, not a guess at the rest of the space.
-        var actions: [GestureAction] {
+        public var actions: [GestureAction] {
             switch self {
             case .doubleTap, .tripleTap:
                 return [.none, .playPause, .next, .previous, .voiceAssistant]
@@ -490,7 +490,7 @@ enum BudsProtocol {
     }
 
     /// What a gesture points at.
-    enum GestureAction: UInt8, CaseIterable, Identifiable {
+    public enum GestureAction: UInt8, CaseIterable, Identifiable {
         case none = 0x00
         case playPause = 0x01
         case voiceAssistant = 0x03
@@ -499,9 +499,9 @@ enum BudsProtocol {
         case volumeControl = 0x07
         case noiseControl = 0x08
 
-        var id: UInt8 { rawValue }
+        public var id: UInt8 { rawValue }
 
-        var label: String {
+        public var label: String {
             switch self {
             case .none: return "Do nothing"
             case .playPause: return "Play / pause"
@@ -516,7 +516,7 @@ enum BudsProtocol {
             }
         }
 
-        var symbol: String {
+        public var symbol: String {
             switch self {
             case .none: return "minus"
             case .playPause: return "playpause"
@@ -536,7 +536,7 @@ enum BudsProtocol {
 
     /// Packets to send once the channel opens. Status arrives unprompted, but OPOv1 expects
     /// a hello before it will accept commands.
-    static func handshake() -> [[UInt8]] { [encodeHello()] }
+    public static func handshake() -> [[UInt8]] { [encodeHello()] }
 
     /// Builds a frame. `len` is a base-128 varint counting every byte after itself, so it
     /// covers the seven remaining header bytes plus the payload.
@@ -545,7 +545,7 @@ enum BudsProtocol {
     /// which is all of them today — and mis-frames anything larger, silently: the length then
     /// predicts a short frame, the payload-length cross-check fails on the real one, and the
     /// whole thing is discarded as resynchronisation noise.
-    static func makeFrame(_ b2: UInt8, _ b3: UInt8, cmd: UInt8, messageType: UInt8,
+    public static func makeFrame(_ b2: UInt8, _ b3: UInt8, cmd: UInt8, messageType: UInt8,
                           sequence: UInt8, payload: [UInt8]) -> [UInt8] {
         precondition(payload.count <= 0xffff, "payload length is a 16-bit field")
         var frame: [UInt8] = [sync]
@@ -557,7 +557,7 @@ enum BudsProtocol {
     }
 
     /// LEB128, little-endian — seven bits per byte, continuation bit high.
-    static func encodeVarint(_ value: Int) -> [UInt8] {
+    public static func encodeVarint(_ value: Int) -> [UInt8] {
         var remaining = value
         var out: [UInt8] = []
         repeat {
@@ -575,7 +575,7 @@ enum BudsProtocol {
     /// longer than any legitimate varint (five bytes is the maximum here). Those two need
     /// opposite handling — one is a short read to wait on, the other is a bad byte to step over —
     /// so the caller tells them apart from the bytes rather than from this result.
-    static func decodeVarint<C: Collection>(_ bytes: C) -> (value: Int, length: Int)?
+    public static func decodeVarint<C: Collection>(_ bytes: C) -> (value: Int, length: Int)?
     where C.Element == UInt8 {
         var value = 0, shift = 0, length = 0
         for byte in bytes {
@@ -589,7 +589,7 @@ enum BudsProtocol {
     }
 
     /// A getter: message type `0x01`, with `cmd` naming the subject.
-    static func encodeRequest(_ cmd: Command, payload: [UInt8] = []) -> [UInt8] {
+    public static func encodeRequest(_ cmd: Command, payload: [UInt8] = []) -> [UInt8] {
         makeFrame(0x00, 0x00, cmd: cmd.rawValue, messageType: MessageType.request.rawValue,
                   sequence: nextSequence(), payload: payload)
     }
@@ -600,13 +600,13 @@ enum BudsProtocol {
     /// `0x04` transparency), which is why the older single-byte form appeared to work while
     /// mapping to the wrong modes. The explicit form is unambiguous and is the only one that
     /// can reach Adaptive or a specific level, so it is the only one sent.
-    static func encodeSetNoiseMask(_ mask: UInt16) -> [UInt8] {
+    public static func encodeSetNoiseMask(_ mask: UInt16) -> [UInt8] {
         makeFrame(0x00, 0x00, cmd: Setter.anc.rawValue,
                   messageType: MessageType.set.rawValue, sequence: nextSequence(),
                   payload: [0x01, 0x01, UInt8(mask & 0xff), UInt8(mask >> 8)])
     }
 
-    static func encodeSetEQPreset(_ preset: EQPreset) -> [UInt8] {
+    public static func encodeSetEQPreset(_ preset: EQPreset) -> [UInt8] {
         makeFrame(0x00, 0x00, cmd: Setter.eqPreset.rawValue,
                   messageType: MessageType.set.rawValue, sequence: nextSequence(),
                   payload: [preset.value])
@@ -621,7 +621,7 @@ enum BudsProtocol {
     /// Buds 4 — a default for callers that have not read the getter, not a claim about every
     /// model. The self-check pins the default payload against the captured `basswave-reply-2`,
     /// so a firmware that moved the bounds fails a test rather than being written blind.
-    static func encodeSetBassWave(_ level: Int, bounds: ClosedRange<Int> = -5...5) -> [UInt8] {
+    public static func encodeSetBassWave(_ level: Int, bounds: ClosedRange<Int> = -5...5) -> [UInt8] {
         let clamped = max(bounds.lowerBound, min(bounds.upperBound, level))
         return makeFrame(0x00, 0x00, cmd: Setter.bassWave.rawValue,
                          messageType: MessageType.set.rawValue, sequence: nextSequence(),
@@ -637,7 +637,7 @@ enum BudsProtocol {
     /// cannot settle whether the firmware honours an empty list — the setter is answered with a
     /// bare result byte whether it rings or not — so this stays a request, and the UI offers
     /// Stop beside Ring instead of claiming the tone is over.
-    static func encodeFind(_ slots: [BatterySlot]) -> [UInt8] {
+    public static func encodeFind(_ slots: [BatterySlot]) -> [UInt8] {
         // The count is one byte: more than 255 buds cannot be named. The UI offers two. Truncate
         // rather than trap, so a bad caller loses the command instead of the process.
         let ids = Array(slots.map(\.rawValue).prefix(255))
@@ -648,7 +648,7 @@ enum BudsProtocol {
 
     /// One record of the getter's reply behind a count, per the "setter takes its getter's
     /// reply minus the status byte" rule that predicts every setter in this file.
-    static func encodeSetTouch(_ rules: [TouchRule]) -> [UInt8] {
+    public static func encodeSetTouch(_ rules: [TouchRule]) -> [UInt8] {
         // One count byte, so 255 records is the ceiling; the UI writes two, one per earbud.
         let rules = Array(rules.prefix(255))
         var payload: [UInt8] = [UInt8(rules.count)]
@@ -659,7 +659,7 @@ enum BudsProtocol {
     }
 
     /// Session opener. The buds answer it, and OPOv1 wants it before commands.
-    static func encodeHello() -> [UInt8] {
+    public static func encodeHello() -> [UInt8] {
         makeFrame(0x00, 0x00, cmd: 0x00, messageType: MessageType.request.rawValue,
                   sequence: nextSequence(), payload: [])
     }
@@ -671,7 +671,7 @@ enum BudsProtocol {
     /// declared main-actor, so two of them on different queues would otherwise race on `&+=`.
     private static let sequenceCounter = OSAllocatedUnfairLock(initialState: UInt8(0))
 
-    static func nextSequence() -> UInt8 {
+    public static func nextSequence() -> UInt8 {
         sequenceCounter.withLock { counter in
             counter &+= 1
             return counter
@@ -682,7 +682,7 @@ enum BudsProtocol {
 
     /// Pulls every complete frame out of `buffer`, leaving any partial tail behind.
     /// RFCOMM delivers arbitrary chunks, so frames both split and coalesce.
-    static func drainFrames(from buffer: inout [UInt8]) -> [Frame] {
+    public static func drainFrames(from buffer: inout [UInt8]) -> [Frame] {
         var frames: [Frame] = []
 
         while true {
@@ -742,7 +742,7 @@ enum BudsProtocol {
     }
 
     /// Decodes an unsolicited frame — a status notification or a settings push.
-    static func interpret(_ frame: Frame) -> [Update] {
+    public static func interpret(_ frame: Frame) -> [Update] {
         if frame.isStatusNotification { return statusTopic(frame.payload) }
         if frame.messageType == MessageType.stateChange.rawValue {
             return settingsPush(frame)
@@ -752,7 +752,7 @@ enum BudsProtocol {
 
     /// Decodes a reply the app asked for. Same bodies as the pushes, each behind a status
     /// byte, so one decoder serves both.
-    static func decode(reply frame: Frame) -> [Update] {
+    public static func decode(reply frame: Frame) -> [Update] {
         guard frame.messageType == MessageType.reply.rawValue else { return [] }
         switch frame.cmd {
         case Command.battery.rawValue:
@@ -784,7 +784,7 @@ enum BudsProtocol {
 
     /// The firmware string is ASCII, comma-separated, and does not fit the counted shape:
     /// `1,2,138,2,2,138,3,1,01,3,2,105` — component, ?, build, repeated.
-    static func firmware(from frame: Frame) -> String? {
+    public static func firmware(from frame: Frame) -> String? {
         guard frame.cmd == Command.firmware.rawValue,
               frame.messageType == MessageType.reply.rawValue,
               frame.payload.count >= 2,
@@ -794,7 +794,7 @@ enum BudsProtocol {
 
     /// The touch-gesture table: `[status][count]` then `count` four-byte records.
     /// The request payload is ignored by the firmware, so this is always sent empty.
-    static func touchRules(from frame: Frame) -> [TouchRule]? {
+    public static func touchRules(from frame: Frame) -> [TouchRule]? {
         guard frame.cmd == Command.touch.rawValue,
               frame.messageType == MessageType.reply.rawValue else { return nil }
         let body = body(withoutStatus: frame)
@@ -811,7 +811,7 @@ enum BudsProtocol {
     }
 
     /// The BassWave level out of `[min][max][current]`, all signed.
-    static func bassWaveLevel(_ body: [UInt8]) -> Int? {
+    public static func bassWaveLevel(_ body: [UInt8]) -> Int? {
         guard body.count >= 3 else { return nil }
         return Int(Int8(bitPattern: body[2]))
     }
@@ -822,7 +822,7 @@ enum BudsProtocol {
     /// is, so nothing here needs to assume one. A range that does not read low-to-high is
     /// rejected rather than clamped, because a decoder that silently fixes a payload is inventing
     /// bytes.
-    static func bassWaveBounds(_ body: [UInt8]) -> ClosedRange<Int>? {
+    public static func bassWaveBounds(_ body: [UInt8]) -> ClosedRange<Int>? {
         guard body.count >= 3 else { return nil }
         let low = Int(Int8(bitPattern: body[0]))
         let high = Int(Int8(bitPattern: body[1]))
@@ -838,7 +838,7 @@ enum BudsProtocol {
     /// time (`0x0115`, `0x0116`, `0x0119`, `0x011d`) — answer a bare `01` instead of a body.
     /// Reading past the status would take `[01 03]` for three records, so a declined reply
     /// yields no update at all rather than a guess at what its leftovers meant.
-    static let statusOK: UInt8 = 0x00
+    public static let statusOK: UInt8 = 0x00
 
     private static func body(withoutStatus frame: Frame) -> [UInt8] {
         guard frame.payload.first == statusOK else { return [] }
@@ -879,7 +879,7 @@ enum BudsProtocol {
     /// or a count that promises more records than the body holds. The vendor's parser discards
     /// the whole table in the same situations (it returns null), and the alternative is showing
     /// a device list that was half-read.
-    static func linkedDevices(_ body: [UInt8]) -> [LinkedDevice]? {
+    public static func linkedDevices(_ body: [UInt8]) -> [LinkedDevice]? {
         guard let count = body.first else { return nil }
         guard count > 0 else { return [] }
         var devices: [LinkedDevice] = []
@@ -979,12 +979,12 @@ enum BudsProtocol {
         return out
     }
 
-    static func hex(_ bytes: [UInt8]) -> String {
+    public static func hex(_ bytes: [UInt8]) -> String {
         bytes.map { String(format: "%02x", $0) }.joined(separator: " ")
     }
 
     /// One-line summary of a frame, for the trace and for `Tools/sniff.swift`.
-    static func describe(_ frame: Frame) -> String {
+    public static func describe(_ frame: Frame) -> String {
         let kind = MessageType(rawValue: frame.messageType).map { "\($0)" } ?? "unknown"
         return "cmd=\(String(format: "%02x", frame.cmd)) "
             + "type=\(String(format: "%02x", frame.messageType)) \(kind) "
@@ -1013,7 +1013,7 @@ enum BudsProtocol {
     /// the honest way to test it — it is a property of the bytes rather than a second opinion
     /// about them — and it catches the class of mistake this file used to contain, where a
     /// typed-out fixture carried a `len` describing different bytes than it held.
-    static func lengthFieldsAgree(_ frame: Frame) -> Bool {
+    public static func lengthFieldsAgree(_ frame: Frame) -> Bool {
         let declared = encodeVarint(7 + frame.payload.count)
         let body = 1 + declared.count
         // A frame is `sync + varint + 7 header bytes + payload`, so an empty-payload frame is
@@ -1042,7 +1042,7 @@ enum BudsProtocol {
     /// test can degrade it. The contract is the one the crash broke: a corpus that does not add
     /// up comes back as *failures*, never as a trap. Every read below is total, and this is how
     /// that is checked rather than by reading the subscripts carefully and hoping.
-    static func selfCheck(corpus: [CaptureCorpus.Capture]) -> SelfCheckResult {
+    public static func selfCheck(corpus: [CaptureCorpus.Capture]) -> SelfCheckResult {
         var result = SelfCheckResult()
         func check(_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String) {
             result.checks += 1

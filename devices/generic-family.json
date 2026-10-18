@@ -1,0 +1,92 @@
+{
+  "id": "generic-family",
+  "model": "Uncatalogued device",
+  "vendor": "OPPO / OnePlus / realme",
+  "notes": "The fallback: any device that advertises the control service and matches no other profile. Everything is unconfirmed, which is the honest state of a model nobody has recorded yet -- and unconfirmed means there is no write path anywhere in the app.",
+  "match": {
+    "serviceUUIDs": ["0000799a-d102-11e1-9b23-00025b00a5a5"],
+    "fallback": true
+  },
+  "capabilities": {
+    "stateRead": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" },
+      "note": "Every member of the family answers the HELLO at the start of a control session, so a session is attempted for any device that advertises the service."
+    },
+    "battery": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" },
+      "note": "Displayed only if the device actually reports it. A model that does not will show as not having reported, not as 0%."
+    },
+    "caseBattery": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" }
+    },
+    "wear": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" }
+    },
+    "noiseControl": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" },
+      "values": ["off", "noiseCancellation", "high", "moderate", "low", "auto", "transparency", "adaptive"],
+      "note": "The modes and their masks are family-wide vocabulary, but nothing here shows this model accepting a write, so the modes are shown and cannot be pressed."
+    },
+    "equalizer": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" },
+      "values": ["balanced", "clearVocals", "bass", "custom"]
+    },
+    "bassWave": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" },
+      "note": "The range would come from the device's own getter, so nothing is assumed about it -- and with no measured write path, nothing is written to it."
+    },
+    "gestures": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" },
+      "values": ["doubleTap", "tripleTap", "touchAndHold", "slide"]
+    },
+    "multipoint": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" }
+    },
+    "findMyEarbuds": {
+      "read": false,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" },
+      "note": "Nothing rings a device this app has never recorded."
+    },
+    "firmware": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" }
+    },
+    "codec": {
+      "read": true,
+      "writable": false,
+      "confidence": "unconfirmed",
+      "evidence": { "source": "none" }
+    }
+  }
+}
