@@ -1,0 +1,20 @@
+# Build products
+.build/
+dist/
+DerivedData/
+
+# Xcode / editor state
+*.xcuserstate
+xcuserdata/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Scratch: traces, probe output, locally pulled APK dumps.
+# A capture that is meant to be kept belongs in captures/, not here.
+*.log
+/tmp/
+*.apk
+apk/
+jadx-out/
