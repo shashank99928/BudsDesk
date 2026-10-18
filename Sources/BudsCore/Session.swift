@@ -438,6 +438,12 @@ public final class Session {
         case .noiseMode(let value):
             if mode != value { log("mode reported: \(value.label)") }
             mode = value
+            // A level only means something while cancellation is on. A reply carries mode and level
+            // together, so when the mode arrives without one — Transparency, Adaptive, or a lossy
+            // push of a cancellation mask — the previous level is no longer true and has to go.
+            // Without this, leaving cancellation on Auto and switching to Adaptive reads back as
+            // "Adaptive (Auto)": a level the buds are not using, still on screen.
+            if value != .noiseCancellation { ancLevel = nil }
             unconfirmedWrites.remove(.noiseControl)
         case .ancLevel(let value):
             if ancLevel != value { log("level reported: \(value.label)") }

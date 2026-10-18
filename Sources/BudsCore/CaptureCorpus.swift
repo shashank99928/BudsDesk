@@ -23,6 +23,23 @@ public enum CaptureCorpus {
         public let tool: String
         public let host: String
         public let notes: String
+
+        public init(id: String, date: String, model: String, vendor: String, firmware: String,
+                    firmwareSource: String, serviceName: String, serviceUUID: String,
+                    rfcommChannel: Int, tool: String, host: String, notes: String) {
+            self.id = id
+            self.date = date
+            self.model = model
+            self.vendor = vendor
+            self.firmware = firmware
+            self.firmwareSource = firmwareSource
+            self.serviceName = serviceName
+            self.serviceUUID = serviceUUID
+            self.rfcommChannel = rfcommChannel
+            self.tool = tool
+            self.host = host
+            self.notes = notes
+        }
     }
 
     /// One frame off the wire, with the note the capture gave it.
@@ -31,6 +48,13 @@ public enum CaptureCorpus {
         public let note: String
         public let hex: String
         public let provenance: Provenance
+
+        public init(name: String, note: String, hex: String, provenance: Provenance) {
+            self.name = name
+            self.note = note
+            self.hex = hex
+            self.provenance = provenance
+        }
 
         public var bytes: [UInt8] {
             hex.split(separator: " ").compactMap { UInt8($0, radix: 16) }
@@ -41,6 +65,11 @@ public enum CaptureCorpus {
     public struct Recording: Sendable {
         public let provenance: Provenance
         public let frames: [Capture]
+
+        public init(provenance: Provenance, frames: [Capture]) {
+            self.provenance = provenance
+            self.frames = frames
+        }
     }
 
     /// One entry per recording, so a frame can point at its provenance cheaply.

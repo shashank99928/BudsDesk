@@ -390,6 +390,18 @@ public enum BudsProtocol {
         case connecting = 1
         case connected = 2
         case disconnecting = 4
+
+        /// A name for the wire value, so a screen and a log agree about what a byte means. The
+        /// numbering is the vendor's; `3` is absent from it and decodes to `nil` rather than being
+        /// rounded to a neighbour.
+        public var label: String {
+            switch self {
+            case .notConnected: return "not connected"
+            case .connecting: return "connecting"
+            case .connected: return "connected"
+            case .disconnecting: return "disconnecting"
+            }
+        }
     }
 
     /// What a peer is, per the vendor's icon selection: `1` phone, `2` computer, `3` tablet,

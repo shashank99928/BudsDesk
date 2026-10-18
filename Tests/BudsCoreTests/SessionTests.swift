@@ -78,8 +78,11 @@ final class SessionTests: XCTestCase {
         XCTAssertEqual(session.firmware, "1,2,138,2,2,138,3,1,01,3,2,105")
         XCTAssertEqual(session.codec, .aac)
 
-        // The last noise frame in the corpus wins, and it is Adaptive (0x0800).
+        // The last noise frame in the corpus wins, and it is Adaptive (0x0800) — a mode with no
+        // level. Auto (0x0080) came past earlier in the sequence, and its level must not survive
+        // the switch: the buds are not cancelling anything at that point.
         XCTAssertEqual(session.mode, .adaptive)
+        XCTAssertNil(session.ancLevel, "Auto was three frames back and is no longer true")
 
         // The last preset frame is the family-2 push, not the getter's reply.
         XCTAssertEqual(session.eqPreset, .bass)
@@ -189,6 +192,31 @@ final class SessionTests: XCTestCase {
         let write = try XCTUnwrap(lastWrite(transport), "no setter was sent")
         XCTAssertEqual(write.payload, [0x01, 0x01, 0x40, 0x00],
                        "the level the buds reported, not High")
+    }
+
+    /// Leaving cancellation drops the level with the mode.
+    ///
+    /// The two fields are not independent: a level means "how hard cancellation works", so while
+    /// the buds are transparent or adapting there is no honest value for it. The corpus replays
+    /// cancellation on Auto and then Adaptive, which is exactly how this reads on screen as
+    /// "Adaptive (Auto)" if the level is left behind.
+    func testLeavingCancellationClearsTheLevelRatherThanCarryingItOver() throws {
+        let transport = ScriptedTransport(frames: [])
+        let session = Session(transport: transport, profile: try profile("oneplus-buds-4"))
+        session.start()
+
+        transport.deliver(try capture("anc-reply-nc-auto").bytes)
+        XCTAssertEqual(session.mode, .noiseCancellation)
+        XCTAssertEqual(session.ancLevel, .auto)
+
+        transport.deliver(try capture("anc-reply-transparency").bytes)
+        XCTAssertEqual(session.mode, .transparency)
+        XCTAssertNil(session.ancLevel, "transparency has no cancellation level")
+
+        // And back again: the level returns with the mode, from the device rather than from memory.
+        transport.deliver(try capture("anc-reply-nc-low").bytes)
+        XCTAssertEqual(session.mode, .noiseCancellation)
+        XCTAssertEqual(session.ancLevel, .low)
     }
 
     // MARK: - The registry is the gate

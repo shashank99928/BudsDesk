@@ -34,6 +34,15 @@ let package = Package(
         // changing. Nothing in this target may import IOBluetooth, CoreBluetooth or SwiftUI.
         .target(name: "BudsCore", path: "Sources/BudsCore", swiftSettings: shared),
 
+        // Everything that is genuinely macOS's own: the IOBluetooth transport, device discovery,
+        // the registry's on-disk location, the SwiftUI surfaces, and the app's own entry point.
+        // It depends on BudsCore and BudsCore does not know it exists.
+        .target(name: "BudsDeskMac", dependencies: ["BudsCore"],
+                path: "Sources/BudsDeskMac", swiftSettings: shared),
+
+        .executableTarget(name: "BudsDesk", dependencies: ["BudsCore", "BudsDeskMac"],
+                          path: "Sources/BudsDesk", swiftSettings: shared),
+
         .testTarget(name: "BudsCoreTests", dependencies: ["BudsCore"],
                     path: "Tests/BudsCoreTests", swiftSettings: shared),
     ]
