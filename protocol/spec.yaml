@@ -1,0 +1,323 @@
+version: 1
+
+meta:
+  title: BudsDesk protocol reference
+  subject: "OPPO / OnePlus / realme TWS earbuds, vendor oppointeraction control channel"
+  source_of_truth: "captures/oneplus-buds-4-2026-10-17/frames.hex"
+  evidence_levels:
+    measured: "Observed: a frame in captures/oneplus-buds-4-2026-10-17/frames.hex shows it, or a hardware loop confirmed it. Ref names the frame."
+    inferred: "Read out of the vendor phone app's own constants, not confirmed on hardware. Ref names what it was read from."
+    unconfirmed: "Plausible from the protocol's shape; nothing observed. Must not be presented as working."
+  provenance:
+    recording:
+      id: oneplus-buds-4-2026-10-17
+      model: OnePlus Buds 4
+      vendor: OnePlus
+      firmware: "1,2,138,2,2,138,3,1,01,3,2,105"
+      tool: "OnePlusBuds4 (single-device app) with BUDSBAR_TRACE=1 and BUDSBAR_HARVEST=1; RX lines kept"
+      host: "macOS 26.5, Apple silicon, IOBluetooth RFCOMM"
+      frames: 25
+      directions: "both; only received frames are kept in the file"
+      evidence: {level: measured, ref: "captures/oneplus-buds-4-2026-10-17/capture.json"}
+    reference_app:
+      package: com.heytap.headset
+      version_name: "116.9.0"
+      apk_sha256: "89368eb2b33abbec1c783b70439679eb0f0a9fea56706999122ab8a3d0ca13b5"
+      how_read: "JADX decompilation to a scratch directory outside this repository"
+      what_was_taken: "Names, ids and behaviour only, each cited as dex:Class#method. No code, asset, font, icon or JSON is redistributed."
+    redistribution: "Nothing from the vendor app is committed or shipped. The licence covers this repository's source only."
+
+transport:
+  service_name: oppointeraction
+  service_uuid: "0000799a-d102-11e1-9b23-00025b00a5a5"
+  rfcomm_channel: 15
+  rfcomm_channel_note: "Resolved from SDP at runtime; 15 on the measured unit."
+  ota_channel:
+    channel: 13
+    name: BESOTA
+    opened: false
+    note: "The firmware OTA channel. Never opened: not for discovery, not for testing. Out of scope permanently (SCOPE.md section 4)."
+    evidence: {level: measured, ref: "SCOPE.md section 4; capture/README.md 'The channel'"}
+  evidence: {level: measured, ref: "capture.json service block"}
+
+frame:
+  start: "0xaa"
+  endianness: little
+  no_checksum: true
+  layout:
+    - {offset: 0, bytes: 1, name: start, value: "0xaa", note: "sync"}
+    - {offset: 1, bytes: "1..5", name: len, note: "base-128 LEB128 varint, continuation bit 0x80, counts 7 header bytes + payload"}
+    - {offset: 2, bytes: 1, name: b2, value: "0x00", purpose: null}  # not established
+    - {offset: 3, bytes: 1, name: b3, value: "0x00", purpose: null}  # not established
+    - {offset: 4, bytes: 1, name: cmd, note: "subject; getter and setter ids are different namespaces"}
+    - {offset: 5, bytes: 1, name: msg_type}
+    - {offset: 6, bytes: 1, name: seq, note: "replies echo the request's value; the decoder does not validate it"}
+    - {offset: "7..8", bytes: 2, name: payload_len, encoding: "u16 little-endian"}
+    - {offset: "9..", bytes: "n", name: payload, note: "payload_len bytes"}
+  total_length: "1 + varint_length + len"
+  varint:
+    encoding: "LEB128, little-endian, 7 bits per byte, continuation bit high"
+    max_bytes: 5
+    range_min: 7
+    range_max: 65542  # 7 + 0xffff
+  checksum:
+    present: false
+    note: "No checksum. The two length fields agreeing is the only integrity check."
+    evidence: {level: measured, ref: "every frame in frames.hex; drainFrames in Protocol.swift re-derives and cross-checks both"}
+  worked_example:
+    frame: battery-reply
+    hex: "aa 0d 00 00 06 81 03 06 00 00 02 01 14 02 14"
+    annotation:
+      - {bytes: "aa", field: start, value: "0xaa"}
+      - {bytes: "0d", field: len, value: 13, note: "13 bytes follow"}
+      - {bytes: "00", field: b2, value: "0x00"}
+      - {bytes: "00", field: b3, value: "0x00"}
+      - {bytes: "06", field: cmd, value: "0x06", meaning: battery}
+      - {bytes: "81", field: msg_type, value: "0x81", meaning: reply}
+      - {bytes: "03", field: seq, value: 3}
+      - {bytes: "06 00", field: payload_len, value: 6}
+      - {bytes: "00", field: status, value: "0x00", meaning: OK}
+      - {bytes: "02", field: count, value: 2}
+      - {bytes: "01 14", field: record, meaning: "slot 0x01 left, level 0x14 = 20"}
+      - {bytes: "02 14", field: record, meaning: "slot 0x02 right, level 0x14 = 20"}
+    evidence: {level: measured, ref: "battery-reply"}
+  evidence: {level: measured, ref: "every frame in frames.hex; reproduced by makeFrame and drainFrames in Protocol.swift"}
+
+message_types:
+  - {value: "0x01", name: request, role: getter, evidence: {level: measured, ref: "every getter request"}}
+  - {value: "0x02", name: notification, role: "family-1 push", evidence: {level: measured, ref: "notify-devices"}}
+  - {value: "0x04", name: set, role: setter, evidence: {level: measured, ref: "setack-anc"}}
+  - {value: "0x05", name: state_change, role: "family-2 push", evidence: {level: measured, ref: "eq-push-bass"}}
+  - {value: "0x81", name: reply, role: "answer to a request", evidence: {level: measured, ref: "battery-reply"}}
+  - {value: "0x84", name: set_ack, role: "addressed to the setter id", evidence: {level: measured, ref: "setack-anc"}}
+  - {value: "0x85", name: register, role: "named in the id space; not otherwise used", evidence: {level: inferred, ref: "vendor app command table (dex)"}}
+
+status_byte:
+  ok: "0x00"
+  declined: "0x01"
+  position: "first byte of a reply body or a family-1 notification body"
+  rule: "A decoder may read past 0x00 only. A 0x01 body is not an answer and must yield no update."
+  evidence: {level: measured, ref: "every reply in frames.hex leads with 0x00; 0x01 observed on hardware for vendor getters 0x0115/0x0116/0x0119/0x011d, not committed as a frame"}
+
+enums:
+  battery_slots:
+    values: {"0x01": left, "0x02": right, "0x03": enclosure}
+    evidence: {level: measured, ref: "battery-reply (slots 1,2), wear-reply (slot 3)"}
+  battery_charging_bit:
+    values: {"mask": "0x80"}
+    note: "Masked off the level (level & 0x7f) and described as a charging flag. No corpus frame sets it."
+    evidence: {level: unconfirmed, ref: "Protocol.swift comment; not observed in frames.hex"}
+  placements:
+    values: {"0x00": notPresent, "0x04": inCase, "0x05": outOfCase, "0x07": inEar}
+    note: "Only 0x07 and 0x04 are in the corpus; 0x00 and 0x05 are described as measured by hand."
+    evidence: {level: measured, ref: "wear-reply"}
+  wear_flags:
+    values: {"0x01": out_of_case, "0x02": in_ear, "0x04": present}
+    evidence: {level: measured, ref: "wear-reply"}
+  noise_masks:
+    values: {"0x0008": off, "0x0100": transparency, "0x0800": adaptive, "0x0010": noise_cancellation_high, "0x0020": noise_cancellation_moderate, "0x0040": noise_cancellation_low, "0x0080": noise_cancellation_auto}
+    evidence: {level: measured, ref: "anc-reply-off, anc-reply-nc-high, anc-reply-nc-moderate, anc-reply-nc-low, anc-reply-nc-auto, anc-reply-transparency, anc-reply-adaptive"}
+  eq_presets:
+    values: {"0x00": balanced, "0x01": clearVocals, "0x02": bass, "0x03": skipped_by_firmware, "0x04": custom}
+    evidence: {level: measured, ref: "eq-reply-balanced, eq-reply-bass"}
+  codec_ids:
+    values: {"0x01": SBC, "0x02": AAC, "0x03": LDAC, "0x04": APTX, "0x05": APTX_HD, "0x06": APTX_ADAPTIVE, "0x07": LHDC, "0x08": LHDC}
+    evidence: {level: measured, ref: "codec-reply; names from the vendor list (dex CodecVO.kt)"}
+  connection_states:
+    values: {"0": notConnected, "1": connecting, "2": connected, "4": disconnecting}
+    evidence: {level: measured, ref: "multiconnect-reply, notify-devices"}
+  device_types:
+    values: {"1": phone, "2": computer, "3": tablet, "4": watch}
+    evidence: {level: inferred, ref: "dex vendor icon table"}
+  media_gestures:
+    values: {"0x02": doubleTap, "0x03": tripleTap, "0x04": touchAndHold, "0x05": slide}
+    evidence: {level: measured, ref: "touch-reply"}
+  gesture_actions:
+    values: {"0x00": none, "0x01": playPause, "0x03": voiceAssistant, "0x05": previous, "0x06": next, "0x07": volumeControl, "0x08": noiseControl}
+    evidence: {level: measured, ref: "touch-reply"}
+
+commands:
+  - id: "0x00"
+    name: hello
+    kind: getter
+    request: {cmd: "0x00", message_type: "0x01", payload: []}
+    reply: {message_type: "0x81", body: "8 static bytes", fields: [{name: token, bytes: 8, value: "ff 77 5a ea 67 0e 20 07", note: "constant every session, not a session token"}]}
+    evidence: {level: measured, ref: "hello-reply"}
+  - id: "0x05"
+    name: firmware
+    kind: getter
+    request: {cmd: "0x05", message_type: "0x01", payload: []}
+    reply: {message_type: "0x81", body: "comma-separated ASCII", fields: [{name: version_string, note: "shown verbatim; field meanings not established"}]}
+    evidence: {level: measured, ref: "firmware-reply"}
+  - id: "0x06"
+    name: battery
+    kind: getter
+    request: {cmd: "0x06", message_type: "0x01", payload: []}
+    reply: {message_type: "0x81", body: "[count] then count x [slot][level]", fields: [{name: count}, {name: slot, enum: battery_slots}, {name: level, note: "level & 0x7f; 0 means reported-unknown, and an absent slot is left alone"}]}
+    evidence: {level: measured, ref: "battery-reply"}
+  - id: "0x08"
+    name: touch
+    kind: getter
+    request: {cmd: "0x08", message_type: "0x01", payload: [], note: "firmware ignores the request payload"}
+    reply: {message_type: "0x81", body: "[count] then count x [side][type][gesture][action]", fields: [{name: count}, {name: side, enum: {0x01: left, 0x02: right}}, {name: type, enum: {0x01: media, 0x06: in_call}}, {name: gesture}, {name: action}]}
+    evidence: {level: measured, ref: "touch-reply"}
+  - id: "0x09"
+    name: wear
+    kind: getter
+    request: {cmd: "0x09", message_type: "0x01", payload: []}
+    reply: {message_type: "0x81", body: "[count] then count x [slot][flags]", fields: [{name: count}, {name: slot, enum: battery_slots}, {name: flags, enum: placements}]}
+    evidence: {level: measured, ref: "wear-reply"}
+  - id: "0x0c"
+    name: anc
+    kind: getter
+    request: {cmd: "0x0c", message_type: "0x01", payload: ["0x01", "0x01"], required: true, note: "the firmware answers nothing to a bare request"}
+    reply: {message_type: "0x81", body: "[count=1][entry=0x01][mask u16le]", fields: [{name: count, value: 1}, {name: entry, value: "0x01"}, {name: mask, enum: noise_masks, note: "the mode and level are the same field"}]}
+    evidence: {level: measured, ref: "anc-reply-off, anc-reply-nc-high, anc-reply-nc-moderate, anc-reply-nc-low, anc-reply-nc-auto, anc-reply-transparency, anc-reply-adaptive"}
+  - id: "0x0d"
+    name: miscConfig
+    kind: getter
+    vendor_label: getFeatureSwitchStatus
+    request: {cmd: "0x0d", message_type: "0x01", payload: null}  # not established / never sent
+    sent: false
+    evidence: {level: inferred, ref: "dex vendor command table (getFeatureSwitchStatus)"}
+  - id: "0x0f"
+    name: eqPreset
+    kind: getter
+    request: {cmd: "0x0f", message_type: "0x01", payload: []}
+    reply: {message_type: "0x81", body: "[preset]", fields: [{name: preset, enum: eq_presets}]}
+    evidence: {level: measured, ref: "eq-reply-balanced, eq-reply-bass"}
+  - id: "0x12"
+    name: connectedDevices
+    kind: getter
+    request: {cmd: "0x12", message_type: "0x01", payload: []}
+    reply: {message_type: "0x81", body: "[count] then count x [address 6][length][state][flags][nameLength][name]", fields: [{name: count}, {name: address, bytes: 6}, {name: length, note: "equals 3 + nameLength"}, {name: state, enum: connection_states}, {name: flags, bits: {0x01: isCurrentDevice, 0x02: isMainAudioDevice, 0x04: isAudioActive, "3..5": device_type}}, {name: nameLength}, {name: name}]}
+    evidence: {level: measured, ref: "multiconnect-reply, notify-devices"}
+  - id: "0x14"
+    name: codec
+    kind: getter
+    request: {cmd: "0x14", message_type: "0x01", payload: []}
+    reply: {message_type: "0x81", body: "[codecID]", fields: [{name: codecID, enum: codec_ids, note: "an id outside the list yields no update"}]}
+    evidence: {level: measured, ref: "codec-reply"}
+  - id: "0x22"
+    name: customEQ
+    kind: getter
+    request: {cmd: "0x22", message_type: "0x01", payload: []}
+    reply: {message_type: "0x81", body: "[count] then the profile, or a bare zero count", fields: [{name: count, note: "only the first byte past the status is read, to decide whether the custom slot is selectable"}]}
+    evidence: {level: measured, ref: "custom-eq-reply (empty case only)"}
+  - id: "0x24"
+    name: bassWave
+    kind: getter
+    request: {cmd: "0x24", message_type: "0x01", payload: []}
+    reply: {message_type: "0x81", body: "[min][max][current], all signed", fields: [{name: min}, {name: max}, {name: current, note: "bounds are the device's own; a range that does not read low-to-high is rejected"}]}
+    evidence: {level: measured, ref: "basswave-reply-0, basswave-reply-2"}
+  - id: "0x2f"
+    name: capabilities
+    kind: getter
+    request: {cmd: "0x2f", message_type: "0x01", payload: null}  # not established / never sent
+    sent: false
+    evidence: {level: unconfirmed, ref: "none observed; id named by nothing on the vendor side"}
+
+setters:
+  - id: "0x00"
+    name: findMyEarbuds
+    kind: setter
+    message_type: "0x04"
+    request: {cmd: "0x00", payload: "[count] then slot ids", measured_payloads: {left: "01 01", right: "01 02", both: "02 01 02", stop: "00"}}
+    ack: {message_type: "0x84", cmd: "0x00", body: "single result byte [01]", note: "identical whether or not a tone plays"}
+    evidence: {level: inferred, ref: "dex:com.oplus.melody.btsdk.protocol.commands.i#setFindMode (0x0400)"}
+  - id: "0x01"
+    name: touch
+    kind: setter
+    message_type: "0x04"
+    request: {cmd: "0x01", payload: "[count] then count x [side][type][gesture][action]", note: "the getter's reply body minus its status byte; only the changed records are sent"}
+    ack: null  # not established: no setack-touch frame in this corpus
+    evidence: {level: measured, ref: "record layout from touch-reply; setter id is the code constant 0x01, acked by no committed frame"}
+  - id: "0x04"
+    name: anc
+    kind: setter
+    message_type: "0x04"
+    request: {cmd: "0x04", payload: ["0x01", "0x01", "maskLo", "maskHi"], note: "the getter's reply body minus its status byte; the explicit 16-bit mask is the only form sent"}
+    ack: {message_type: "0x84", cmd: "0x04"}
+    evidence: {level: measured, ref: "setack-anc"}
+  - id: "0x06"
+    name: eqPreset
+    kind: setter
+    message_type: "0x04"
+    request: {cmd: "0x06", payload: ["preset"], note: "the getter's reply body minus its status byte"}
+    ack: {message_type: "0x84", cmd: "0x06"}
+    evidence: {level: measured, ref: "setack-eq"}
+  - id: "0x1b"
+    name: bassWave
+    kind: setter
+    message_type: "0x04"
+    request: {cmd: "0x1b", payload: ["min", "max", "level"], note: "the getter's reply body minus its status byte; level clamped to the device's stated bounds"}
+    ack: {message_type: "0x84", cmd: "0x1b"}
+    evidence: {level: measured, ref: "setack-basswave"}
+
+namespace_note:
+  text: "Getter and setter ids are different namespaces. BassWave getter 0x24 vs setter 0x1b; touch getter 0x08 vs setter 0x01; EQ preset getter 0x0f vs setter 0x06."
+  caveat: "Protocol.swift's Setter doc-comment says the EQ setter 'matches its getter (0x06)'; the constants in the same file are 0x0f and 0x06, and the corpus shows both. This file follows the numbers."
+  evidence: {level: measured, ref: "setack-anc, setack-eq, setack-basswave; eq-reply-bass"}
+
+notifications:
+  family_1:
+    trigger: {cmd: "0x04", message_type: "0x02"}
+    shape: "payload[0] selects the topic; the rest is the topic's reply body with its status byte removed"
+    topics:
+      - {topic: "0x01", means: battery, evidence: {level: unconfirmed, ref: "code constant; no committed family-1 battery push"}}
+      - {topic: "0x02", means: wear, evidence: {level: unconfirmed, ref: "code constant; no committed family-1 wear push"}}
+      - {topic: "0x03", means: anc, note: "reported lossy by the code (some pushes carry the full u16, others only the low byte; low byte 0x00 is ambiguous between transparency and adaptive), but no such push is committed", evidence: {level: unconfirmed, ref: "code constant; no committed family-1 anc push"}}
+      - {topic: "0x06", means: connectedDevices, evidence: {level: measured, ref: "notify-devices"}}
+  family_2:
+    trigger: {message_type: "0x05"}
+    shape: "cmd names the subject on its own numbering; payload equals the getter's reply payload minus its status byte"
+    subjects:
+      - {cmd: "0x04", means: eqPreset, payload: "bare preset byte", evidence: {level: measured, ref: "eq-push-bass, eq-push-balanced"}}
+      - {cmd: "0x08", means: bassWave, payload: "[min][max][current]", evidence: {level: unconfirmed, ref: "derived in selfCheck; not captured"}}
+
+sequence:
+  note: "Replies echo the request's value. Family-2 pushes in the corpus carry 0xff; the family-1 push carries 0x25. Nothing validates the byte, so its meaning for pushes is not claimed."
+  evidence: {level: measured, ref: "reply sequences across frames.hex; eq-push-bass (0xff), notify-devices (0x25)"}
+
+polling:
+  note: "The host drives poll(); the session owns no timer. Requests are sent on open, on read-back, and on each poll."
+  state_requests: ["anc (payload 01 01)", battery, wear, connectedDevices, codec]
+  settings_requests: [eqPreset, bassWave, customEQ, firmware, touch]
+  readback: "A write asks for its read-back immediately and marks the next two polls; if nothing arrives the pending claim is dropped rather than left forever."
+  evidence: {level: measured, ref: "Session.swift stateRequests/settingsRequests/beginReadback; SessionTests"}
+
+gates:
+  - {id: closed_capability_set, rule: "A capabilities key must be a Capability this code models.", why: "A typo would silently disable a feature, which looks supported.", evidence: {level: measured, ref: "CapabilityRegistry.swift RegistryError.unknownCapability"}}
+  - {id: values_in_enum, rule: "Every values entry must be an enum case the code can encode or draw.", why: "Otherwise the UI offers a button that cannot be honoured.", evidence: {level: measured, ref: "CapabilityRegistry.swift RegistryError.unknownValue"}}
+  - {id: values_shape, rule: "A value-bearing capability must have values; a capability that takes none must not.", why: "A missing list draws an empty picker; an ignored field is a lie in the file.", evidence: {level: measured, ref: "CapabilityRegistry.swift RegistryError.missingValues / valuesOnCapabilityThatTakesNone"}}
+  - {id: measured_needs_recording, rule: "measured must cite a capture or a hardware-loop.", why: "'Measured' has to mean a recording exists.", evidence: {level: measured, ref: "CapabilityRegistry.swift RegistryError.measuredWithoutARecording"}}
+  - {id: inferred_needs_apk, rule: "inferred must cite the phone app (apk).", why: "'Inferred' means read out of the vendor's code, and nothing else.", evidence: {level: measured, ref: "CapabilityRegistry.swift RegistryError.wrongEvidenceForConfidence"}}
+  - {id: unconfirmed_cites_nothing, rule: "unconfirmed must cite source 'none'.", why: "The word means there is no evidence; a citation would contradict it.", evidence: {level: measured, ref: "CapabilityRegistry.swift RegistryError.wrongEvidenceForConfidence"}}
+  - {id: writable_is_measured, rule: "A writable capability must be measured.", why: "The one that matters most: no write path without a recording behind it.", evidence: {level: measured, ref: "CapabilityRegistry.swift RegistryError.unconfirmedCapabilityIsWritable"}}
+  - {id: single_fallback, rule: "Exactly one profile sets match.fallback.", why: "An unknown device must have somewhere to land, and only one place.", evidence: {level: measured, ref: "CapabilityRegistry.swift RegistryError.noFallbackProfile / moreThanOneFallbackProfile"}}
+  - {id: session_can_write, rule: "At runtime a write is allowed only when spec.writable is true and confidence is measured.", why: "This is the whole of canWrite.", evidence: {level: measured, ref: "CapabilityRegistry.swift DeviceProfile.canWrite"}}
+  - {id: session_offers_value, rule: "Each setter also checks the model lists the specific value.", why: "A model cannot be configured to offer a mode the codec cannot encode.", evidence: {level: measured, ref: "Session.swift offers(_:_:)"}}
+  - {id: basswave_bounds, rule: "The BassWave write refuses until the device states its bounds.", why: "Until then there is no honest range to clamp to; assuming another model's range would invent bytes.", evidence: {level: measured, ref: "Session.swift set(bassWave:)"}}
+  - {id: custom_eq_precondition, rule: "The custom EQ slot is refused until a saved profile is reported.", why: "The firmware would store it and leave the phone's picker with no selection.", evidence: {level: measured, ref: "Session.swift set(eqPreset:)"}}
+  - {id: gesture_action_set, rule: "A gesture action must be in the observed set for that gesture.", why: "The firmware validates nothing; a value outside the phone's list leaves its UI with no selection.", evidence: {level: measured, ref: "Protocol.swift MediaGesture.actions"}}
+  - {id: no_optimistic_write, rule: "A write never assigns a displayed value; only a reply does.", why: "A declined write looks like a control snapping back, which is the truth.", evidence: {level: measured, ref: "Session.swift doc comment and set(...) methods"}}
+
+not_verified:
+  - {id: case_battery, note: "The charging case's charge never appears on this channel. Every 0x8106 reply carried two slots (left, right) even while the wear reply named the case. caseBattery is read:false at measured confidence. The case's charge reaches the phone app by some path this channel does not show.", evidence: {level: measured, ref: "battery-reply (negative finding)"}}
+  - {id: find_my_earbuds, note: "findMyEarbuds cannot be confirmed: the ack 0x8400 is identical whether or not a tone plays (every payload answered [01]). No ring capture is committed and no ear test was run. No write path exists.", evidence: {level: inferred, ref: "dex:...#setFindMode (0x0400)"}}
+  - {id: single_model, note: "Only one model is measured (OnePlus Buds 4). Every other model in the registry is the generic-family fallback: unconfirmed, read-only, no write path.", evidence: {level: measured, ref: "capture.json; devices/generic-family.json"}}
+  - {id: prompt_volume, note: "The prompt-volume scale was not measured, so no control is exposed. No prompt-volume command id, request or decoder exists in Protocol.swift; the README's 'getter measured' is not backed by a code path here. The prompt-voice upload is a file transfer and is out of scope.", evidence: {level: unconfirmed, ref: "no code path; SCOPE.md section 4"}}
+  - {id: firmware_update, note: "Firmware updates are permanently out of scope. BESOTA on RFCOMM channel 13 is never opened. No OTA UI, code path or decoder exists.", evidence: {level: measured, ref: "SCOPE.md section 4"}}
+  - {id: gesture_setter_ack, note: "No setack-touch frame is in this corpus; the only committed hardware acks are for ANC, EQ and BassWave. The touch setter id 0x01 is the code's constant and the record layout is from touch-reply, but no frame shows the firmware accepting the write.", evidence: {level: unconfirmed, ref: "no setack-touch in frames.hex"}}
+  - {id: multipoint_write, note: "Multi-connect write is unmeasured. The vendor SDK has a setter (0x0429, operateMultiConnectHandheldDevice) but it was never exercised and no capture shows it; multipoint is read-only.", evidence: {level: inferred, ref: "dex vendor SDK (operateMultiConnectHandheldDevice)"}}
+  - {id: codec_write, note: "The codec is read-only. The vendor setter (0x041a, setHighAudioCodecType) is one the SDK logs as unsupported, and it would change the phone's link, not the Mac's.", evidence: {level: inferred, ref: "dex vendor SDK (setHighAudioCodecType)"}}
+  - {id: in_call_gestures, note: "The in-call gesture context (type 0x06) is not offered: its action codes are unnamed in every published description, and guessing between answer and decline risks ending a call.", evidence: {level: unconfirmed, ref: "touch-reply records with type 0x06; no names anywhere"}}
+  - {id: custom_eq_profile, note: "The non-empty custom-EQ profile shape is not in the corpus; only the no-profile reply (00 00) was captured. The profile editor is out of scope.", evidence: {level: measured, ref: "custom-eq-reply (empty case only)"}}
+  - {id: battery_charging_flag, note: "No captured battery frame sets the top bit the code masks off and describes as a charging flag.", evidence: {level: unconfirmed, ref: "Protocol.swift comment; not observed in frames.hex"}}
+  - {id: touch_and_capabilities_getters, note: "0x0d (miscConfig) and 0x2f (capabilities) are named but never sent; nothing was measured for either.", evidence: {level: unconfirmed, ref: "Protocol.swift Command enum"}}
+  - {id: wear_extra_states, note: "Wear states out-of-case (0x05) and not-present (0x00) are not in the corpus; only in-ear (0x07) and in-case (0x04) were captured.", evidence: {level: measured, ref: "wear-reply"}}
+  - {id: b2_b3, note: "Bytes 2 and 3 are always 0x00 in every corpus frame but their purpose is not established.", evidence: {level: measured, ref: "every frame in frames.hex"}}
+  - {id: firmware_fields, note: "The firmware string's comma-separated fields are not decoded; it is shown verbatim.", evidence: {level: measured, ref: "firmware-reply"}}
+  - {id: find_payloads, note: "Find's payloads (01 01, 01 02, 02 01 02, 00) are described by the code as measured against hardware, but no find frame is committed in this corpus.", evidence: {level: inferred, ref: "Protocol.swift encodeFind; dex setFindMode"}}
+  - {id: family_1_topic_numbering, note: "Of the family-1 push topics, only 0x06 (the multi-connect table) appears in the corpus. The mapping of 0x01 to battery, 0x02 to wear and 0x03 to anc is the code's constant with no committed frame behind it, and topics beyond these four are unknown.", evidence: {level: unconfirmed, ref: "Protocol.swift statusTopic; only notify-devices (0x06) is committed"}}
+  - {id: anc_lossy_push, note: "The ANC status push is described by the code as lossy on this hardware (sometimes only the low byte, whose 0x00 cannot tell transparency from adaptive), but no lossy push is committed in the corpus; only full 16-bit getter replies are present.", evidence: {level: unconfirmed, ref: "Protocol.swift comment; lossy frames are derived in selfCheck only"}}
