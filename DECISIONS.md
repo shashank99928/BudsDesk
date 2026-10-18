@@ -124,3 +124,79 @@ has and this model's support for is genuinely unknown, which is a different stat
 **What would change our mind:** a model whose capability report the hardware itself sends (a
 capability getter that answers) makes the registry derived rather than asserted for that model.
 Then the file records what the device said, and its `source` says so.
+
+---
+
+## D5 — Find-my-earbuds is not offered on the OnePlus Buds 4, even though the phone app has it
+
+**Date:** 2026-10-18
+
+**Options**
+
+1. Offer Ring and Stop on the measured model, because the app that ships today offers them and
+   the setter has been exercised on real hardware.
+2. Mark the capability `inferred` from the reference app's code and offer nothing, so no write
+   path exists until there is a recording and an ear test.
+3. Mark it `measured` with a `hardware-loop` citation, on the strength of the acks that came back.
+
+**Evidence**
+
+- The setter is real and is the vendor's own: `0x0400 setFindMode`, and the ack `0x8400` has been
+  observed answering with a single result byte.
+- The ack **does not distinguish accept from reject**. Every find payload tried — five of them —
+  answered `0x8400` with the payload `[01]`, including the ones that were asked to ring nothing.
+- No capture of a ring session was committed, and the ear test that would settle whether a tone
+  actually plays was deliberately skipped.
+- "Stop" has no frame of its own at all: the only stop this vocabulary can express is the find
+  setter with an empty slot list, and nothing in the captures shows the firmware honouring it.
+
+**Decision:** option 2. `findMyEarbuds` is `read: false`, `writable: false`, `confidence:
+inferred`, citing `dex:…i#setFindMode`.
+
+**Why:** option 3 would be the lie this project is built to avoid. "Measured" has to mean an
+observation that can tell success from failure, and this ack cannot: a result byte that is `01`
+whether or not a tone played is not evidence that a tone played. Option 1 ships a button whose
+only feedback is the user's own ears, in an app that claims its writes are verified — which is
+exactly the kind of claim the rest of this repository refuses to make.
+
+This is a real, acknowledged **regression against the app that ships today**. It is written down
+rather than hidden: `README.md`'s support matrix has no row for it, and this entry is the reason.
+
+**What would change our mind:** a committed recording of a ring — the request and the hardware's
+answer with something in it that distinguishes the two cases — plus one ear test, or an ack whose
+semantics are established rather than assumed. Then it becomes `measured` with a write path, and
+the app grows a Ring button.
+
+---
+
+## D6 — The session owns no timer; the host drives `poll()`
+
+**Date:** 2026-10-18
+
+**Options**
+
+1. Keep the single-device app's shape: `Session` installs its own `Timer` and schedules its own
+   deferred read-backs with `DispatchQueue.main.asyncAfter`.
+2. `Session` exposes `poll()`, and nothing else; the host (the app, or a CLI) owns the clock.
+
+**Evidence**
+
+- The master prompt's trap list includes "a headless CLI must pump the run loop, not `sleep`, or
+  the delegate callbacks never fire", and its Phase 6 requires that `Session` be "deterministic
+  and inspectable".
+- The single-device app's `refreshAfterSet()` re-reads at 0.35 s and 1.2 s with two timers. That
+  behaviour is untestable without waiting, and it made `swift test` time-dependent.
+- `SessionTests` now asserts write-then-read-back, give-up-after-N-polls and a fragmented frame
+  reassembling, all in milliseconds, with no radio.
+
+**Decision:** option 2, with the deferred read-back modelled as a tick count: a write asks for its
+read-back immediately *and* marks the next two polls as read-back polls, so a late answer still
+lands and an absent one is eventually given up on rather than left pending forever.
+
+**Why:** a clock inside the session is the difference between a state machine that can be tested
+and one that can only be watched. It also keeps `BudsCore` host-generic: `Timer` and `Dispatch`
+are platform furniture, and neither belongs in the layer that is meant to be shared byte for byte
+across three operating systems.
+
+**What would change our mind:** nothing plausible. If a host forgets to poll, the symptom is a
+stale reading, which is visible and is already the thing the UI must render honestly.
