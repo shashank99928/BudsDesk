@@ -2,6 +2,11 @@
 .build/
 dist/
 DerivedData/
+BudsDesk.app/
+
+# The icon's intermediate sizes. The .icns that ships *is* tracked — a checkout that can build a
+# release without running the generator is worth more than the few hundred kilobytes it costs.
+Resources/AppIcon.iconset/
 
 # Xcode / editor state
 *.xcuserstate

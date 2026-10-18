@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- The bundle identifier is fixed for the life of the app. macOS keys the Bluetooth
+	     permission to it, so changing it would re-prompt every existing user on first launch
+	     after an update. -->
+	<key>CFBundleIdentifier</key>
+	<string>com.shashank.budsdesk</string>
+
+	<key>CFBundleExecutable</key>
+	<string>BudsDesk</string>
+	<key>CFBundleName</key>
+	<string>BudsDesk</string>
+	<key>CFBundleDisplayName</key>
+	<string>BudsDesk</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+
+	<key>LSMinimumSystemVersion</key>
+	<string>26.0</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+
+	<!-- Why the app wants a radio at all. The wording is deliberately narrower than "uses
+	     Bluetooth": it opens one vendor control channel and nothing else, and it never
+	     connects to the internet. -->
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>BudsDesk talks to your earbuds over Bluetooth to read their battery and wear state, and to change noise control, equaliser and touch settings. It opens the vendor's own control channel and nothing else.</string>
+
+	<key>NSHumanReadableCopyright</key>
+	<string>MIT licensed. Not affiliated with OPPO, OnePlus, realme, or BBK Electronics.</string>
+</dict>
+</plist>
