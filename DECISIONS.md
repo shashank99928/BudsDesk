@@ -200,3 +200,92 @@ across three operating systems.
 
 **What would change our mind:** nothing plausible. If a host forgets to poll, the symptom is a
 stale reading, which is visible and is already the thing the UI must render honestly.
+
+---
+
+## D7 — The app icon is an equalizer mark, not an earbud
+
+**Date:** 2026-10-18
+
+**Options**
+
+1. Draw the product: one or two earbuds on the dark squircle.
+2. Draw the category: an equalizer, because that is the first thing anyone opens this app for.
+3. Ship no icon, or a monogram.
+
+**Evidence**
+
+- Five revisions drew an earbud literally, and each was rendered at 16, 32 and 128 points and
+  looked at rather than assumed. Every one read as a different object: a tall capsule on a stem is
+  a **microphone**; a circle on a stem is a **person**; two of those leaning apart are a **green
+  smudge** at 16 points; a squat body with a nozzle is a **hand mirror**; the same pair with the
+  nozzles turned outward is **two crowns**.
+- That is a property of the shape, not of the drawing. An earbud *is* a blob on a stick — so is a
+  lollipop, a pin, a microphone and a mirror — and at 16 points there is nothing left to separate
+  them. The literal option was not a larger amount of care away from working; it was unwinnable at
+  that size.
+- The first render that measured correctly put the mark at 49.9% × 49.6% of the tile. Every
+  earlier version had been exactly one icon-inset (100 points at 1024) down and to the right,
+  because the art used canvas coordinates inside a content-box coordinate space. It was found by
+  measuring the pixels, not by looking harder.
+
+**Decision:** option 2 — three unequal bars, the middle one tallest.
+
+**Why:** an icon's job is to be recognised in a Dock, and three strokes cannot be confused with
+anything at 16 points, while a smudge can be confused with everything. The bars are also true of
+this app rather than aspirational about it: changing the equalizer and the noise mode is the first
+thing anyone opens it for. An icon that promises earbuds and delivers a microphone is a small
+version of the same failure this whole repository is arranged to avoid.
+
+The five failed revisions are written into `Tools/make-icon.swift` as a table rather than deleted,
+because the next person to think "this should obviously be an earbud" is going to try it, and the
+record is what stops that being a weekend.
+
+**What would change our mind:** a literal earbud that survives a 16-point render and reads as one
+in a Dock context — which means an actual illustration by someone who draws for a living, not
+another arrangement of two ellipses and a rounded rectangle.
+
+---
+
+## D8 — The site answers five questions and refuses to be a model catalogue
+
+**Date:** 2026-10-19
+
+**Options**
+
+1. A landing page plus one page per model in the family — forty-odd device-name pages — which is
+   what a site in this category looks like from the outside.
+2. Five pages, each one the best available answer to a question people actually type: the app
+   itself, the one measured model, why macOS cannot do this and what to do instead, an honest
+   comparison with the phone app, and one supported-models page.
+
+**Evidence**
+
+- Searching for `oneplus buds mac app` returns an Android-emulator page claiming to run the phone
+  app on a PC, the App Store listing for the *iPhone* app, a vendor forum thread and YouTube
+  videos. Nothing on the first page is a Mac app.
+- Searching for `how to change oneplus buds eq on mac` returns forum threads and videos **asking
+  the question**, and no page answering it.
+- The nearest existing thing is an MIT-licensed realme TWS controller on GitHub, four stars, no
+  description, last touched months ago.
+- Google restricted `FAQPage` rich results in 2023 to a small set of authoritative sites and
+  deprecated `HowTo` results entirely. Both are still read by Bing and by answer engines, which is
+  why they are emitted and why nothing depends on them.
+
+**Decision:** option 2.
+
+**Why:** the incumbents are a dormant repository, an emulator-spam page and a personal blog post,
+so the transactional queries are winnable — but only by being the specific, correct answer. A new
+domain publishing forty thin pages of model names is the textbook doorway pattern: it will not
+rank, and here it would be worse than not ranking, because each page would imply support for
+hardware nobody has recorded. This project's one real asset is that its claims are checkable, and
+a model catalogue is exactly the thing that would spend it.
+
+The same reasoning disposed of the obvious comparison-page move. The page about the phone app says
+the App Store offers it for Apple silicon Macs in some storefronts, and that whether it can reach
+the control channel from there **has not been tested**. That is a weaker sentence than "it does not
+work on a Mac", and it is the only one this project is entitled to write.
+
+**What would change our mind:** a model becomes measured. Then it earns its own page, because there
+is real model-specific content to write — the OnePlus Buds 4 page exists because that hardware has
+been recorded, not because the name was available.
