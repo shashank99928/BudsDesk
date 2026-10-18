@@ -1,0 +1,19 @@
+{
+  "id": "oneplus-buds-4-2026-10-17",
+  "date": "2026-10-17",
+  "model": "OnePlus Buds 4",
+  "vendor": "OnePlus",
+  "firmware": "1,2,138,2,2,138,3,1,01,3,2,105",
+  "firmwareSource": "0x0105 getRemoteVersion reply, recorded verbatim as the hardware reports it (comma-separated ASCII). It is not a dotted version string and this project does not invent one.",
+  "service": {
+    "name": "oppointeraction",
+    "uuid": "0000799a-d102-11e1-9b23-00025b00a5a5",
+    "rfcommChannel": 15
+  },
+  "tool": "OnePlusBuds4 (the single-device app) built with BUDSBAR_TRACE=1 and BUDSBAR_HARVEST=1, RX lines kept",
+  "host": "macOS 26.5, Apple silicon, IOBluetooth RFCOMM",
+  "frames": 25,
+  "directions": "both (requests sent, replies received); only received frames are kept in this file",
+  "notes": "Every byte here was taken off the wire. Nothing is transcribed by hand: makeFrame recomputes both length fields for anything derived, and a test asserts this file and the generated corpus agree byte for byte, so a frame whose varint length disagrees with its payload-length field cannot exist. The harvest swept each mode, level, EQ preset and BassWave setting (and restored what it found) so the capture contains one clean example of each frame type; that is why several frames differ only in the mode byte.",
+  "excluded": "Firmware OTA traffic (RFCOMM channel 13) was never opened, so no OTA frame is present by design."
+}

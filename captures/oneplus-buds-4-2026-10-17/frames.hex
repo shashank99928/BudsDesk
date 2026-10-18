@@ -1,0 +1,88 @@
+# reply to the session HELLO; a static 8-byte value
+hello-reply = aa 10 00 00 00 81 01 09 00 00 ff 77 5a ea 67 0e 20 07
+
+# 0x8106: L 20%, R 20%, case absent
+battery-reply = aa 0d 00 00 06 81 03 06 00 00 02 01 14 02 14
+
+# 0x8109: L in ear, R in ear, case in case
+wear-reply = aa 0f 00 00 09 81 04 08 00 00 03 01 07 02 07 03 04
+
+# 0x810c readback: 0x0008 off
+anc-reply-off = aa 0c 00 00 0c 81 07 05 00 00 01 01 08 00
+
+# 0x810c readback: 0x0010 noise cancellation, high
+anc-reply-nc-high = aa 0c 00 00 0c 81 07 05 00 00 01 01 10 00
+
+# 0x810c readback: 0x0020 noise cancellation, moderate
+anc-reply-nc-moderate = aa 0c 00 00 0c 81 07 05 00 00 01 01 20 00
+
+# 0x810c readback: 0x0040 noise cancellation, low
+anc-reply-nc-low = aa 0c 00 00 0c 81 07 05 00 00 01 01 40 00
+
+# 0x810c readback: 0x0080 noise cancellation, auto
+anc-reply-nc-auto = aa 0c 00 00 0c 81 07 05 00 00 01 01 80 00
+
+# 0x810c readback: 0x0100 transparency
+anc-reply-transparency = aa 0c 00 00 0c 81 07 05 00 00 01 01 00 01
+
+# 0x810c readback: 0x0800 adaptive
+anc-reply-adaptive = aa 0c 00 00 0c 81 07 05 00 00 01 01 00 08
+
+# 0x810f: preset 0x00
+eq-reply-balanced = aa 09 00 00 0f 81 02 02 00 00 00
+
+# 0x810f: preset 0x02 -- read back after setting Bass
+eq-reply-bass = aa 09 00 00 0f 81 08 02 00 00 02
+
+# family 2, subject 0x04: preset pushed as 0x00
+eq-push-balanced = aa 08 00 00 04 05 ff 01 00 00
+
+# family 2, subject 0x04: preset pushed as 0x02
+eq-push-bass = aa 08 00 00 04 05 ff 01 00 02
+
+# 0x8124: [status][min -5][max +5][current 0]
+basswave-reply-0 = aa 0b 00 00 24 81 03 04 00 00 fb 05 00
+
+# 0x8124 read back after setting +2
+basswave-reply-2 = aa 0b 00 00 24 81 09 04 00 00 fb 05 02
+
+# 0x8122: no saved custom profile
+custom-eq-reply = aa 09 00 00 22 81 04 02 00 00 00
+
+# 0x8105: ASCII, comma separated
+firmware-reply = aa 27 00 00 05 81 05 20 00 00 04 31 2c 32 2c 31 33 38 2c 32 2c 32 2c 31 33 38 2c 33 2c 31 2c 30 31 2c 33 2c 32 2c 31 30 35
+
+# 0x8108: 18 four-byte records behind a count
+touch-reply = aa 51 00 00 08 81 06 4a 00 00 12 01 01 01 00 01 01 02 06 01 01 03 05 01 01 04 08 01 01 06 00 01 01 05 07 02 01 01 00 02 01 02 06 02 01 03 05 02 01 04 08 02 01 06 00 02 01 05 07 01 06 02 1d 01 06 03 00 01 06 06 1c 02 06 02 1d 02 06 03 00 02 06 06 1c
+
+# 0x0484: the ack is addressed to the SETTER id
+setack-anc = aa 08 00 00 04 84 0a 01 00 00
+
+# 0x0684: EQ preset setter
+setack-eq = aa 08 00 00 06 84 12 01 00 00
+
+# 0x1b84: BassWave setter -- not the getter's 0x24
+setack-basswave = aa 08 00 00 1b 84 14 01 00 00
+
+# 0x0204 topic 0x06: the multi-connect table -- [count], then records of
+# [address 6][length][state][flags][nameLength][name]. The layout is the vendor
+# SDK's own multi-connect parser; read under it, this frame's two records end
+# exactly on its last byte, which is what makes the stride more than a fit to one
+# sample. The phone's state byte is 00 here: it was not connected at the time.
+notify-devices = aa 3f 00 00 04 02 25 38 00 06 02 26 68 69 83 be b0 1b 02 01 18 53 68 61 73 68 61 6e 6b e2 80 99 73 20 4d 61 63 42 6f 6f 6b 20 50 72 6f 6f af 4d 25 a8 b8 0d 00 00 0a 73 68 73 78 6e 6b 20 53 32 33
+
+# 0x8112: the multi-connect table read back on request -- the same body the 0x0204
+# push carries, behind a status byte, and the reply echoes the request's sequence
+# (0x32). The getter is `0x12` with an empty payload, exactly as the vendor SDK
+# sends it. The phone's state byte is 02 here: it had connected, and that one byte
+# is the whole difference from `notify-devices`.
+multiconnect-reply = aa 3f 00 00 12 81 32 38 00 00 02 26 68 69 83 be b0 1b 02 01 18 53 68 61 73 68 61 6e 6b e2 80 99 73 20 4d 61 63 42 6f 6f 6b 20 50 72 6f 6f af 4d 25 a8 b8 0d 02 00 0a 73 68 73 78 6e 6b 20 53 32 33
+
+# 0x8114: the codec the link is using, read back with an empty payload. The id is
+# read against the vendor SDK's own table (`CodecVO.kt` builds the "High audio" list
+# from the same numbering and highlights the entry equal to the reported type):
+# 02 is AAC by that table. The getter is one of the ids the SDK's log labels name --
+# `getCurrentCodecType`, SDK command 276 -- and of the twenty-odd getters tried, this
+# one answered where spatial type, game sound, tap level and the spine features stay
+# silent.
+codec-reply = aa 09 00 00 14 81 42 02 00 00 02
