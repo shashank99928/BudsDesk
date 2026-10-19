@@ -1,0 +1,64 @@
+name: CI
+
+# What this runs is what a person would run, in the same order, for the same reasons:
+# the parser and corpus tests first, then the bundle assembly, which itself runs the SF Symbol
+# check and the protocol self-check against the release binary. A check that only ran here and
+# not locally would be a check nobody could reproduce.
+#
+# The runner requirement is real rather than convenient. The package targets `.macOS(.v26)` and
+# the corpus tests are not conditional, so a runner with an older SDK cannot build this — which
+# is the honest state of a project that supports exactly one OS version. See `SCOPE.md` §3.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: macos-26
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Toolchain
+        run: |
+          swift --version
+          xcodebuild -version || true
+          sw_vers
+
+      - name: Build (release)
+        # Release, not debug: it is what ships, and a warning that only appears under
+        # whole-module optimisation is a warning worth seeing before a release.
+        run: swift build -c release
+
+      - name: Test
+        run: swift test
+
+      - name: Assemble the app bundle and check it
+        # build.sh runs `swift Tools/check-symbols.swift` (an unknown SF Symbol name renders
+        # nothing and reports no error), then assembles the bundle with its capability registry
+        # inside it, then runs `--selfcheck` and `--profiles` against the release binary. The
+        # last one is the check that catches a registry valid on disk and missing in the app.
+        run: ./build.sh
+
+      - name: The disk image still builds
+        # Not uploaded anywhere — this only proves the packaging path has not rotted, since it
+        # is the one path that involves tools outside Swift. Finder styling may be skipped on a
+        # runner with no Automation permission; that path is guarded and warns rather than fails.
+        run: ./make-dmg.sh
+
+      - name: Keep the disk image for inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BudsDesk-dmg
+          path: dist/BudsDesk.dmg
+          if-no-files-found: warn
+          retention-days: 7
