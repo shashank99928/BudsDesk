@@ -336,3 +336,52 @@ there is nothing left to keep in step by hand.
 **What would change our mind:** the markup becoming a liability rather than an asset — if the
 engines stop reading it, the `FAQPage` block is deleted. The FAQ stays either way, because the FAQ
 is for people.
+
+---
+
+## D10 — The screenshot on the site is a drawing of the app, made by the app
+
+**Date:** 2026-10-19
+
+**Options**
+
+1. Take a screenshot of the running app. It is the obvious thing, and it needs the hardware awake
+   and paired at the moment of capture.
+2. Draw the window off-screen, at a fixed size, from the recording in the corpus — the real
+   `DeviceWindow` over the real `AppModel`, with the replay named in the window's own footer.
+3. Commission or compose an illustration of what the app would look like.
+
+**Evidence**
+
+- Option 1 was not available and will not always be: the measured pair is asleep in its case, and a
+  site whose image can only be produced when hardware is on the desk is a site nobody else can
+  reproduce. It also has a worse failure mode than being unavailable — a screenshot of a *stale*
+  build looks exactly like a screenshot of the current one.
+- Option 3 is the one this project can never take. An illustration of a measured app is a picture of
+  a claim, and there would be nothing to check it against.
+- Option 2 turned out to be a test as well as a picture. Drawing `away` (nothing paired, registry
+  loaded) for the first time showed the window saying **"No capability registry — the registry could
+  not be read, so nothing can be offered"** — which is what a user sees on their first launch, and
+  is false. The card for "broken install" was being drawn for "no earbuds yet". That is a
+  user-visible bug on the most common first run, and it was found by drawing the app rather than by
+  using it, because using it meant the earbuds were already paired.
+- `ImageRenderer` cannot rasterise a `ScrollView` on this OS — it produced a blank rectangle. A
+  hosted `NSView` drawn with `cacheDisplay` can, at a stated scale, and the two AppKit-backed
+  controls (a gesture `Menu`, an indeterminate `ProgressView`) are swapped for static labels by an
+  environment flag, because an animation has no still.
+
+**Decision:** option 2, and the drawings live in the repository where they can fail a build. The
+site's image is `docs/assets/connected.png`, which `--render` writes and `--compare` verifies, so
+the picture a visitor sees is a picture that passed. `build.sh` runs `--compare` against the release
+binary, and a missing drawing is a failure rather than a silent write — a build must not rewrite the
+thing it is checking.
+
+**Why:** it is the same rule as everywhere else here, applied to pixels: the artefact has to be
+produced by the thing it claims to be. A drawing is honest about what it is, too — the footer names
+the recording being replayed, so the picture carries its provenance instead of implying someone's
+desk. And it turns a marketing asset into a regression test: the clipped label and the control that
+fell out of its row are exactly the failures a compiler cannot see.
+
+**What would change our mind:** a still cannot show a flow, and if the site ever needs to show one
+(the pairing, the moment the earbuds wake up) a screen recording would be the right artefact —
+labelled, and made the same way, driven by a recording rather than by a wish.

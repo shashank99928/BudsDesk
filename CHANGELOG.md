@@ -18,6 +18,13 @@ unless that model was measured. What is listed as *not* included is as deliberat
   FAQ by `Tools/faq-jsonld.py`, so the two cannot separate. Where the marked-up copy held the fuller
   answer, that answer moved onto the page: the FAQ gained the Audio MIDI Setup question, a longer
   emulator answer and the app's own wording for the case battery. See DECISIONS D9.
+- **The first launch no longer claims the registry is missing.** With nothing paired, the window
+  drew the "no capability registry" card — which describes a broken install — for the ordinary state
+  of having no earbuds yet. The two are now different cards, and the `away` drawing that caught it
+  is checked into the repository.
+- **`--version` reads the version instead of repeating it.** It asks the bundle, which `swift run`
+  does not have, so it falls back to one literal that `DocumentationTests` holds equal to the plist,
+  the README and the site.
 
 ### Added
 
@@ -27,6 +34,11 @@ unless that model was measured. What is listed as *not* included is as deliberat
   the home page's feature table against the registry's write paths, and "one model measured end to
   end" against the number of measured profiles. The site's own links and its absence of a made-up
   rating are checked too.
+- **`--render` and `--compare`**, which draw the app's own window off-screen and compare it with the
+  drawings in the repository. The picture on the website is now one of those files — the real
+  `DeviceWindow` over the real `AppModel`, driven by the recording in the corpus, with the recording
+  named in its own footer — so a layout that breaks fails `./build.sh` instead of shipping, and the
+  image a visitor sees is an image that passed. See DECISIONS D10.
 
 ## [0.1.0] — 2026-10-18
 

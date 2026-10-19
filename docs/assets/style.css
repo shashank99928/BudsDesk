@@ -230,6 +230,29 @@ hr {
 .note.good { border-left-color: var(--good); }
 .note p:last-child { margin-bottom: 0; }
 
+/* The app's window, drawn by the app rather than captured off somebody's desk: `BudsDesk --render`
+ * writes it, and `build.sh` fails if it stops matching what the window draws. Capped at the app's
+ * own 440pt width so the picture is the size the window is.
+ */
+figure.shot {
+    margin: 0 0 26px;
+    max-width: 440px;
+}
+
+figure.shot img {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+figure.shot figcaption {
+    margin-top: 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--faint);
+}
+
 .buttons {
     display: flex;
     flex-wrap: wrap;

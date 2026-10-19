@@ -14,6 +14,36 @@ import BudsCore
 @MainActor
 final class AppModel: ObservableObject {
 
+    /// How this model is being driven.
+    ///
+    /// The app runs `.live` and only `.live`. The other two exist so the window can be drawn
+    /// without a radio — `--render` uses them to take the pictures the site shows and the ones the
+    /// build compares against. Everything below the transport is the app's own code either way:
+    /// the same `Session`, the same profile from the same registry, the same views. Only discovery
+    /// and the clock are replaced, which is what makes a picture taken this way worth anything
+    /// more than a mock-up.
+    enum Scene {
+        /// Discovery, a clock and a real RFCOMM link.
+        case live
+        /// A recording, replayed through the real session at a fixed time.
+        case replay(Replay)
+        /// Looking for paired earbuds and finding none: what a first launch with the buds away
+        /// shows, and the only state that needs no recording to be honest about.
+        case away
+    }
+
+    /// Everything a replay needs, and nothing else.
+    struct Replay {
+        let recording: CaptureCorpus.Recording
+        let profile: DeviceProfile
+        /// Stands in for the unit the recording was taken from. Its address is never drawn —
+        /// nothing in the window shows one — so it says that it is a stand-in rather than
+        /// borrowing a real unit's address.
+        let device: PairedBudDevice
+        /// The clock. Fixed, so two drawings of one recording are the same picture.
+        let now: () -> Date
+    }
+
     // MARK: Published state
 
     /// Bumped whenever the session's state changes, so SwiftUI re-reads the session. The session is
@@ -43,33 +73,103 @@ final class AppModel: ObservableObject {
     /// words for rather than an empty panel.
     var isAway: Bool { !isPresent }
 
+    /// Whether the capability registry loaded.
+    ///
+    /// "No registry" and "no earbuds found" are different sentences, and the window has to be able
+    /// to tell them apart: the first is a broken install and the second is an ordinary first
+    /// launch. Drawing both with the words for the first is the bug the `away` golden caught.
+    var hasRegistry: Bool { registry != nil }
+
     // MARK: Private
 
     private var registry: CapabilityRegistry?
-    private var transport: RFCOMMTransport?
+    private var transport: (any Transport)?
     private var ticker: Timer?
     private var nextAttempt = Date.distantPast
     private var isConnecting = false
 
+    /// How this model was built and what its clock is. `Session` owns no timer (D6) and this class
+    /// is the only clock in the app, so a drawing gets a clock of its own here rather than reaching
+    /// for `Date()` in the middle of a render.
+    private let scene: Scene
+    private let now: () -> Date
+
     private static let tick: TimeInterval = 2
     private static let retryInterval: TimeInterval = 6
 
-    init() {
-        loadRegistry()
-        adoptPinnedAddressIfRequested()
-        let ticker = Timer.scheduledTimer(withTimeInterval: Self.tick, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.onTick() }
+    init(scene: Scene = .live) {
+        self.scene = scene
+        switch scene {
+        case .live, .away: now = Date.init
+        case .replay(let replay): now = replay.now
         }
-        // `.common` so the tick keeps running while a menu is open or a list is scrolling: the
-        // default mode stops during menu tracking, which is exactly when a stale reading is most
-        // visible.
-        RunLoop.main.add(ticker, forMode: .common)
-        self.ticker = ticker
-        onTick()
+
+        loadRegistry()
+
+        switch scene {
+        case .live:
+            adoptPinnedAddressIfRequested()
+            let ticker = Timer.scheduledTimer(withTimeInterval: Self.tick, repeats: true) { [weak self] _ in
+                Task { @MainActor in self?.onTick() }
+            }
+            // `.common` so the tick keeps running while a menu is open or a list is scrolling: the
+            // default mode stops during menu tracking, which is exactly when a stale reading is most
+            // visible.
+            RunLoop.main.add(ticker, forMode: .common)
+            self.ticker = ticker
+            onTick()
+
+        case .away:
+            candidates = []
+            status = "No earbuds found. Pair them in System Settings → Bluetooth."
+            // See `replayInto`: a drawing must not carry the directory layout of the machine that
+            // drew it. This is the same reason, for the state that needs no recording.
+            registryDescription = plainRegistryDescription + " · no device found yet"
+
+        case .replay(let replay):
+            replayInto(replay)
+        }
     }
 
     deinit {
         ticker?.invalidate()
+    }
+
+    // MARK: - Replay
+
+    /// Drive the real session from a recording, with no radio and no ticker.
+    ///
+    /// The window a person sees here is the app's window: `DeviceWindow` reading a `Session` that
+    /// parsed the same frames the hardware sent. What makes it safe to publish is that the footer
+    /// says which recording it is, so the picture carries its own provenance instead of pretending
+    /// a unit is on the desk.
+    private func replayInto(_ replay: Replay) {
+        candidates = [replay.device]
+        device = replay.device
+        profile = replay.profile
+
+        // The live description names the directory the registry was read from, which is a fact
+        // about the machine that drew it rather than about the app. A recording id is a fact about
+        // the picture, so a drawing says that instead.
+        registryDescription = plainRegistryDescription + " · replaying \(replay.recording.provenance.id)"
+
+        note("Replaying \(replay.recording.provenance.id) — \(replay.recording.frames.count) frames, "
+             + "\(replay.recording.provenance.model), taken \(replay.recording.provenance.date).")
+
+        let transport = ScriptedTransport(frames: replay.recording.frames)
+        let session = Session(transport: transport, profile: replay.profile,
+                              advertisedName: replay.device.advertisedName,
+                              log: { [weak self] line in
+                                  Task { @MainActor in self?.note(line) }
+                              })
+        session.onChange = { [weak self] in
+            Task { @MainActor in self?.sessionChanged() }
+        }
+        self.transport = transport
+        self.session = session
+        session.start()
+        transport.deliverAll()
+        sessionChanged()
     }
 
     // MARK: - Registry
@@ -87,6 +187,16 @@ final class AppModel: ObservableObject {
             problem = error.localizedDescription
             status = "The capability registry could not be read."
         }
+    }
+
+    /// What the footer says about the registry, without naming the directory it was read from.
+    ///
+    /// A drawing must not carry the machine's directory layout: a visitor does not need it, and two
+    /// machines have to draw the same picture. The live app still says where the registry was read
+    /// from, because that is a real thing a person may want to look at.
+    private var plainRegistryDescription: String {
+        let measured = registry?.profiles.filter { $0.match.fallback != true }.count ?? 0
+        return "\(measured) catalogued model" + (measured == 1 ? "" : "s")
     }
 
     /// `BUDSDESK_ADDRESS` names one device, for someone with more than one pair of these earbuds.
@@ -115,7 +225,7 @@ final class AppModel: ObservableObject {
             return
         }
 
-        if session == nil, !isConnecting, Date() >= nextAttempt {
+        if session == nil, !isConnecting, now() >= nextAttempt {
             connect()
         } else if isReady {
             session?.poll()
@@ -158,7 +268,7 @@ final class AppModel: ObservableObject {
         self.profile = profile
 
         isConnecting = true
-        nextAttempt = Date().addingTimeInterval(Self.retryInterval)
+        nextAttempt = now().addingTimeInterval(Self.retryInterval)
         note("Connecting to \(candidate.name) as \(profile.model)…")
 
         let transport = RFCOMMTransport(address: address)
@@ -194,7 +304,7 @@ final class AppModel: ObservableObject {
         session = nil
         transport = nil
         device = nil
-        nextAttempt = Date().addingTimeInterval(Self.retryInterval)
+        nextAttempt = now().addingTimeInterval(Self.retryInterval)
         objectWillChange.send()
     }
 
@@ -241,13 +351,13 @@ final class AppModel: ObservableObject {
     /// A bounded ring of what happened. Not a debug console: the app ships this so a person can
     /// see that a write was declined, or that the codec changed, without a terminal.
     private func note(_ line: String) {
-        activity.append(Self.timestamp() + "  " + line)
+        activity.append(timestamp() + "  " + line)
         if activity.count > 200 { activity.removeFirst(activity.count - 200) }
     }
 
-    private static func timestamp() -> String {
+    private func timestamp() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: Date())
+        return formatter.string(from: now())
     }
 }

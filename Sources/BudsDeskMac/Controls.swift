@@ -17,7 +17,12 @@ struct DeviceWindow: View {
             VStack(alignment: .leading, spacing: 12) {
                 StatusHeader(model: model)
 
-                if let profile = model.profile {
+                if !model.hasRegistry {
+                    // A broken install. This is the one case that means the registry could not be
+                    // read, and it used to be drawn for "no earbuds found" as well — which told a
+                    // person on their first launch that the app was broken when it was not.
+                    RegistryMissingCard(model: model)
+                } else if let profile = model.profile {
                     if model.isReady, let session = model.session {
                         BatteryCard(session: session)
                         if profile.offers(.noiseControl) { NoiseCard(model: model, session: session, profile: profile) }
@@ -30,7 +35,7 @@ struct DeviceWindow: View {
                         WaitingCard(model: model, profile: profile)
                     }
                 } else {
-                    RegistryMissingCard(model: model)
+                    NoEarbudsCard(model: model)
                 }
 
                 ActivityCard(model: model)
@@ -98,10 +103,19 @@ private struct StatusHeader: View {
 private struct WaitingCard: View {
     @ObservedObject var model: AppModel
     let profile: DeviceProfile
+    /// True while the app is drawing itself off-screen. See `Render`.
+    @Environment(\.isRenderingSnapshot) private var isRenderingSnapshot
 
     var body: some View {
         Card(title: head, subtitle: detail) {
-            ProgressView().controlSize(.small).progressViewStyle(.linear)
+            if isRenderingSnapshot {
+                // An indeterminate bar animates, so a still of it is a still of whichever moment
+                // the snap caught — a different picture every time. The drawing gets the bar's
+                // shape at rest instead; the layout is what the picture is for.
+                Capsule().fill(Theme.cardStroke).frame(height: 4)
+            } else {
+                ProgressView().controlSize(.small).progressViewStyle(.linear)
+            }
         }
     }
 
@@ -118,6 +132,30 @@ private struct WaitingCard: View {
         return "The earbuds are paired but not answering yet. They may be in the case, asleep, or "
              + "out of range — a sleeping pair is the usual reason, and they will connect on "
              + "their own once they wake."
+    }
+}
+
+/// The registry loaded and nothing paired with this Mac advertises the control service: an ordinary
+/// first launch, or earbuds that are out of range.
+///
+/// Deliberately not the same card as "no registry". A window that says the registry could not be
+/// read when in fact nothing is paired tells a person their install is broken on the first run —
+/// which is exactly what this window did until the `away` golden caught it.
+private struct NoEarbudsCard: View {
+    @ObservedObject var model: AppModel
+
+    var body: some View {
+        Card(title: "No earbuds found yet",
+             subtitle: "Nothing paired with this Mac advertises the control service these earbuds "
+                     + "share.") {
+            Text("Pair them in System Settings → Bluetooth. They connect as audio devices without "
+                 + "BudsDesk; the settings macOS does not expose are what this app adds. A pair "
+                 + "asleep in the case still counts as paired — this line is about Bluetooth's "
+                 + "records, not about the buds being awake.")
+                .font(.system(size: 11))
+                .foregroundStyle(Theme.tertiaryText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
 
@@ -390,6 +428,8 @@ private struct GesturesCard: View {
     @ObservedObject var model: AppModel
     let session: Session
     let profile: DeviceProfile
+    /// True while the app is drawing itself off-screen. See `Render`.
+    @Environment(\.isRenderingSnapshot) private var isRenderingSnapshot
 
     var body: some View {
         Card(title: "Gestures", subtitle: subtitle, note: note) {
@@ -400,38 +440,50 @@ private struct GesturesCard: View {
                             .font(.system(size: 12))
                             .foregroundStyle(Theme.primaryText)
                             .frame(width: 140, alignment: .leading)
-                        Menu {
-                            ForEach(gesture.actions) { action in
-                                Button {
-                                    model.setGesture(gesture, action)
-                                } label: {
-                                    Label("\(action.label)\(action == current(gesture) ? "  ✓" : "")",
-                                          systemImage: action.symbol)
+                        if isRenderingSnapshot {
+                            // A `Menu` is AppKit-backed and `ImageRenderer` draws it as a coloured
+                            // placeholder, so the drawing shows the label the menu would show.
+                            pickerLabel(gesture)
+                                .opacity(profile.canWrite(.gestures) ? 1 : 0.62)
+                        } else {
+                            Menu {
+                                ForEach(gesture.actions) { action in
+                                    Button {
+                                        model.setGesture(gesture, action)
+                                    } label: {
+                                        Label("\(action.label)\(action == current(gesture) ? "  ✓" : "")",
+                                              systemImage: action.symbol)
+                                    }
                                 }
+                            } label: {
+                                pickerLabel(gesture)
                             }
-                        } label: {
-                            HStack {
-                                Text(current(gesture)?.label ?? "Unknown")
-                                    .font(.system(size: 12))
-                                Spacer()
-                                Image(systemName: "chevron.up.chevron.down").font(.system(size: 9))
-                            }
-                            .foregroundStyle(Theme.primaryText)
-                            .padding(.horizontal, 10)
-                            .frame(height: Theme.unselectedHeight)
-                            .background(Color.white.opacity(0.05),
-                                        in: RoundedRectangle(cornerRadius: 8))
+                            .menuStyle(.borderlessButton)
+                            .menuIndicator(.hidden)
+                            .disabled(!profile.canWrite(.gestures))
+                            .opacity(profile.canWrite(.gestures) ? 1 : 0.62)
+                            .accessibilityLabel("\(gesture.label) action")
+                            .accessibilityValue(current(gesture)?.label ?? "unknown")
                         }
-                        .menuStyle(.borderlessButton)
-                        .menuIndicator(.hidden)
-                        .disabled(!profile.canWrite(.gestures))
-                        .opacity(profile.canWrite(.gestures) ? 1 : 0.62)
-                        .accessibilityLabel("\(gesture.label) action")
-                        .accessibilityValue(current(gesture)?.label ?? "unknown")
                     }
                 }
             }
         }
+    }
+
+    /// One picker's face, drawn identically inside the menu and in its place. The two must not
+    /// drift, or the published picture would show something the window does not.
+    private func pickerLabel(_ gesture: BudsProtocol.MediaGesture) -> some View {
+        HStack {
+            Text(current(gesture)?.label ?? "Unknown")
+                .font(.system(size: 12))
+            Spacer()
+            Image(systemName: "chevron.up.chevron.down").font(.system(size: 9))
+        }
+        .foregroundStyle(Theme.primaryText)
+        .padding(.horizontal, 10)
+        .frame(height: Theme.unselectedHeight)
+        .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
     }
 
     private func current(_ gesture: BudsProtocol.MediaGesture) -> BudsProtocol.GestureAction? {

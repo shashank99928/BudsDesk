@@ -37,6 +37,10 @@ public enum BudsDeskCLI {
             return listDevices(asJSON: args.contains("--json"))
         case "--replay":
             return replay(args)
+        case "--render":
+            return render(args)
+        case "--compare":
+            return compareSnapshots(args)
         default:
             // Not a mode this binary knows. If it looks like an option, say so rather than
             // silently launching a window — a mistyped flag that opens a GUI is a bad surprise.
@@ -261,6 +265,72 @@ public enum BudsDeskCLI {
         return 0
     }
 
+    // MARK: - Drawing the window
+
+    /// The positional argument after a command, if there is one.
+    private static func positional(_ args: [String], after command: String) -> String? {
+        args.dropFirst().first { $0 != command && !$0.hasPrefix("-") }
+    }
+
+    /// `--render [root]`: draw the window in the states worth a picture, into the paths those
+    /// surfaces declare.
+    ///
+    /// This is the same `DeviceWindow` the app puts on screen, driven by the recording in the
+    /// corpus, so what it writes is a picture of the app rather than an illustration of it. The
+    /// site shows one of these and `--compare` checks both, which is why neither is a mock-up:
+    /// there is nothing here that could drift from the window without failing the build.
+    private static func render(_ args: [String]) -> Int32 {
+        let root = URL(fileURLWithPath: positional(args, after: "--render") ?? ".")
+        return MainActor.assumeIsolated {
+            do {
+                for line in try Render.write(to: root) {
+                    print("  \(line)")
+                }
+                return 0
+            } catch {
+                FileHandle.standardError.write(Data("budsdesk: \(error)\n".utf8))
+                return 1
+            }
+        }
+    }
+
+    /// `--compare [root]`: the drawing above against the files in the repository. What `build.sh`
+    /// runs, so a layout change that nobody looked at fails a build instead of shipping.
+    ///
+    /// A missing golden is a failure rather than a silent write: a build must never rewrite the
+    /// thing it is supposed to be checking.
+    private static func compareSnapshots(_ args: [String]) -> Int32 {
+        let root = URL(fileURLWithPath: positional(args, after: "--compare") ?? ".")
+        return MainActor.assumeIsolated {
+            do {
+                var failed = 0
+                for result in try Render.compare(in: root) {
+                    if result.missing {
+                        failed += 1
+                        print("  ?? \(result.path) has not been drawn yet; run `budsdesk --render`")
+                    } else if let resized = result.resized {
+                        failed += 1
+                        print("  !! \(result.path) changed size: drawn "
+                              + "\(Int(resized.drawn.width))×\(Int(resized.drawn.height)), golden "
+                              + "\(Int(resized.golden.width))×\(Int(resized.golden.height))")
+                    } else if result.passed {
+                        print("  ok \(result.path) — \(result.total) pixels, "
+                              + "\(result.differing) outside tolerance")
+                    } else {
+                        failed += 1
+                        print("  !! \(result.path) — \(result.differing) of \(result.total) pixels "
+                              + "differ (\(String(format: "%.2f", result.ratio * 100))%). Look at "
+                              + "the two, then regenerate deliberately with `budsdesk --render`.")
+                    }
+                }
+                return failed == 0 ? 0 : 1
+            } catch {
+                FileHandle.standardError.write(Data("budsdesk: \(error)\n".utf8))
+                return 1
+            }
+        }
+    }
+
     // MARK: - Rendering
 
     private static func stateText(of session: Session, recording: CaptureCorpus.Recording,
@@ -379,7 +449,19 @@ public enum BudsDeskCLI {
 
     // MARK: - Text
 
-    static let version = "0.1.0"
+    /// The version this binary is.
+    ///
+    /// Read from the bundle rather than written here: the plist is what Get Info shows and what
+    /// the site advertises, and a third copy in a Swift literal is a third thing to forget. A
+    /// `swift run` has no bundle, so the fallback below is the one place a version is typed —
+    /// and `DocumentationTests` checks that it agrees with the plist.
+    static var version: String {
+        (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)
+            ?? sourceFallbackVersion
+    }
+
+    /// The version to report when there is no bundle to ask.
+    static let sourceFallbackVersion = "0.1.0"
 
     static let usage = """
     budsdesk — a macOS app for OPPO / OnePlus / realme TWS earbuds, by measurement.
@@ -394,6 +476,11 @@ public enum BudsDeskCLI {
                                      replay a recording (a captures/<id>/ directory or a .hex
                                      file) through the real session and decoders, and print
                                      what it says. No radio is touched.
+      budsdesk --render [root]       draw the window in the states worth a picture, driven by
+                                     the recording in the corpus, and write each one to the
+                                     path it declares. No radio is touched.
+      budsdesk --compare [root]      draw the same surfaces and compare them with the files in
+                                     the repository; exits non-zero on any difference
       budsdesk --selfcheck [--verbose]
                                      run the protocol self-check over the frozen corpus and
                                      exit non-zero on any failure

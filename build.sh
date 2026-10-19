@@ -75,5 +75,16 @@ if ! "./$APP/Contents/MacOS/BudsDesk" --profiles >/dev/null; then
     exit 1
 fi
 
+# The window, drawn by this binary and compared with the drawings in the repository. A layout that
+# nobody looked at is otherwise perfectly valid SwiftUI that just looks wrong — a clipped label, a
+# control that fell out of its row — and nothing else in this build can see that. The site's
+# screenshot is one of these files, so the picture a visitor sees is a picture that passed.
+#
+# Run `./BudsDesk.app/Contents/MacOS/BudsDesk --render` after an intended change, and look at it.
+if ! "./$APP/Contents/MacOS/BudsDesk" --compare .; then
+    echo "error: the window no longer matches the drawings in the repository" >&2
+    exit 1
+fi
+
 echo "built $APP"
 echo "run:  open \"$APP\"     (or: \"./$APP/Contents/MacOS/BudsDesk\"  to see stderr)"

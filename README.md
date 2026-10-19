@@ -18,6 +18,14 @@ measured, inferred, or unconfirmed.
 > write path, because nothing about writing to it has been observed. That is a design decision, not a
 > gap waiting to be filled by optimism.
 
+![The BudsDesk window: OnePlus Buds 4 connected, both buds in ear at 20%, Adaptive noise control
+selected, with the note that the case has not reported a charge. The footer names the recording the
+window is replaying.](docs/assets/connected.png)
+
+That image is not a screenshot of a desk. It is the app's own window, drawn by `BudsDesk --render`
+from the recorded session in `captures/`, and `./build.sh` fails if the app stops drawing it that
+way — so it cannot quietly become a picture of a version that never existed.
+
 ---
 
 ## What it does
@@ -104,11 +112,19 @@ BudsDesk --selfcheck            # 182 protocol checks against the corpus
 BudsDesk --profiles             # the capability registry, with every gate on it
 BudsDesk --devices              # paired devices advertising the control service
 BudsDesk --replay <capture>     # a recorded session, read back through the real Session
+BudsDesk --render               # draw the window from the recorded session into docs/assets
+BudsDesk --compare              # draw it again and compare with the files in the repository
 BudsDesk --version
 ```
 
 `--replay` is the interesting one: it drives the real session with a recording instead of a radio,
 which is how the app is tested without fighting the running app for the one control channel there is.
+
+`--render` is `--replay` with a window on the end. It draws the real `DeviceWindow` over the real
+`AppModel`, driven by the recording in the corpus, so the picture on the website is a picture of the
+app rather than an illustration of it — and `--compare` fails the build when what the app draws stops
+matching it. The footer of such a drawing names the recording being replayed, because that is what
+it is.
 
 ## Repository layout
 
@@ -123,7 +139,8 @@ which is how the app is tested without fighting the running app for the one cont
 | `Sources/BudsCore/` | The portable protocol core — Foundation and `os` only, no radio |
 | `Sources/BudsDeskMac/` | Transport, discovery, session hosting and UI for macOS |
 | `Tests/` | Corpus replay, total-parser, registry and session tests, plus the ones that hold this README and the site to what the code says |
-| `docs/` | The site as it ships. The FAQ markup on each page is generated from the FAQ the page shows, so a crawler never reads a question a visitor cannot — see D9 and `Tools/faq-jsonld.py` |
+| `Tests/Goldens/` | The window as the app draws it, for the states the site does not show. `build.sh` fails if a drawing stops matching |
+| `docs/` | The site as it ships, including the screenshot `--render` writes. The FAQ markup on each page is generated from the FAQ the page shows, so a crawler never reads a question a visitor cannot — see D9 and `Tools/faq-jsonld.py` |
 | `Tools/` | Capture freezing and harvesting, the SF Symbol check, icon and disk-image art, and the site's FAQ generator |
 
 ## Building
@@ -137,8 +154,15 @@ swift test        # corpus replay + total parsers + registry + session
 `build.sh` runs the SF Symbol check first — the cheapest thing that can fail, and the failure it
 catches is invisible, since SwiftUI draws nothing for a symbol name the OS does not know and reports
 no error. It then assembles the bundle, copies the capability registry inside it, and runs
-`--selfcheck` **and** `--profiles` against the release binary. A registry that is valid on disk and
-missing inside the app fails the build.
+`--selfcheck`, `--profiles` **and** `--compare` against the release binary. A registry that is valid
+on disk and missing inside the app fails the build, and so does a window that has stopped drawing
+the way the drawings in the repository say it draws.
+
+The drawing itself is worth knowing about, because it is not a screenshot tool. `ImageRenderer` was
+tried first and produced a blank rectangle — it cannot rasterise a `ScrollView` on this OS, and the
+window is one. What runs now is a hosted view drawn at 2×, with a small environment flag that swaps
+the two AppKit-backed controls (a `Menu` and an indeterminate `ProgressView`) for static labels: an
+animation has no still, and a still of one would be a different file on every run.
 
 Requires macOS 26+, Apple silicon, and `swift-tools-version: 6.2`. An installed Xcode is needed only
 for its SwiftUI macro plugin; it need not be selected with `xcode-select`.

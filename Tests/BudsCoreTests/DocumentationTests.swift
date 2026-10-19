@@ -106,6 +106,16 @@ final class DocumentationTests: XCTestCase {
         let download = "https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg"
         XCTAssertTrue(readme.contains(download), "the README's download link moved")
         XCTAssertTrue(home.contains(download), "the site's download link moved")
+
+        // `--version` asks the bundle when there is one and falls back to this literal when there
+        // is not, which is the case `swift run` is in. Two answers to "what version is this" is
+        // one answer too many, so they are held together here.
+        let cli = try document("Sources/BudsDeskMac/CLI.swift")
+        let fallback = try XCTUnwrap(
+            captures(#"sourceFallbackVersion = "([0-9.]+)""#, in: cli).first,
+            "the CLI no longer carries a version for a build with no bundle to ask")
+        XCTAssertEqual(fallback, built,
+                       "`swift run` reports \(fallback) and the app is \(built)")
     }
 
     // MARK: - The site's structured data quotes the site
@@ -209,19 +219,26 @@ final class DocumentationTests: XCTestCase {
 
     // MARK: - The site's own links
 
-    func testEveryInternalLinkResolvesToAFileThatShips() throws {
+    func testEveryInternalLinkAndAssetResolvesToAFileThatShips() throws {
         var checked = 0
         for url in Self.pages {
             let body = try page(url)
-            for target in Set(captures(#"href="/BudsDesk/([^#"?]*)""#, in: body)) {
+
+            // Navigation and prose links, written absolute so the pages can live at any depth.
+            let links = captures(#"(?:href|src)="/BudsDesk/([^#"?]*)""#, in: body)
+            // A page's own assets, written relative. A missing one draws nothing at all, which is
+            // the kind of absence nobody reports as a bug.
+            let assets = captures(#"(?:href|src)="(assets/[^"]+)""#, in: body)
+
+            for target in Set(links + assets) {
                 let file = Self.site.appendingPathComponent(target.isEmpty ? "index.html" : target)
                 XCTAssertTrue(FileManager.default.fileExists(atPath: file.path),
-                              "\(url.lastPathComponent) links to /BudsDesk/\(target), which does "
-                              + "not ship")
+                              "\(url.lastPathComponent) refers to \(target), which does not ship")
                 checked += 1
             }
         }
-        XCTAssertGreaterThanOrEqual(checked, 5, "the navigation stopped linking to anything")
+        XCTAssertGreaterThanOrEqual(checked, 8,
+                                    "the navigation and the pages stopped referring to anything")
     }
 
     func testTheSitemapListsEveryPageAndNothingElse() throws {
