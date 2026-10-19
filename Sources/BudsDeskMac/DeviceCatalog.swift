@@ -35,7 +35,7 @@ public enum DeviceCatalog {
         0x9b, 0x23, 0x00, 0x02, 0x5b, 0x00, 0xa5, 0xa5,
     ]
 
-    public static var controlServiceUUIDString: String { "0000799a-d102-11e1-9b23-00025b00a5a5" }
+    public static var controlServiceUUIDString: String { "0000079a-d102-11e1-9b23-00025b00a5a5" }
 
     /// Every paired device that advertises the control service.
     ///

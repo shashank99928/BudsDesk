@@ -4,7 +4,7 @@
   "vendor": "OPPO / OnePlus / realme",
   "notes": "The fallback: any device that advertises the control service and matches no other profile. Everything is unconfirmed, which is the honest state of a model nobody has recorded yet -- and unconfirmed means there is no write path anywhere in the app.",
   "match": {
-    "serviceUUIDs": ["0000799a-d102-11e1-9b23-00025b00a5a5"],
+    "serviceUUIDs": ["0000079a-d102-11e1-9b23-00025b00a5a5"],
     "fallback": true
   },
   "capabilities": {

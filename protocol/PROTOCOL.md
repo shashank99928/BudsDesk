@@ -1,7 +1,7 @@
-# The `oppointeraction` control channel, as measured
+# The `enco link` control channel, as measured
 
 This is the wire protocol BudsDesk speaks: the vendor RFCOMM service named
-`oppointeraction` on OPPO / OnePlus / realme TWS earbuds. It is written for someone who wants to
+`enco link` on OPPO / OnePlus / realme TWS earbuds. It is written for someone who wants to
 implement it themselves or check this implementation against the hardware.
 
 Every byte-level claim below is labelled with one of three words, and the label is the point:
@@ -45,8 +45,8 @@ as that tuple. Findings from a capture name the capture instead.
 
 | | |
 |---|---|
-| Service name | `oppointeraction` |
-| Service UUID | `0000799a-d102-11e1-9b23-00025b00a5a5` |
+| Service name | `enco link` |
+| Service UUID | `0000079a-d102-11e1-9b23-00025b00a5a5` |
 | RFCOMM channel | resolved from SDP at runtime; **15** on the measured unit |
 | Never opened | **13 (`BESOTA`)** — the firmware OTA channel, out of scope permanently |
 

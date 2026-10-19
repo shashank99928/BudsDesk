@@ -133,7 +133,8 @@ it is.
 | `SCOPE.md` | What is in scope and, more importantly, what is permanently out |
 | `DECISIONS.md` | Each architectural choice: options, evidence, choice, what would change it |
 | `protocol/` | The protocol as prose (`PROTOCOL.md`) and as data (`spec.yaml`), including what is *not* verified |
-| `capture/` | Provenance for the reference recording and the APK that was read |
+| `capture/` | Provenance for the reference recording, the SDP record read off the earbuds, and the APK that was read as evidence and only as evidence |
+| `EVIDENCE.md` | Every protocol fact this project states, its confidence (measured / inferred / unconfirmed) and the citation that lets anyone re-check it. Opened to settle the control service UUID, which it contradicted — see D13 |
 | `captures/` | The recordings themselves — the source of truth |
 | `devices/` | The capability registry: one file per model, and the rules a profile must pass |
 | `Sources/BudsCore/` | The portable protocol core — Foundation and `os` only, no radio |
@@ -141,7 +142,7 @@ it is.
 | `Tests/` | Corpus replay, total-parser, registry and session tests, plus the ones that hold this README and the site to what the code says |
 | `Tests/Goldens/` | The window as the app draws it, for the states the site does not show. `build.sh` fails if a drawing stops matching |
 | `docs/` | The site as it ships: the app's own page, one page per brand, the measured model, the topic pages and the model list (D11), including the screenshot `--render` writes. The FAQ markup on each page is generated from the FAQ the page shows, so a crawler never reads a question a visitor cannot — see D9 and `Tools/faq-jsonld.py` |
-| `Tools/` | Capture freezing and harvesting, the SF Symbol check, icon and disk-image art, and the site's FAQ generator |
+| `Tools/` | Capture freezing and harvesting, the SF Symbol check, icon and disk-image art, the site's FAQ generator, and `dex-strings.py`, which reads a DEX string table directly instead of decompiling it |
 
 ## Building
 

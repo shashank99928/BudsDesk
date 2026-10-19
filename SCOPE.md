@@ -11,8 +11,8 @@ here is not in scope, and anything written here as out of scope stays out of sco
 
 ## 1. Area of interoperability
 
-The earbuds in this family expose a vendor RFCOMM (SPP) service named `oppointeraction`, with the
-SDP service UUID `0000799a-d102-11e1-9b23-00025b00a5a5`. Over that one serial channel the
+The earbuds in this family expose a vendor RFCOMM (SPP) service named `enco link`, with the
+SDP service UUID `0000079a-d102-11e1-9b23-00025b00a5a5`. Over that one serial channel the
 companion phone app reads and writes device state: battery, wear, noise control, equalizer,
 gestures, multi-connect, firmware string, codec.
 
@@ -25,7 +25,7 @@ it understands are bytes the hardware actually sent. Where the two disagree, the
 ## 2. Devices in scope
 
 **Target family:** TWS earbuds from OPPO, OnePlus and realme (realme is an OPPO sub-brand and
-shares the protocol stack) whose SDP records advertise the `oppointeraction` service above, and
+shares the protocol stack) whose SDP records advertise the `enco link` service above, and
 which expose the vendor control channel on an RFCOMM channel resolved at runtime from SDP.
 
 **Feature coverage per device is data, not code.** Every model's capabilities live in

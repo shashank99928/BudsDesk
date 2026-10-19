@@ -97,7 +97,7 @@ final class RegistryTests: XCTestCase {
     /// its captures actually support and no others.
     func testTheOnePlusBudsFourProfileMatchesAndGatesWrites() throws {
         let registry = try loadRegistry()
-        let service = "0000799a-d102-11e1-9b23-00025b00a5a5"
+        let service = "0000079a-d102-11e1-9b23-00025b00a5a5"
 
         let profile = try XCTUnwrap(
             registry.profile(advertisedName: "OnePlus Buds 4", serviceUUIDs: [service]),
@@ -129,7 +129,7 @@ final class RegistryTests: XCTestCase {
     /// from walking up to any paired Bluetooth device it happens to find.
     func testUnknownNamesFallBackAndForeignServicesMatchNothing() throws {
         let registry = try loadRegistry()
-        let service = "0000799a-d102-11e1-9b23-00025b00a5a5"
+        let service = "0000079a-d102-11e1-9b23-00025b00a5a5"
 
         let unknown = try XCTUnwrap(
             registry.profile(advertisedName: "OPPO Enco Air5 Pro", serviceUUIDs: [service]))
@@ -151,7 +151,7 @@ final class RegistryTests: XCTestCase {
     // matters most — it takes the shipped registry, breaks one thing, and asserts a named error.
 
     private func profile(_ capabilities: String, match: String = """
-        "match": { "serviceUUIDs": ["0000799a-d102-11e1-9b23-00025b00a5a5"], "fallback": true }
+        "match": { "serviceUUIDs": ["0000079a-d102-11e1-9b23-00025b00a5a5"], "fallback": true }
         """) -> Data {
         Data("""
         { "id": "test", "model": "Test", "vendor": "Test",
@@ -263,7 +263,7 @@ final class RegistryTests: XCTestCase {
                     "battery": { "read": true, "writable": false, "confidence": "measured",
                       "evidence": { "source": "capture", "ref": "battery-reply" } }
                     """, match: """
-                    "match": { "serviceUUIDs": ["0000799a-d102-11e1-9b23-00025b00a5a5"] }
+                    "match": { "serviceUUIDs": ["0000079a-d102-11e1-9b23-00025b00a5a5"] }
                     """), origin: "test.json"),
             ])
             XCTFail("a registry with nowhere for an unknown device to land was accepted")
@@ -278,7 +278,7 @@ final class RegistryTests: XCTestCase {
     /// that the failure is named rather than silent. If this test ever passes with the mutation
     /// applied, the loader has stopped enforcing it.
     func testRulesHaveTeeth() throws {
-        let service = "0000799a-d102-11e1-9b23-00025b00a5a5"
+        let service = "0000079a-d102-11e1-9b23-00025b00a5a5"
         var object = try XCTUnwrap(
             try JSONSerialization.jsonObject(
                 with: Data(contentsOf: Self.root.appendingPathComponent("devices/oneplus-buds-4.json")))

@@ -6,8 +6,8 @@
   "firmware": "1,2,138,2,2,138,3,1,01,3,2,105",
   "firmwareSource": "0x0105 getRemoteVersion reply, recorded verbatim as the hardware reports it (comma-separated ASCII). It is not a dotted version string and this project does not invent one.",
   "service": {
-    "name": "oppointeraction",
-    "uuid": "0000799a-d102-11e1-9b23-00025b00a5a5",
+    "name": "enco link",
+    "uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
     "rfcommChannel": 15
   },
   "tool": "OnePlusBuds4 (the single-device app) built with BUDSBAR_TRACE=1 and BUDSBAR_HARVEST=1, RX lines kept",

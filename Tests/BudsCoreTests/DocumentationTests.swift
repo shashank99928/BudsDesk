@@ -261,6 +261,81 @@ final class DocumentationTests: XCTestCase {
                        "a page a search engine is told about and a page that ships have diverged")
     }
 
+    // MARK: - One value, in every form it is written
+
+    /// The control service UUID was wrong here for the life of the repository. The byte array the
+    /// app opens the channel with was right; the *string* form of that same constant was one digit
+    /// off, and the string is the half that got published — into the registry that gates matching,
+    /// the protocol spec, the recording's own provenance, the docs and the site. No test caught it
+    /// because the registry's UUID check compares the registry to our own constant, so a pair of
+    /// self-consistent errors agreed with itself forever.
+    ///
+    /// So this checks the two forms against each other *and* against the one value read off the
+    /// earbuds. See `EVIDENCE.md`, fact 1, and `capture/sdp-oneplus-buds-4-2026-10-19.txt`.
+    func testTheControlServiceHasOneValueInBothForms() throws {
+        // Read from the OnePlus Buds 4's own SDP record. It is written out rather than derived,
+        // because the device is the only authority for it: changing this line means reading the
+        // hardware again, not editing the code until the test passes.
+        let measured = "0000079a-d102-11e1-9b23-00025b00a5a5"
+
+        let source = try document("Sources/BudsDeskMac/DeviceCatalog.swift")
+
+        let byteBlock = try XCTUnwrap(
+            captures(#"controlServiceUUIDBytes: \[UInt8\] = \[(.*?)\]"#, in: source).first,
+            "controlServiceUUIDBytes is gone from DeviceCatalog.swift")
+        let bytes = captures(#"0x([0-9a-fA-F]{2})"#, in: byteBlock).compactMap { UInt8($0, radix: 16) }
+        XCTAssertEqual(bytes.count, 16, "the byte form of the control UUID is not sixteen bytes")
+        let hex = bytes.map { String(format: "%02x", $0) }.joined()
+        let asUUID = "\(hex.prefix(8))-\(hex.dropFirst(8).prefix(4))-\(hex.dropFirst(12).prefix(4))"
+            + "-\(hex.dropFirst(16).prefix(4))-\(hex.dropFirst(20))"
+
+        let literal = try XCTUnwrap(
+            captures(#"controlServiceUUIDString: String \{ "([^"]+)" \}"#, in: source).first,
+            "controlServiceUUIDString is gone from DeviceCatalog.swift")
+
+        XCTAssertEqual(literal, asUUID,
+                       "the string form and the byte form of the control UUID disagree: the bytes "
+                       + "open the channel and the string is what gets published")
+        XCTAssertEqual(literal, measured,
+                       "the control UUID no longer matches the earbuds' SDP record — read the "
+                       + "device again before changing this, and update EVIDENCE.md")
+    }
+
+    /// Everything that *publishes* the control UUID has to publish the same one: the registry that
+    /// gates matching, the recording's provenance, the protocol spec and the docs. The sweep is
+    /// deliberately blunt — every UUID on the vendor's base `-d102-11e1-9b23-00025b00a5a5` in a
+    /// published file must be the measured one — because the original defect was one digit inside
+    /// such a string, which no reader notices and no link checker sees.
+    ///
+    /// `EVIDENCE.md` is excluded on purpose: it documents the whole UUID family the vendor's own
+    /// app references, most of which this project does not speak to.
+    func testNothingPublishedCarriesADifferentControlServiceUUID() throws {
+        let measured = "0000079a-d102-11e1-9b23-00025b00a5a5"
+
+        var files = ["SCOPE.md", "capture/README.md", "protocol/PROTOCOL.md", "protocol/spec.yaml",
+                     "devices/README.md", "devices/oneplus-buds-4.json", "devices/generic-family.json"]
+        files += Self.pages.map { "docs/\($0.lastPathComponent)" }
+
+        for path in files {
+            let text = try document(path)
+            for uuid in captures(#"([0-9a-fA-F]{8}-d102-11e1-9b23-00025b00a5a5)"#, in: text) {
+                XCTAssertEqual(uuid.lowercased(), measured,
+                               "\(path) publishes a control service UUID the earbuds do not advertise")
+            }
+        }
+
+        // The two machine-read sources, where a wrong value is not merely published but *used*.
+        let registry = try CapabilityRegistry.load(from: Self.root.appendingPathComponent("devices"))
+        for profile in registry.profiles {
+            XCTAssertEqual(profile.match.serviceUUIDs, [measured],
+                           "\(profile.id) gates matching on a different UUID")
+        }
+        for recording in CaptureCorpus.recordings {
+            XCTAssertEqual(recording.provenance.serviceUUID, measured,
+                           "\(recording.provenance.id) records a different UUID")
+        }
+    }
+
     /// The navigation is the site's map and it is copied into every page, which is the arrangement
     /// that drifts: one page gains a link, another loses one, and both still look finished. The
     /// current page is marked on the page it is current for, so that is the one thing allowed to

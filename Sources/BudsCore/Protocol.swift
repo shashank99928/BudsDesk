@@ -169,7 +169,7 @@ public enum EQPreset: String, CaseIterable, Identifiable {
     }
 }
 
-/// Wire format for the `oppointeraction` RFCOMM channel on OnePlus / OPPO / realme earbuds.
+/// Wire format for the `enco link` RFCOMM channel on OnePlus / OPPO / realme earbuds.
 ///
 /// Pure functions over bytes — no I/O — so `selfCheck()` can exercise them against captured
 /// traffic without the hardware present.

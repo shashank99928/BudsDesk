@@ -5,7 +5,7 @@
   "notes": "Measured on the unit in captures/oneplus-buds-4-2026-10-17. The name is matched exactly against what macOS reports, and the service UUID is the gate every member of the family passes.",
   "match": {
     "names": ["OnePlus Buds 4"],
-    "serviceUUIDs": ["0000799a-d102-11e1-9b23-00025b00a5a5"],
+    "serviceUUIDs": ["0000079a-d102-11e1-9b23-00025b00a5a5"],
     "fallback": false
   },
   "capabilities": {

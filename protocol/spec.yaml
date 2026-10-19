@@ -2,7 +2,7 @@ version: 1
 
 meta:
   title: BudsDesk protocol reference
-  subject: "OPPO / OnePlus / realme TWS earbuds, vendor oppointeraction control channel"
+  subject: "OPPO / OnePlus / realme TWS earbuds, vendor enco link control channel"
   source_of_truth: "captures/oneplus-buds-4-2026-10-17/frames.hex"
   evidence_levels:
     measured: "Observed: a frame in captures/oneplus-buds-4-2026-10-17/frames.hex shows it, or a hardware loop confirmed it. Ref names the frame."
@@ -28,8 +28,8 @@ meta:
     redistribution: "Nothing from the vendor app is committed or shipped. The licence covers this repository's source only."
 
 transport:
-  service_name: oppointeraction
-  service_uuid: "0000799a-d102-11e1-9b23-00025b00a5a5"
+  service_name: enco link
+  service_uuid: "0000079a-d102-11e1-9b23-00025b00a5a5"
   rfcomm_channel: 15
   rfcomm_channel_note: "Resolved from SDP at runtime; 15 on the measured unit."
   ota_channel:

@@ -18,7 +18,7 @@ model exists.
   "match": {
     "names": ["OnePlus Buds 4"],       // exact, case-insensitive, against the OS's name
     "namePrefixes": ["OPPO Enco"],     // optional, for regional generation suffixes
-    "serviceUUIDs": ["0000799a-d102-11e1-9b23-00025b00a5a5"],
+    "serviceUUIDs": ["0000079a-d102-11e1-9b23-00025b00a5a5"],
     "fallback": false                  // exactly one profile in the registry sets this
   },
 

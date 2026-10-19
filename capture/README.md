@@ -68,11 +68,23 @@ One vendor serial service carries all of this:
 
 | | |
 |---|---|
-| Service name | `oppointeraction` |
-| Service UUID | `0000799a-d102-11e1-9b23-00025b00a5a5` |
+| Service name | `enco link` — the *name the device reports for itself*. Names are supplied by the device, so they document; the UUID below is what gates. |
+| Service UUID | `0000079a-d102-11e1-9b23-00025b00a5a5` — read off the earbuds' SDP record; see `../EVIDENCE.md` |
 | RFCOMM channel | resolved from SDP at runtime (15 on the measured unit) |
-| Other channels seen on some models | 12 (`Realme Pearl`), 17 (`RFCOMM COM`) |
+| Other channels this unit advertises | 17 (`RFCOMM COM`), 29 (`WATCH` — purpose unknown, and not described anywhere here) |
+| Other channels seen on some models | 12 (`Realme Pearl`) |
 | **Never opened** | **13 (`BESOTA`) — the firmware OTA channel. Out of scope permanently; see `../SCOPE.md` §4** |
+
+The whole record as it was read is kept in `sdp-oneplus-buds-4-2026-10-19.txt`: every service, its
+UUID, its attributes and its channel, with no interpretation laid over it. Channel 13 does not
+appear in it. That is one observation about one record, and it changes nothing above.
+
+> **A correction, kept visible.** Earlier revisions of this file named the service
+> `oppointeraction` and gave the UUID as `0000799a-…`. Neither came off a device: both were
+> literals in a template inside `Tools/trace-to-capture.py`, and one of them was wrong by a single
+> digit. The value reached the protocol spec, the registry, the docs and the released bundle
+> because the recording that quoted it had become the citation for all of them. `EVIDENCE.md`
+> records what found it and what now prevents it.
 
 Only one process may hold the channel. A stale holder makes the next open fail *silently*, which
 is why a "discovery returned nothing" symptom is usually a permission or exclusivity problem

@@ -406,7 +406,7 @@ labelled, and made the same way, driven by a recording rather than by a wish.
   bluetooth`) is not winnable; the brand name is the part somebody actually types.
 - Each brand carries a fact that is true of it and not of the other two, and every one of those facts
   is already in this repository: OnePlus has the single measured model; the control service is named
-  `oppointeraction` and the RFCOMM channel is read out of the device's own SDP record rather than
+  `enco link` and the RFCOMM channel is read out of the device's own SDP record rather than
   assumed (`Sources/BudsDeskMac/RFCOMMTransport.swift`); and the SDP record on some realme models
   carries a second channel named `Realme Pearl` (`capture/README.md`) — which is also why a realme
   owner should be told an independent realme Mac client exists before they decide anything.
@@ -472,3 +472,50 @@ added — which is the constraint that makes the rest of these decisions possibl
 **What would change our mind:** none of this is load-bearing enough to defend against evidence. If a
 wrapped status cell ever reads worse than a clipped column, the cells get a fixed width and the
 wrapper gets a visible scroll cue instead of the wrap.
+
+---
+
+## D13 — A stated fact needs a citation, and a tool may only write what it can see
+
+**Date:** 2026-10-19
+
+**Options**
+
+1. Keep protocol facts in prose and let the recording be the de-facto authority. A fact's
+   provenance is then whatever the last person to edit the file believed.
+2. One ledger (`EVIDENCE.md`): a row per fact, a confidence of `measured` / `inferred` /
+   `unconfirmed`, and a citation to a byte offset, a class and method, or a frame — plus the rule
+   that an ingest tool writes `null` for anything it cannot itself observe.
+
+**Evidence**
+
+- The control service UUID was wrong in 13 published places, and the *string* form of that
+  constant had been wrong since it was written. The byte form — the half that opens the channel —
+  was right, so nothing ever failed; the string form — the half that gets published — differed by
+  one digit. Runtime behaviour was identical and completely misleading.
+- The registry's own gate could not catch it, and still cannot: it compares the registry's UUIDs
+  against the same constant in the same binary, so a self-consistent pair of errors agreed with
+  itself forever. Only a witness outside the repository can break that.
+- The wrong value was not mis-transcribed from a measurement. It was a literal in the manifest
+  template of `Tools/trace-to-capture.py`, next to a service name that also appears nowhere else.
+  The recording inherited both, and the recording then became the citation for the protocol spec,
+  the registry, the docs and the site. A field labelled measured had a writer, not a witness.
+- Two witnesses settled it in one afternoon: the earbuds' own SDP record
+  (`capture/sdp-oneplus-buds-4-2026-10-19.txt`) and the APK's raw string pool
+  (`classes.dex:0x6a6bbe`, found with `Tools/dex-strings.py`, which does not decompile). Both say
+  `0000079a-…`. The repository was the outlier.
+
+**Decision:** option 2. Facts live in `EVIDENCE.md` with a confidence and a citation that a
+stranger can reproduce from the same file and hash. `Tools/trace-to-capture.py` now writes `null`
+for the service name and the channel, with the reason in a comment beside it. And two tests hold the
+line: the two forms of the constant must agree with each other *and* with the value read off the
+hardware, and every published copy of it — registry, corpus, spec, docs — must match.
+
+**Why:** a wrong fact that is consistent with itself is invisible to every test that checks
+consistency, which is most of them. This project's whole claim is that its facts came off a wire,
+and the ledger is what makes the difference between a fact and a recollection visible while it is
+still cheap to fix.
+
+**What would change our mind:** nothing about the need for citations. A row whose citation nobody
+else can reproduce is wrong and gets deleted rather than softened, and a fact that only the author
+can verify belongs in the open questions, not in the table.

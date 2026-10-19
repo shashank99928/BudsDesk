@@ -174,10 +174,14 @@ def main():
         "vendor": args.vendor,
         "firmware": args.firmware,
         "firmwareSource": args.firmware_source,
+        # A trace log holds frames and nothing else, so two of these three cannot come from it.
+        # They are written as null rather than guessed: this tool once filled both in from a
+        # template, and a typo in that template reached the protocol spec, the registry, the site
+        # and the release before anyone looked at the earbuds. See EVIDENCE.md.
         "service": {
-            "name": "oppointeraction",
-            "uuid": "0000799a-d102-11e1-9b23-00025b00a5a5",
-            "rfcommChannel": None,   # not in a trace log; fill it in from the SDP record
+            "name": None,            # read it off the SDP record; the device supplies the name
+            "uuid": "0000079a-d102-11e1-9b23-00025b00a5a5",
+            "rfcommChannel": None,   # read it off the SDP record; channel 13 is never opened
         },
         "tool": args.tool,
         "host": host,

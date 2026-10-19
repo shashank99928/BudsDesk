@@ -19,7 +19,7 @@ public protocol Transport: AnyObject {
     /// The channel closed, or failed to open. The reason is for a human.
     var onClose: ((String?) -> Void)? { get set }
 
-    /// What is being talked to, for the log line. e.g. `RFCOMM 15 (oppointeraction)`.
+    /// What is being talked to, for the log line. e.g. `RFCOMM 15 (enco link)`.
     var description: String { get }
 
     var isOpen: Bool { get }
