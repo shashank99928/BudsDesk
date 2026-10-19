@@ -41,6 +41,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Opens the frame log before anything can arrive, so that a traced run which reaches no
+        // device leaves a log saying so rather than no file at all.
+        Trace.begin()
         buildMainMenu()
         // A first launch with the earbuds away shows the window and says so; the item appears on
         // its own once they are found. Showing the window is right for a `.regular` app and for

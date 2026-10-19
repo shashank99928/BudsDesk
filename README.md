@@ -123,7 +123,7 @@ which is how the app is tested without fighting the running app for the one cont
 | `Sources/BudsCore/` | The portable protocol core — Foundation and `os` only, no radio |
 | `Sources/BudsDeskMac/` | Transport, discovery, session hosting and UI for macOS |
 | `Tests/` | Corpus replay, total-parser, registry and session tests |
-| `Tools/` | Capture freezing, the SF Symbol check, icon and disk-image art |
+| `Tools/` | Capture freezing and harvesting, the SF Symbol check, icon and disk-image art |
 
 ## Building
 

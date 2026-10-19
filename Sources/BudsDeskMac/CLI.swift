@@ -29,6 +29,11 @@ public enum BudsDeskCLI {
         case "--profiles":
             return listProfiles(asJSON: args.contains("--json"))
         case "--devices":
+            // The one command-line mode that may touch the radio, so it is the one that opens a
+            // trace. `--selfcheck` and `--profiles` deliberately do not: they are run by build.sh,
+            // and a build that leaves a trace log in the working directory is a build that
+            // surprised somebody.
+            Trace.begin()
             return listDevices(asJSON: args.contains("--json"))
         case "--replay":
             return replay(args)

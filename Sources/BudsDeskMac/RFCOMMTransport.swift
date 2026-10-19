@@ -80,6 +80,9 @@ public final class RFCOMMTransport: NSObject, Transport, IOBluetoothRFCOMMChanne
         let result = copy.withUnsafeMutableBytes { raw in
             channel.writeAsync(raw.baseAddress, length: UInt16(raw.count), refcon: nil)
         }
+        // Traced only once the write was accepted, so the log records what went on the wire and
+        // not what was attempted.
+        if result == kIOReturnSuccess { Trace.record(.sent, bytes) }
         return result == kIOReturnSuccess
     }
 
@@ -159,6 +162,9 @@ public final class RFCOMMTransport: NSObject, Transport, IOBluetoothRFCOMMChanne
         guard let dataPointer, dataLength > 0 else { return }
         let bytes = Array(UnsafeBufferPointer(
             start: dataPointer.assumingMemoryBound(to: UInt8.self), count: dataLength))
+        // Traced here rather than in the session: this is the byte stream as the radio delivered
+        // it, before any reassembly. A capture wants what the hardware said, fragments and all.
+        Trace.record(.received, bytes)
         onData?(bytes)
     }
 
