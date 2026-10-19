@@ -65,7 +65,7 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Why can't macOS change the noise cancelling on these earbuds?",
+          "name": "Why can't macOS change the noise cancelling?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Because the setting does not travel over the audio connection. The earbuds expose a separate vendor control service over Bluetooth, and every setting — noise mode, equalizer, gestures, battery, wear state — is exchanged there. macOS's Bluetooth support handles audio, input devices and battery reporting, and does not open vendor control services, so there is no Apple control to find."
@@ -81,7 +81,15 @@
         },
         {
           "@type": "Question",
-          "name": "Do the settings I change from the Mac stay set?",
+          "name": "Can I use an Android emulator to run the phone app instead?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We have not tested specific emulators, and we will not claim none can pass a real Bluetooth radio into a guest system. What is certain is that these settings travel over a Bluetooth channel, so an app running without a real radio has nothing to talk to. Emulator downloads of the phone app are widely advertised for exactly this purpose; the settings themselves are what such a route would need to reach."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will the changes survive a reconnect?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Yes. The settings are stored on the earbuds, not in the app: BudsDesk writes a value and then reads it back from the earbuds, and the same value is what the phone app will show. The app keeps no settings of its own and needs no account."
@@ -89,10 +97,10 @@
         },
         {
           "@type": "Question",
-          "name": "Can I run the phone app on the Mac in an Android emulator to do this?",
+          "name": "Which models does this work with?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "We have not tested specific emulators and will not claim that none can pass a Bluetooth radio through to a guest system. What is certain is that these settings are exchanged over a Bluetooth channel, so an app running without a real radio has nothing to talk to. Emulator downloads of the phone app are widely advertised for exactly this purpose; the settings themselves are what such a route would need to reach."
+            "text": "OnePlus Buds 4 is measured end to end. Other OPPO, OnePlus and realme models that advertise the same control service connect and read; they have no write path until someone records them."
           }
         }
       ]
@@ -248,16 +256,29 @@
     <h2>Questions</h2>
     <dl class="faq">
       <dt>Why can't macOS change the noise cancelling?</dt>
-      <dd>Because the setting does not travel over the audio connection. It goes over a separate
-      vendor control service that Apple's Bluetooth stack does not open.</dd>
+      <dd>Because the setting does not travel over the audio connection. The earbuds expose a separate
+      vendor control service over Bluetooth, and every setting — noise mode, equalizer, gestures,
+      battery, wear state — is exchanged there. macOS's Bluetooth support handles audio, input devices
+      and battery reporting, and does not open vendor control services, so there is no Apple control to
+      find.</dd>
+
+      <dt>Can Audio MIDI Setup change my earbuds' equalizer instead?</dt>
+      <dd>Only in a different sense. Audio MIDI Setup and apps like it can apply an equalizer on the Mac
+      to the audio the Mac is playing. The earbuds' own equalizer is stored on the earbuds and applies
+      to every device connected to them, including the phone. They are not the same control and one
+      does not change the other.</dd>
 
       <dt>Can I use an Android emulator to run the phone app instead?</dt>
       <dd>We have not tested specific emulators, and we will not claim none can pass a real Bluetooth
       radio into a guest system. What is certain is that these settings travel over a Bluetooth
-      channel, so an app running without a real radio has nothing to talk to.</dd>
+      channel, so an app running without a real radio has nothing to talk to. Emulator downloads of the
+      phone app are widely advertised for exactly this purpose; the settings themselves are what such a
+      route would need to reach.</dd>
 
       <dt>Will the changes survive a reconnect?</dt>
-      <dd>Yes — they are stored on the earbuds. Re-pairing the earbuds does not reset them.</dd>
+      <dd>Yes. The settings are stored on the earbuds, not in the app: BudsDesk writes a value and then
+      reads it back from the earbuds, and the same value is what the phone app will show. The app keeps
+      no settings of its own and needs no account.</dd>
 
       <dt>Which models does this work with?</dt>
       <dd>OnePlus Buds 4 is measured end to end. Other OPPO, OnePlus and realme models that advertise

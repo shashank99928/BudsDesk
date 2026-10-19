@@ -289,3 +289,50 @@ work on a Mac", and it is the only one this project is entitled to write.
 **What would change our mind:** a model becomes measured. Then it earns its own page, because there
 is real model-specific content to write — the OnePlus Buds 4 page exists because that hardware has
 been recorded, not because the name was available.
+
+---
+
+## D9 — The site's FAQ markup is generated from the FAQ the page shows
+
+**Date:** 2026-10-19
+
+**Options**
+
+1. Write the `FAQPage` structured data by hand, as prose that improves on the visible FAQ: fuller
+   answers, sharper questions, the kind of phrasing an answer engine prefers.
+2. Write the FAQ a reader sees, and generate the structured data from it, so the markup is a copy
+   of the page rather than a version of it.
+
+**Evidence**
+
+- Every page carried both, and on every page they disagreed. The home page marked up *"Can I change
+  noise cancelling on OnePlus, OPPO or realme earbuds from a Mac?"* while showing *"Can I change
+  noise cancelling on these earbuds from a Mac?"*; the OnePlus Buds 4 page marked up four questions
+  and showed three different ones; the supported-models page marked up three questions and had no
+  visible FAQ at all.
+- Google restricted `FAQPage` rich results in 2023 and deprecated `HowTo` results entirely, but the
+  markup is still read by Bing and by answer engines — which is why D8 emits it. That leaves the
+  failure mode with no upside: the 2023 rules require marked-up content to be visible to the reader,
+  so a page whose markup outruns the page carries the spam signal and collects none of the reward.
+- The two diverged because they were maintained as two documents about the same thing, which is the
+  same defect as a registry note that describes a frame no capture contains. That one is already
+  unforgeable: the claim has to name bytes. This one had nothing to name.
+
+**Decision:** option 2. The visible `<dl class="faq">` is the source. `Tools/faq-jsonld.py` rewrites
+each page's `mainEntity` to quote it — same questions, same order, same answers, verbatim — and
+`DocumentationTests` fails if the two ever differ, or if a page marks up a FAQ with no visible copy
+to quote.
+
+Where the two disagreed on substance, the fuller answer moved onto the page rather than the terser
+one moving into the markup. The Audio MIDI Setup question, the emulator answer and the wording of
+the case-battery answer were all content the marked-up copy had and the visible FAQ did not, and the
+right response to "the page is worse than its own metadata" is to improve the page.
+
+**Why:** paraphrase is where a claim goes to grow. A marked-up question that no visitor can read is
+the same kind of error as a write path with no capture behind it, and this project's whole argument
+is that it does not make that error. Generating the markup also removes the second document, so
+there is nothing left to keep in step by hand.
+
+**What would change our mind:** the markup becoming a liability rather than an asset — if the
+engines stop reading it, the `FAQPage` block is deleted. The FAQ stays either way, because the FAQ
+is for people.

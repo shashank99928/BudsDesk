@@ -77,10 +77,18 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Can I change noise cancelling on OnePlus, OPPO or realme earbuds from a Mac?",
+          "name": "Can I change noise cancelling on these earbuds from a Mac?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "macOS itself cannot. Its Bluetooth settings connect and disconnect the earbuds and nothing more, because the noise-control and equalizer settings live on a separate vendor control channel that no Apple software opens. BudsDesk opens that channel, which is why it can change the mode from the Mac. Use Bluetooth settings to pair the earbuds; they will connect to the Mac as audio devices without it."
+            "text": "Not through macOS. Its Bluetooth settings connect and disconnect the earbuds and nothing more, because the noise-control and equalizer settings live on a separate vendor control channel that no Apple software opens. BudsDesk opens that channel, which is why it can change the mode from the Mac. Pairing still happens in System Settings, and the earbuds connect as audio devices without it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I still need the phone app?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "For firmware updates, yes. For daily use — noise mode, equalizer, BassWave, gestures — no. Those settings are stored on the earbuds, so a change made here shows up on the phone and the other way round."
           }
         },
         {
@@ -88,7 +96,7 @@
           "name": "Does BudsDesk replace the HeyMelody app on the Mac?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "HeyMelody is a phone app that has no desktop build. BudsDesk is not a port of it and shares none of its code: it was written separately by recording what the earbuds' own control channel carries. It covers the settings that were measured on this channel, and it deliberately does not do firmware updates."
+            "text": "It is not a port of it and shares none of its code: it was written separately by recording what the earbuds' own control channel carries. It covers the settings that were measured on this channel, and it deliberately does not do firmware updates. See the honest comparison."
           }
         },
         {
@@ -101,10 +109,18 @@
         },
         {
           "@type": "Question",
+          "name": "Why does only one model write settings?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because only one model has been recorded. The protocol is shared across the family, which is why other models connect and read, but a setting is only enabled once it has been observed working on that model. Guessing is how an app starts lying."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Is the charging case's battery shown?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No, because the earbuds never report it on this channel. Across a full recording session every battery reply carried exactly two slots, left and right, even while the wear reply named the case. BudsDesk prints 'the case has not reported a charge' rather than drawing an empty battery."
+            "text": "No, because the earbuds never report it on this channel. Across a full recording session every battery reply carried exactly two slots, left and right, even while the wear reply named the case. BudsDesk says \"the case is present but has not reported a charge — on this channel it never does\" rather than drawing an empty cell."
           }
         },
         {
@@ -117,18 +133,18 @@
         },
         {
           "@type": "Question",
-          "name": "Does BudsDesk send any data anywhere?",
+          "name": "Does it send anything to a server?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. It has no accounts, no telemetry, no analytics and no update checks, and it is not sandboxed but makes no network calls. It can be run with the network down and behaves identically. The source is public, so this is checkable rather than promised."
+            "text": "No. No accounts, no telemetry, no analytics and no update checks. It is not sandboxed but makes no network calls, and it can be run with the network down and behaves identically. The source is public, so this is checkable rather than promised."
           }
         },
         {
           "@type": "Question",
-          "name": "Is it on the Mac App Store?",
+          "name": "Is it free, and is it on the App Store?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. It is distributed as a disk image from GitHub Releases and is ad-hoc signed, so the first launch asks you to confirm opening it. There is no paid tier, no account and no in-app purchase."
+            "text": "It is MIT licensed and free: no account, no paid tier, no in-app purchase. It is not on the Mac App Store. It ships as a disk image from GitHub Releases and is ad-hoc signed, so the first launch asks you to confirm opening it."
           }
         }
       ]
@@ -318,32 +334,53 @@ swift test        # corpus replay, total parsers, registry and session tests
     <dl class="faq">
       <dt>Can I change noise cancelling on these earbuds from a Mac?</dt>
       <dd>Not through macOS. Its Bluetooth settings connect and disconnect the earbuds and nothing
-      more, because these settings live on a separate vendor control channel that no Apple software
-      opens. BudsDesk opens that channel. Pairing still happens in System Settings.</dd>
+      more, because the noise-control and equalizer settings live on a separate vendor control channel
+      that no Apple software opens. BudsDesk opens that channel, which is why it can change the mode
+      from the Mac. Pairing still happens in System Settings, and the earbuds connect as audio devices
+      without it.</dd>
 
       <dt>Do I still need the phone app?</dt>
-      <dd>For firmware updates, yes. For daily use — noise mode, equalizer, BassWave, gestures — no.</dd>
+      <dd>For firmware updates, yes. For daily use — noise mode, equalizer, BassWave, gestures — no.
+      Those settings are stored on the earbuds, so a change made here shows up on the phone and the
+      other way round.</dd>
 
-      <dt>Does it replace HeyMelody on the Mac?</dt>
-      <dd>It is not a port of it and shares none of its code. It was written separately by recording
-      what the earbuds' own control channel carries. See
+      <dt>Does BudsDesk replace the HeyMelody app on the Mac?</dt>
+      <dd>It is not a port of it and shares none of its code: it was written separately by recording
+      what the earbuds' own control channel carries. It covers the settings that were measured on this
+      channel, and it deliberately does not do firmware updates. See
       <a href="/BudsDesk/heymelody-on-mac.html">the honest comparison</a>.</dd>
+
+      <dt>Which earbuds models are supported?</dt>
+      <dd>One model is verified end to end against hardware: the OnePlus Buds 4. Any other OPPO,
+      OnePlus or realme model that advertises the same control service will connect and show everything
+      it reports, but with no write path, because writing a setting that has not been observed to work
+      on that model would be a guess. Adding a model means recording it and adding one JSON file.</dd>
 
       <dt>Why does only one model write settings?</dt>
       <dd>Because only one model has been recorded. The protocol is shared across the family, which is
       why other models connect and read, but a setting is only enabled once it has been observed
       working on that model. Guessing is how an app starts lying.</dd>
 
-      <dt>Where is the case battery?</dt>
-      <dd>The earbuds never report it on this channel. The app says so explicitly instead of drawing
-      an empty cell.</dd>
+      <dt>Is the charging case's battery shown?</dt>
+      <dd>No, because the earbuds never report it on this channel. Across a full recording session
+      every battery reply carried exactly two slots, left and right, even while the wear reply named
+      the case. BudsDesk says "the case is present but has not reported a charge — on this channel it
+      never does" rather than drawing an empty cell.</dd>
+
+      <dt>Does BudsDesk update the earbuds' firmware?</dt>
+      <dd>No, and it never will. Firmware updates live on a separate service that is never opened by
+      this app — not for discovery, not for testing. A failed firmware write bricks hardware, and the
+      payoff does not justify the risk.</dd>
 
       <dt>Does it send anything to a server?</dt>
-      <dd>No. No accounts, no telemetry, no analytics, no update checks. The source is public and this
-      is checkable rather than promised.</dd>
+      <dd>No. No accounts, no telemetry, no analytics and no update checks. It is not sandboxed but
+      makes no network calls, and it can be run with the network down and behaves identically. The
+      source is public, so this is checkable rather than promised.</dd>
 
-      <dt>Is it free? Is there a catch?</dt>
-      <dd>MIT licensed, free, no account, no tier. It is not on the App Store.</dd>
+      <dt>Is it free, and is it on the App Store?</dt>
+      <dd>It is MIT licensed and free: no account, no paid tier, no in-app purchase. It is not on the
+      Mac App Store. It ships as a disk image from GitHub Releases and is ad-hoc signed, so the first
+      launch asks you to confirm opening it.</dd>
     </dl>
   </section>
 

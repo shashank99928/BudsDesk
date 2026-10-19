@@ -237,6 +237,31 @@
   </section>
 
   <section>
+    <h2>Questions</h2>
+    <dl class="faq">
+      <dt>Will BudsDesk work with my OPPO Enco, OnePlus Buds or realme Buds?</dt>
+      <dd>If your model advertises the vendor's control service, BudsDesk will connect and show
+      everything it reports: battery where per-bud data exists, wear state, the active noise-control
+      mode, the equalizer preset, the codec and the firmware string. It will not write any setting
+      until that exact model has been recorded, because writing a value nobody has observed on your
+      model risks putting it in a state the app cannot explain.</dd>
+
+      <dt>How does a model become fully supported?</dt>
+      <dd>Somebody records it. Run the app with tracing on, set each control in turn while the traffic
+      is captured, and commit the recording with its provenance: model, firmware string, date and
+      tool. Then add one JSON file to <code>devices/</code> describing what that recording shows, with
+      each capability marked measured, inferred or unconfirmed and citing its evidence. No compiler
+      change is involved.</dd>
+
+      <dt>Why not just enable the controls for every model in the family?</dt>
+      <dd>Because a setting that is written and not understood can leave the earbuds in a state the
+      app cannot describe or undo. The app offers exactly what has been observed to work on that
+      model. That restraint is the product: an app that says it changed something and did not is
+      worse than an app with fewer buttons.</dd>
+    </dl>
+  </section>
+
+  <section>
     <h2>Related work worth knowing</h2>
 
     <p>

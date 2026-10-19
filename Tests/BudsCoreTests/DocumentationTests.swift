@@ -1,0 +1,301 @@
+import XCTest
+@testable import BudsCore
+
+/// The README, the changelog and the site all state things about this code: how many checks the
+/// self-check runs, which version the bundle builds, which controls actually write, how many
+/// models are measured. Those are facts the code already knows, and the failure mode is quiet —
+/// prose drifts, a reader acts on it, and nothing fails.
+///
+/// The sharpest case is the site's structured data. A page can carry `FAQPage` markup that answers
+/// questions appearing nowhere on the page: a crawler reads a generous FAQ, a visitor sees less.
+/// That is not a hypothetical here — the marked-up questions and the visible ones were the same
+/// *subject* and different *words* on every page, and one page had marked-up questions with no
+/// visible FAQ at all. `Tools/faq-jsonld.py` builds the markup out of the visible FAQ and these
+/// tests refuse to let the two separate again.
+final class DocumentationTests: XCTestCase {
+
+    // MARK: - Reading the documents
+
+    private static let root = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent()            // Tests/BudsCoreTests
+        .deletingLastPathComponent()            // Tests
+        .deletingLastPathComponent()            // the package root
+
+    private static let site = root.appendingPathComponent("docs")
+
+    /// Every page the site serves, `404.html` included: the 404 page is in the navigation's
+    /// blast radius and its links are as capable of rotting as any other's.
+    private static let pages: [URL] = {
+        let contents = (try? FileManager.default.contentsOfDirectory(
+            at: site, includingPropertiesForKeys: nil)) ?? []
+        return contents
+            .filter { $0.pathExtension == "html" }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+    }()
+
+    private func document(_ path: String) throws -> String {
+        try String(contentsOf: Self.root.appendingPathComponent(path), encoding: .utf8)
+    }
+
+    private func page(_ url: URL) throws -> String {
+        try String(contentsOf: url, encoding: .utf8)
+    }
+
+    /// Every match, as its capture groups. An empty array means the sentence is gone, which fails
+    /// the test that wanted it — a rewrite that drops a number must not silently stop checking it.
+    private func rows(_ pattern: String, in text: String) -> [[String]] {
+        guard let regex = try? NSRegularExpression(pattern: pattern,
+                                                   options: [.dotMatchesLineSeparators]) else {
+            XCTFail("`\(pattern)` is not a valid pattern")
+            return []
+        }
+        let range = NSRange(location: 0, length: (text as NSString).length)
+        return regex.matches(in: text, range: range).map { match in
+            (1..<match.numberOfRanges).map { group in
+                guard let found = Range(match.range(at: group), in: text) else { return "" }
+                return String(text[found])
+            }
+        }
+    }
+
+    /// The first group of every match, for the patterns that capture one thing.
+    private func captures(_ pattern: String, in text: String) -> [String] {
+        rows(pattern, in: text).map { $0.first ?? "" }
+    }
+
+    // MARK: - The counts the prose states
+
+    func testTheCheckCountInProseMatchesTheCode() throws {
+        let result = BudsProtocol.selfCheck()
+        XCTAssertTrue(result.passed, "the self-check fails: \(result.failures)")
+
+        // Prose wraps, so the sentence is matched across lines wherever it can be.
+        let readme = try document("README.md")
+        let stated = try XCTUnwrap(
+            captures(#"(\d+) protocol\s+checks against the corpus"#, in: readme).first,
+            "the README no longer says how many checks --selfcheck runs")
+        XCTAssertEqual(Int(stated), result.checks, "the README's check count is stale")
+
+        // The changelog states the same number for the release that added it, and a reader has no
+        // way to tell a stale changelog from a current one.
+        let changelog = try document("CHANGELOG.md")
+        let released = try XCTUnwrap(
+            captures(#"\((\d+) protocol checks\)"#, in: changelog).first,
+            "the changelog no longer says how many checks the self-check runs")
+        XCTAssertEqual(Int(released), result.checks, "the changelog's check count is stale")
+    }
+
+    func testTheVersionTheSiteAndReadmeAdvertiseIsTheVersionTheBundleBuilds() throws {
+        let plist = try document("Resources/Info.plist")
+        let built = try XCTUnwrap(
+            captures(#"CFBundleShortVersionString</key>\s*<string>([0-9.]+)</string>"#, in: plist).first,
+            "the bundle version could not be read")
+
+        let readme = try document("README.md")
+        XCTAssertEqual(try XCTUnwrap(captures(#"Status: v([0-9.]+)"#, in: readme).first,
+                                     "the README no longer states a version"),
+                       built, "the README advertises a different version than the bundle builds")
+
+        let home = try page(Self.site.appendingPathComponent("index.html"))
+        XCTAssertEqual(try XCTUnwrap(captures(#""softwareVersion": "([0-9.]+)""#, in: home).first,
+                                     "the site no longer advertises a version"),
+                       built, "the site advertises a different version than the bundle builds")
+
+        // One download, named once: a reader who finds the app on the site and reads about it in
+        // the README must be sent to the same place.
+        let download = "https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg"
+        XCTAssertTrue(readme.contains(download), "the README's download link moved")
+        XCTAssertTrue(home.contains(download), "the site's download link moved")
+    }
+
+    // MARK: - The site's structured data quotes the site
+
+    private struct Question: Equatable {
+        let name: String
+        let answer: String
+    }
+
+    /// The questions the crawler is told about, in page order.
+    private func markedUpFAQ(in page: String) throws -> [Question] {
+        var found: [Question] = []
+        for block in captures(#"<script type="application/ld\+json">(.*?)</script>"#, in: page) {
+            let root = try JSONSerialization.jsonObject(with: Data(block.utf8))
+            for node in nodes(in: root) where node["@type"] as? String == "FAQPage" {
+                for entry in node["mainEntity"] as? [[String: Any]] ?? [] {
+                    guard let name = entry["name"] as? String,
+                          let answer = (entry["acceptedAnswer"] as? [String: Any])?["text"] as? String
+                    else { continue }
+                    found.append(Question(name: name, answer: answer))
+                }
+            }
+        }
+        return found
+    }
+
+    /// Every dictionary anywhere under a parsed JSON-LD block, following `@graph`.
+    private func nodes(in value: Any) -> [[String: Any]] {
+        if let dictionary = value as? [String: Any] {
+            return [dictionary] + (dictionary["@graph"] as? [Any] ?? []).flatMap { nodes(in: $0) }
+        }
+        if let array = value as? [Any] {
+            return array.flatMap { nodes(in: $0) }
+        }
+        return []
+    }
+
+    /// The FAQ a reader sees, as `(question, answer)` in the order the page shows them.
+    private func visibleFAQ(in page: String) -> [Question] {
+        guard let block = captures(#"<dl class="faq">(.*?)</dl>"#, in: page).first else { return [] }
+        let names = captures(#"<dt>(.*?)</dt>"#, in: block).map(visibleText)
+        let answers = captures(#"<dd>(.*?)</dd>"#, in: block).map(visibleText)
+        XCTAssertEqual(names.count, answers.count,
+                       "a <dt> without a <dd> is a question nobody answered")
+        return zip(names, answers).map { Question(name: $0.0, answer: $0.1) }
+    }
+
+    /// What the reader's eye lands on: tags gone, entities decoded, runs of space collapsed — the
+    /// same normalisation `Tools/faq-jsonld.py` applies, so a wrapped answer and its one-line
+    /// markup copy compare equal.
+    private func visibleText(_ fragment: String) -> String {
+        var text = fragment.replacingOccurrences(of: "<[^>]+>", with: "",
+                                                 options: .regularExpression)
+        // `&amp;` last: decoding it first would turn `&amp;lt;` into a tag boundary.
+        for (entity, character) in ["&mdash;": "—", "&ndash;": "–", "&hellip;": "…",
+                                    "&nbsp;": " ", "&quot;": "\"", "&apos;": "'", "&#39;": "'",
+                                    "&lt;": "<", "&gt;": ">", "&amp;": "&"] {
+            text = text.replacingOccurrences(of: entity, with: character)
+        }
+        return text.split(whereSeparator: \.isWhitespace).joined(separator: " ")
+    }
+
+    func testTheMarkedUpFAQIsTheFAQThePageShows() throws {
+        var checked = 0
+        for url in Self.pages {
+            let name = url.lastPathComponent
+            let body = try page(url)
+            let marked = try markedUpFAQ(in: body)
+            let shown = visibleFAQ(in: body)
+
+            if marked.isEmpty && shown.isEmpty { continue }
+            XCTAssertFalse(marked.isEmpty,
+                           "\(name) shows a FAQ with no structured data; run Tools/faq-jsonld.py")
+            XCTAssertFalse(shown.isEmpty,
+                           "\(name) marks up a FAQ that is not on the page — write it out or delete "
+                           + "the block; markup a visitor cannot see is an overclaim")
+            XCTAssertEqual(marked.count, shown.count,
+                           "\(name): \(marked.count) questions marked up, \(shown.count) on the page")
+            for (index, question) in marked.enumerated() where index < shown.count {
+                XCTAssertEqual(question.name, shown[index].name,
+                               "\(name) question \(index + 1): markup and page disagree")
+                XCTAssertEqual(question.answer, shown[index].answer,
+                               "\(name) answer \(index + 1): markup and page disagree")
+            }
+            checked += marked.count
+        }
+        XCTAssertGreaterThanOrEqual(checked, 20,
+                                    "the site lost its FAQ, so this test stopped checking anything")
+    }
+
+    func testNoPageMarksUpAReviewNobodyWrote() throws {
+        for url in Self.pages {
+            let body = try page(url)
+            for claim in ["aggregateRating", "ratingValue", "reviewCount", "\"@type\": \"Review\""] {
+                XCTAssertFalse(body.contains(claim),
+                               "\(url.lastPathComponent) carries `\(claim)`; nobody has reviewed "
+                               + "this app, so there is no rating to mark up")
+            }
+        }
+    }
+
+    // MARK: - The site's own links
+
+    func testEveryInternalLinkResolvesToAFileThatShips() throws {
+        var checked = 0
+        for url in Self.pages {
+            let body = try page(url)
+            for target in Set(captures(#"href="/BudsDesk/([^#"?]*)""#, in: body)) {
+                let file = Self.site.appendingPathComponent(target.isEmpty ? "index.html" : target)
+                XCTAssertTrue(FileManager.default.fileExists(atPath: file.path),
+                              "\(url.lastPathComponent) links to /BudsDesk/\(target), which does "
+                              + "not ship")
+                checked += 1
+            }
+        }
+        XCTAssertGreaterThanOrEqual(checked, 5, "the navigation stopped linking to anything")
+    }
+
+    func testTheSitemapListsEveryPageAndNothingElse() throws {
+        let sitemap = try document("docs/sitemap.xml")
+        let listed = Set(captures(#"<loc>https://shashank99928\.github\.io/BudsDesk/([^<]*)</loc>"#,
+                                  in: sitemap).map { $0.isEmpty ? "index.html" : $0 })
+        let shipped = Set(Self.pages.map(\.lastPathComponent)).subtracting(["404.html"])
+        XCTAssertEqual(listed, shipped,
+                       "a page a search engine is told about and a page that ships have diverged")
+    }
+
+    // MARK: - The site's support claims
+
+    /// The table on the home page is the closest thing the site has to a specification, and the
+    /// registry is the thing that decides what is actually on screen. If the site shows four
+    /// controls that write, the registry had better have four write paths.
+    func testTheFeatureTableClaimsNoWriteTheRegistryCannotBack() throws {
+        let registry = try CapabilityRegistry.load(from: Self.root.appendingPathComponent("devices"))
+        let profile = try XCTUnwrap(registry.profile(id: "oneplus-buds-4"),
+                                    "the model the site's table is about is not in the registry")
+        let writable = Capability.allCases.filter { profile.canWrite($0) }
+        let readable = Capability.allCases.filter { profile.offers($0) }
+
+        let home = try page(Self.site.appendingPathComponent("index.html"))
+        let table = rows(#"<tr><td>([^<]*)</td><td class="yes">([^<]*)</td>"#
+                         + #"<td class="(?:no|partial)">([^<]*)</td></tr>"#, in: home)
+        XCTAssertGreaterThanOrEqual(table.count, 10,
+                                    "the feature table changed shape, so this test is checking "
+                                    + "nothing — update the pattern with it")
+        let features = table.map { (feature: $0[0], ours: $0[1], family: $0[2]) }
+
+        let writes = features.filter { $0.ours.contains("writes") }
+        XCTAssertEqual(writes.count, writable.count,
+                       "the site shows \(writes.count) controls that write: "
+                       + "\(writes.map(\.feature)); the registry has \(writable.count): "
+                       + "\(writable.map(\.rawValue).sorted())")
+
+        let reads = features.filter { $0.ours.contains("Measured") }
+        XCTAssertLessThanOrEqual(reads.count, readable.count,
+                                 "the site claims more measured reads than the registry offers")
+
+        for row in features {
+            XCTAssertFalse(row.family.contains("Measured") || row.family.contains("writes"),
+                           "the table offers the rest of the family `\(row.family)` for "
+                           + "\(row.feature), which no recording backs")
+        }
+    }
+
+    /// "One model measured end to end" is the claim the whole project rests on, and it is the one
+    /// that goes stale first: a second model gets recorded and the prose keeps apologising for a
+    /// gap that no longer exists.
+    func testTheNumberOfMeasuredModelsIsTheNumberTheProseStates() throws {
+        let registry = try CapabilityRegistry.load(from: Self.root.appendingPathComponent("devices"))
+        let measured = registry.profiles.filter { $0.match.fallback != true }
+
+        let spelled = ["one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6]
+        for (path, pattern) in [
+            ("README.md", #"Status: v[0-9.]+, (\w+) models? verified"#),
+            ("docs/models.html", #"(\w+) models? is measured end to end"#),
+        ] {
+            let stated = try XCTUnwrap(captures(pattern, in: try document(path)).first,
+                                       "\(path) no longer states how many models are measured")
+            let count = try XCTUnwrap(spelled[stated.lowercased()] ?? Int(stated),
+                                      "\(path) states `\(stated)`, which is not a number of models")
+            XCTAssertEqual(count, measured.count,
+                           "\(path) says \(stated); the registry has \(measured.count) measured "
+                           + "profile(s): \(measured.map(\.id).sorted())")
+        }
+
+        // And a measured model nobody wrote down is a model nobody can find.
+        let readme = try document("README.md")
+        for profile in measured {
+            XCTAssertTrue(readme.contains(profile.model),
+                          "the registry measures \(profile.model) and the README never names it")
+        }
+    }
+}

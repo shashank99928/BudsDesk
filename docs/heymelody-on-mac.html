@@ -44,7 +44,7 @@
         },
         {
           "@type": "Question",
-          "name": "Does BudsDesk use the phone app's code?",
+          "name": "Does BudsDesk reuse anything from it?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "No. BudsDesk shares no code, no assets and no extracted data with it. It was written by recording the traffic between the phone app and real earbuds, then writing an independent client for what the wire carries. No vendor code is decompiled into the app, and no vendor asset is redistributed."
@@ -52,7 +52,7 @@
         },
         {
           "@type": "Question",
-          "name": "Does BudsDesk update the firmware like the phone app does?",
+          "name": "Does BudsDesk do firmware updates?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "No, and it never will. Firmware updates travel over a separate service that BudsDesk never opens. If updating firmware matters to you, the phone app is the only tool here that does it, and that is a real advantage it has."
@@ -215,18 +215,27 @@
     <h2>Questions</h2>
     <dl class="faq">
       <dt>Is there a Mac version of HeyMelody?</dt>
-      <dd>No desktop build exists. Some storefronts offer the iPhone app for Apple silicon Macs. We
-      have not tested what it can reach from there.</dd>
+      <dd>There is no desktop build. It is a phone app published for iPhone and Android. Some
+      storefronts offer it for Apple silicon Macs as an iPhone app, which Apple makes possible for apps
+      that have not been withdrawn from Mac availability; whether it can reach the earbuds' control
+      channel when run that way is not something this project has tested, and this page does not claim
+      either way.</dd>
 
       <dt>Does BudsDesk reuse anything from it?</dt>
-      <dd>No code, no assets, no data files. It was written independently from recordings of the
-      wire.</dd>
+      <dd>No. BudsDesk shares no code, no assets and no extracted data with it. It was written by
+      recording the traffic between the phone app and real earbuds, then writing an independent client
+      for what the wire carries. No vendor code is decompiled into the app, and no vendor asset is
+      redistributed.</dd>
 
       <dt>Does BudsDesk do firmware updates?</dt>
-      <dd>No, and it will not. That is a genuine advantage the phone app keeps.</dd>
+      <dd>No, and it never will. Firmware updates travel over a separate service that BudsDesk never
+      opens. If updating firmware matters to you, the phone app is the only tool here that does it, and
+      that is a real advantage it has.</dd>
 
       <dt>Can I use both?</dt>
-      <dd>Yes, and most people who try BudsDesk probably will.</dd>
+      <dd>Yes. The settings live on the earbuds, so a change made in one shows up in the other. Use the
+      phone app for firmware and for models BudsDesk has not catalogued, and BudsDesk when the earbuds
+      are at the computer.</dd>
     </dl>
   </section>
 

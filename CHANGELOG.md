@@ -6,6 +6,28 @@ and [Semantic Versioning](https://semver.org/).
 The honesty rule applies here as everywhere else: a version is not described as supporting a model
 unless that model was measured. What is listed as *not* included is as deliberate as what is.
 
+## [Unreleased]
+
+### Fixed
+
+- **The site's FAQ markup now quotes the page.** Every page carried `FAQPage` structured data that
+  disagreed with the FAQ a visitor could read — the same subjects in different words — and the
+  supported-models page marked up three questions with no visible FAQ at all. Markup a reader cannot
+  see is the exact overclaim this project exists to avoid, and it collected nothing in return: the
+  rich result it was written for was retired in 2023. The markup is now generated from the visible
+  FAQ by `Tools/faq-jsonld.py`, so the two cannot separate. Where the marked-up copy held the fuller
+  answer, that answer moved onto the page: the FAQ gained the Audio MIDI Setup question, a longer
+  emulator answer and the app's own wording for the case battery. See DECISIONS D9.
+
+### Added
+
+- **Documentation tests**, so the prose is checked rather than trusted: the `--selfcheck` count in
+  this changelog and the README against the checks that actually run, the version the site
+  advertises against the bundle, every internal link and sitemap entry against the files that ship,
+  the home page's feature table against the registry's write paths, and "one model measured end to
+  end" against the number of measured profiles. The site's own links and its absence of a made-up
+  rating are checked too.
+
 ## [0.1.0] — 2026-10-18
 
 First build anyone can run.

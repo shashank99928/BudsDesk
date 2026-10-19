@@ -122,8 +122,9 @@ which is how the app is tested without fighting the running app for the one cont
 | `devices/` | The capability registry: one file per model, and the rules a profile must pass |
 | `Sources/BudsCore/` | The portable protocol core — Foundation and `os` only, no radio |
 | `Sources/BudsDeskMac/` | Transport, discovery, session hosting and UI for macOS |
-| `Tests/` | Corpus replay, total-parser, registry and session tests |
-| `Tools/` | Capture freezing and harvesting, the SF Symbol check, icon and disk-image art |
+| `Tests/` | Corpus replay, total-parser, registry and session tests, plus the ones that hold this README and the site to what the code says |
+| `docs/` | The site as it ships. The FAQ markup on each page is generated from the FAQ the page shows, so a crawler never reads a question a visitor cannot — see D9 and `Tools/faq-jsonld.py` |
+| `Tools/` | Capture freezing and harvesting, the SF Symbol check, icon and disk-image art, and the site's FAQ generator |
 
 ## Building
 

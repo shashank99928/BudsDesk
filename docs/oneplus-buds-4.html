@@ -66,6 +66,30 @@
             "@type": "Answer",
             "text": "Off, Noise Cancellation at High, Moderate, Low or Auto, Transparency, and Adaptive. The cancellation levels are separate values from the modes, and the four level values were each set and read back in turn to confirm they work as they appear to."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there an official OnePlus app for the Mac?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No vendor ships a desktop app for these earbuds. BudsDesk is an independent, open-source project and is not affiliated with OnePlus."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will it work with the OnePlus Buds Pro 3, or the Nord Buds?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They will connect and show what they report, but no settings will be writable until that model has been recorded. See models."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is the build ad-hoc signed?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because it is distributed outside the App Store without a paid developer account. Notarisation is a real cost and this says so rather than hiding it."
+          }
         }
       ]
     },
@@ -274,6 +298,26 @@
   <section>
     <h2>Questions</h2>
     <dl class="faq">
+      <dt>Can the OnePlus Buds 4 firmware be updated from a Mac?</dt>
+      <dd>Not with BudsDesk, and not by design. Firmware updates travel over a separate vendor service
+      that BudsDesk never opens. A failed firmware write can leave the earbuds unusable, so the feature
+      is permanently out of scope rather than merely unimplemented.</dd>
+
+      <dt>Does BudsDesk show the OnePlus Buds 4 charging case battery?</dt>
+      <dd>No. The earbuds report exactly two battery slots, left and right, on the control channel
+      BudsDesk uses — even while a separate reply names the case as present. The case's charge never
+      appears here, so the app states that instead of showing an empty battery.</dd>
+
+      <dt>Is there a find-my-earbuds button?</dt>
+      <dd>No. The command exists and the earbuds acknowledge it, but the acknowledgement is
+      byte-identical whether or not a tone actually plays, so nothing here can verify that it worked.
+      An app whose whole point is not to guess does not ship a button it cannot confirm.</dd>
+
+      <dt>Which noise cancelling modes can be set from the Mac?</dt>
+      <dd>Off, Noise Cancellation at High, Moderate, Low or Auto, Transparency, and Adaptive. The
+      cancellation levels are separate values from the modes, and the four level values were each set
+      and read back in turn to confirm they work as they appear to.</dd>
+
       <dt>Is there an official OnePlus app for the Mac?</dt>
       <dd>No vendor ships a desktop app for these earbuds. BudsDesk is an independent, open-source
       project and is not affiliated with OnePlus.</dd>
