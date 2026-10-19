@@ -385,3 +385,90 @@ fell out of its row are exactly the failures a compiler cannot see.
 **What would change our mind:** a still cannot show a flow, and if the site ever needs to show one
 (the pairing, the moment the earbuds wake up) a screen recording would be the right artefact —
 labelled, and made the same way, driven by a recording rather than by a wish.
+
+---
+
+## D11 — One page per brand, because each brand explains something the others do not
+
+**Date:** 2026-10-19
+
+**Options**
+
+1. Publish no brand pages. D8 settled on five pages, one per question people type, and "a page per
+   brand" is the same move as "a page per model" with a larger step size.
+2. Three pages — OnePlus Buds, OPPO Enco, realme Buds — each saying what that brand's owner gets on a
+   Mac today, and each linked from the navigation on every page.
+
+**Evidence**
+
+- The three winnable query families in D8's survey are brand-shaped: `oneplus buds mac app`,
+  `oppo buds mac app`, `realme buds mac app`. The generic phrasing (`control earbuds from mac
+  bluetooth`) is not winnable; the brand name is the part somebody actually types.
+- Each brand carries a fact that is true of it and not of the other two, and every one of those facts
+  is already in this repository: OnePlus has the single measured model; the control service is named
+  `oppointeraction` and the RFCOMM channel is read out of the device's own SDP record rather than
+  assumed (`Sources/BudsDeskMac/RFCOMMTransport.swift`); and the SDP record on some realme models
+  carries a second channel named `Realme Pearl` (`capture/README.md`) — which is also why a realme
+  owner should be told an independent realme Mac client exists before they decide anything.
+- The failure this guards against is measurable rather than hypothetical: three pages differing only
+  in the brand word are D8's forty-page catalogue three pages smaller, and the trade would be the one
+  thing this site has — claims a reader can check — for three pages saying nothing new.
+
+**Decision:** option 2: `docs/oneplus-buds-on-mac.html`, `docs/oppo-buds-on-mac.html`,
+`docs/realme-buds-on-mac.html`, in the navigation of every page. Three tests hold them: the
+navigation is identical on every page and reaches every brand; each brand page carries the download
+and links the model list; and a brand with no measured model has to contain the words `read-only`, so
+the limit cannot be dropped in an edit that reads well.
+
+**Why:** a brand page earns its place exactly when the brand explains something. That a family member
+connects and cannot write is what this project is about, and each brand has its own reason for it —
+OnePlus because a recording exists for one of its models, OPPO because the channel is named after it,
+realme because the channels are not uniform even inside the family. None of those sentences can be
+swapped into another brand's page, which is the test a doorway page fails.
+
+**What would change our mind:** a brand page that says nothing its siblings do not. Then it is
+deleted rather than improved, because that is what a doorway page is. And the moment a second model
+is measured, that model earns its own page (D8) and the brand page becomes the hub linking to it —
+which is already the shape of the OnePlus page around `oneplus-buds-4.html`.
+
+---
+
+## D12 — The site's rules follow the pointer and the viewport, not the machine it was built on
+
+**Date:** 2026-10-19
+
+**Options**
+
+1. Keep the stylesheet tuned for the desktop the site was designed on: hover styles unconditional,
+   `white-space: nowrap` on the short status cells in the model tables, the brand cards linked by
+   their headings only.
+2. Declare hover only where a pointer exists, let the status cells wrap, make the whole card the
+   link, and keep the sticky header from covering the skip link's target.
+
+**Evidence**
+
+- The status cells held phrases like "Read-only until recorded", set `nowrap`. At 320px or at 200%
+  zoom the three columns' minimum widths exceeded the viewport, so the table scrolled sideways with
+  nothing on screen to say so — the shape of a table whose last column is unreachable. Wrapping costs
+  nothing at 940px, where the column has room and does not wrap at all.
+- On a touch screen a bare `:hover` sticks to the last link tapped, so `nav.site a:hover` left a
+  navigation link looking permanently current next to the real `aria-current` one.
+- The skip link is the first focusable element on every page, and its target sat under the sticky
+  header — which is the one thing a skip link must not do.
+- The brand cards' headings were links inside bordered cards, so the card looked pressable and only
+  its first line was.
+
+**Decision:** option 2. Hover rules live inside `@media (hover: hover)`; the status cells wrap;
+`a.card` is the link and the heading inside it takes the accent colour; `main` carries a
+`scroll-margin-top` clearing the header; images keep `pointer-events: none`, which is a deliberate
+choice of this project rather than an oversight — they are diagrams, and nothing here should be
+openable in a new tab.
+
+**Why:** every one of these is a rule that only holds on the machine the page was looked at on. The
+site is read on a phone as often as a laptop, and at 200% zoom by people who need it. None of the
+four costs anything on the desktop, and the stylesheet stays one auditable file with no dependency
+added — which is the constraint that makes the rest of these decisions possible.
+
+**What would change our mind:** none of this is load-bearing enough to defend against evidence. If a
+wrapped status cell ever reads worse than a clipped column, the cells get a fixed width and the
+wrapper gets a visible scroll cue instead of the wrap.

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OPPO Enco Buds on a Mac: ANC, EQ &amp; Battery — BudsDesk</title>
+<meta name="description" content="OPPO Enco earbuds on macOS: what the Mac will not do, the vendor control channel BudsDesk opens, what it reads from an Enco connection today, and what turns an Enco model from read-only into supported.">
+<link rel="canonical" href="https://shashank99928.github.io/BudsDesk/oppo-buds-on-mac.html">
+<meta name="theme-color" content="#0e1013">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BudsDesk">
+<meta property="og:title" content="OPPO Enco earbuds on a Mac — BudsDesk">
+<meta property="og:description" content="The Enco line on macOS: the channel BudsDesk opens, what it reads today, and what makes an Enco model fully supported.">
+<meta property="og:url" content="https://shashank99928.github.io/BudsDesk/oppo-buds-on-mac.html">
+<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
+
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/icon.png" type="image/png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "BudsDesk", "item": "https://shashank99928.github.io/BudsDesk/" },
+        { "@type": "ListItem", "position": 2, "name": "OPPO Enco", "item": "https://shashank99928.github.io/BudsDesk/oppo-buds-on-mac.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does BudsDesk work with my OPPO Enco model?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If it advertises the vendor's control service, yes — it will connect and show what it reports: battery per bud where the earbuds supply it, wear state, the active noise mode, the equalizer preset, the codec and the firmware string. It will not write any setting until that exact model has been recorded here, because writing a value nobody has seen that model accept risks leaving it in a state the app cannot describe or undo. If your model does not publish the service, nothing is sent at all."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does the app call my OPPO Enco earbuds read-only?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because no Enco model has been recorded in this project yet. Read-only is a statement about evidence rather than about the hardware: the protocol is shared, so a read-only connection is the expected result, and every control that would write is drawn disabled with the reason printed on it. The window's footer reads \"Verified write paths: none\" — which is a fact about this repository, not a verdict on your earbuds."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does BudsDesk import my settings from the OPPO phone app?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No, and it does not need to. Every setting lives on the earbuds themselves, so the app asks the hardware what its state is and shows the answer. There is no account, no cloud copy and no transfer from the phone — the earbuds are the single source of truth for both apps."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there an official OPPO app for the Mac?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No vendor ships a desktop app for these earbuds, and none of this project's code comes from one. BudsDesk is independent and open source, written by recording what the earbuds' control channel carries; it is not affiliated with OPPO or BBK Electronics."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+    <nav class="site" aria-label="Main">
+      <a href="/BudsDesk/">Home</a>
+      <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a>
+      <a href="/BudsDesk/oppo-buds-on-mac.html" aria-current="page">OPPO Enco</a>
+      <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a>
+      <a href="/BudsDesk/models.html">Models</a>
+      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
+      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+  <nav class="crumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li aria-current="page">OPPO Enco</li>
+    </ol>
+  </nav>
+
+  <h1>OPPO Enco earbuds on your Mac</h1>
+
+  <p class="lede">
+    The Enco line is where this protocol comes from: the vendor's serial service is named after OPPO,
+    and the OnePlus and realme earbuds that answer it are the same protocol under other names. What no
+    Enco model has yet is a recording in this project — and a recording is the only thing that turns a
+    connection from readable into writable.
+  </p>
+
+  <div class="buttons">
+    <a class="button primary" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download for macOS</a>
+    <a class="button" href="/BudsDesk/models.html">What "read-only" means</a>
+  </div>
+  <p style="font-size:14.5px;color:var(--faint);margin-bottom:26px">
+    Free, MIT licensed. macOS 26 or later on Apple silicon. Not on the Mac App Store.
+    Latest release <strong>v0.1.1</strong> —
+    <a href="https://github.com/shashank99928/BudsDesk/releases">what changed</a>.
+  </p>
+
+  <section>
+    <h2>Why a Mac sees an audio device and nothing else</h2>
+
+    <p>
+      Every setting on an Enco earbud — the noise mode, the equalizer, BassWave, which gesture does
+      what — lives on a separate vendor control channel, carried over a Bluetooth serial service.
+      Pairing happens in System Settings, and macOS will connect and disconnect the earbuds happily,
+      but no Apple software opens that other channel. So the noise mode you set last week from the
+      phone is still in force, with no way to see it or change it from the Mac.
+    </p>
+
+    <p>
+      BudsDesk opens that channel. It is the whole reason the app exists: not a nicer Bluetooth pane,
+      but the missing half of the earbud's own interface.
+    </p>
+  </section>
+
+  <section>
+    <h2>The channel, as measured</h2>
+
+    <p>
+      This is not a guess about how OPPO earbuds might work; it is what the SDP record on real
+      hardware says, recorded with the capture that named it:
+    </p>
+
+    <div class="scroll-x">
+    <table>
+      <thead>
+        <tr><th scope="col">Field</th><th scope="col">Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Service name</td><td><code>oppointeraction</code></td></tr>
+        <tr><td>Service UUID</td><td><code>0000799a-d102-11e1-9b23-00025b00a5a5</code></td></tr>
+        <tr><td>RFCOMM channel</td><td>Resolved from SDP at runtime; <strong>15</strong> on the measured unit</td></tr>
+        <tr><td>Firmware OTA channel</td><td><code>BESOTA</code> — never opened, not for discovery, not for testing</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>
+      That UUID is the gate rather than an identifier: every member of the family publishes it, which
+      is what makes an Enco earbud a candidate for this app at all. The channel number beside it is
+      read out of the device's own SDP record every time rather than hard-coded, because a model is
+      free to put the service somewhere else.
+    </p>
+  </section>
+
+  <section>
+    <h2>What an Enco connection shows today</h2>
+
+    <p>
+      Connect an OPPO Enco model that advertises the control service and BudsDesk will have a session
+      with it. What you see is what the earbuds say, and nothing is written:
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Read</h3>
+        <p>Battery where the earbuds report it per bud, wear state, the active noise-control mode, the
+        equalizer preset, the codec the link negotiated, and the firmware string verbatim.</p>
+      </div>
+      <div class="card">
+        <h3>Not written</h3>
+        <p>No mode, preset, BassWave level or gesture is changed, because no Enco model has been
+        recorded here yet. Every such control is drawn disabled with the reason on the card.</p>
+      </div>
+      <div class="card">
+        <h3>Never</h3>
+        <p>Firmware. Updates travel over a different service that this app does not open at all — a
+        failed firmware write bricks hardware, and nothing here is worth that risk.</p>
+      </div>
+    </div>
+
+    <div class="note warn">
+      <p><strong>If your Enco earbuds report nothing at all, that is a result too.</strong> A model
+      that answers the service but has no state to give is telling you it speaks a different
+      generation of this protocol — and the app says so, instead of showing you defaults dressed up as
+      readings.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>How an Enco model becomes writable</h2>
+
+    <p>
+      Somebody records it. Tracing on, one setting changed at a time, the traffic written out as hex,
+      and the recording committed with its provenance: model, firmware string, date, tool and channel.
+      Then one JSON file in <code>devices/</code> describing what the recording shows, each capability
+      marked measured, inferred or unconfirmed with its evidence cited. It is a file, not a build.
+    </p>
+
+    <p>
+      <a href="/BudsDesk/models.html">The supported-models page</a> has the full recipe and the rules
+      the registry enforces — including the one that matters most here: a capability only gets a write
+      path if it is measured.
+    </p>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <dl class="faq">
+      <dt>Does BudsDesk work with my OPPO Enco model?</dt>
+      <dd>If it advertises the vendor's control service, yes — it will connect and show what it
+      reports: battery per bud where the earbuds supply it, wear state, the active noise mode, the
+      equalizer preset, the codec and the firmware string. It will not write any setting until that
+      exact model has been recorded here, because writing a value nobody has seen that model accept
+      risks leaving it in a state the app cannot describe or undo. If your model does not publish the
+      service, nothing is sent at all.</dd>
+
+      <dt>Why does the app call my OPPO Enco earbuds read-only?</dt>
+      <dd>Because no Enco model has been recorded in this project yet. Read-only is a statement about
+      evidence rather than about the hardware: the protocol is shared, so a read-only connection is
+      the expected result, and every control that would write is drawn disabled with the reason
+      printed on it. The window's footer reads "Verified write paths: none" — which is a fact about
+      this repository, not a verdict on your earbuds.</dd>
+
+      <dt>Does BudsDesk import my settings from the OPPO phone app?</dt>
+      <dd>No, and it does not need to. Every setting lives on the earbuds themselves, so the app asks
+      the hardware what its state is and shows the answer. There is no account, no cloud copy and no
+      transfer from the phone — the earbuds are the single source of truth for both apps.</dd>
+
+      <dt>Is there an official OPPO app for the Mac?</dt>
+      <dd>No vendor ships a desktop app for these earbuds, and none of this project's code comes from
+      one. BudsDesk is independent and open source, written by recording what the earbuds' control
+      channel carries; it is not affiliated with OPPO or BBK Electronics.</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>The other two brands</h2>
+
+    <p>
+      The same channel serves <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a> and
+      <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a>. OnePlus has the single measured
+      model so far; for the rest of the family the rule is the same — connect and read today, writable
+      once somebody records it.
+    </p>
+  </section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p class="fineprint">
+      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as factual
+      device names. No vendor code, icon, font or other asset is redistributed.
+    </p>
+    <p>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a>
+    </p>
+    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+  </div>
+</footer>
+
+</body>
+</html>

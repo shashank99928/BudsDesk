@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>realme Buds on a Mac: ANC, EQ &amp; Battery — BudsDesk</title>
+<meta name="description" content="realme Buds on macOS: the same vendor control channel as OPPO and OnePlus, what BudsDesk reads from a realme connection today, why nothing writes yet, and the independent realme Mac client that already exists.">
+<link rel="canonical" href="https://shashank99928.github.io/BudsDesk/realme-buds-on-mac.html">
+<meta name="theme-color" content="#0e1013">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BudsDesk">
+<meta property="og:title" content="realme Buds on a Mac — BudsDesk">
+<meta property="og:description" content="One protocol, three brands: what a realme Buds connection reads today, and what would make it writable.">
+<meta property="og:url" content="https://shashank99928.github.io/BudsDesk/realme-buds-on-mac.html">
+<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
+
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/icon.png" type="image/png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "BudsDesk", "item": "https://shashank99928.github.io/BudsDesk/" },
+        { "@type": "ListItem", "position": 2, "name": "realme Buds", "item": "https://shashank99928.github.io/BudsDesk/realme-buds-on-mac.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does BudsDesk work with realme Buds Air 5 Pro?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If it advertises the vendor's control service, it will connect and read: battery per bud where the earbuds report it, wear state, the active noise mode, the equalizer preset, the codec and the firmware string. It will not change any setting, because no realme model has been recorded in this project yet — a write path only exists where a recording of that model does. If the earbuds do not publish the service, nothing is sent at all."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the \"Realme Pearl\" channel?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A second Bluetooth serial channel that has been seen in the SDP record on some realme models, alongside the one the measured unit uses for the vendor's control service. It is why BudsDesk resolves the channel number from the device's own SDP record at runtime instead of hard-coding one: a model that names or numbers its channels differently is still reachable. The firmware OTA channel is a separate thing again, and it is never opened."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there another Mac app for realme earbuds?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Realme TWS Mac Controller is an independent, MIT-licensed macOS client for realme earbuds, and it reached the same conclusion about macOS that this project did. It is somebody else's free work, it shares no code with BudsDesk, and if it supports your model, use it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which realme models are measured by BudsDesk?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "None yet, and the site says so rather than listing model names as supported. One model is measured end to end across the whole family, the OnePlus Buds 4; every other OPPO, OnePlus and realme model connects and reads under the same rules. Naming forty models as \"supported\" would be the kind of claim this project exists to avoid."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+    <nav class="site" aria-label="Main">
+      <a href="/BudsDesk/">Home</a>
+      <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a>
+      <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a>
+      <a href="/BudsDesk/realme-buds-on-mac.html" aria-current="page">realme Buds</a>
+      <a href="/BudsDesk/models.html">Models</a>
+      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
+      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+  <nav class="crumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li aria-current="page">realme Buds</li>
+    </ol>
+  </nav>
+
+  <h1>realme Buds on your Mac</h1>
+
+  <p class="lede">
+    realme Buds speak the same vendor control channel as OPPO and OnePlus earbuds, so a realme
+    connection behaves the same way: it connects, it reports its state, and it stays read-only until
+    somebody records a realme model. Nobody has, for this project — and the most useful thing this
+    page can do besides say so is point you at the independent realme Mac client that exists.
+  </p>
+
+  <div class="buttons">
+    <a class="button primary" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download for macOS</a>
+    <a class="button" href="https://github.com/anikket-b/Realme-TWS-Mac-Controller">The other realme Mac app</a>
+  </div>
+  <p style="font-size:14.5px;color:var(--faint);margin-bottom:26px">
+    Free, MIT licensed. macOS 26 or later on Apple silicon. Not on the Mac App Store.
+    Latest release <strong>v0.1.1</strong> —
+    <a href="https://github.com/shashank99928/BudsDesk/releases">what changed</a>.
+  </p>
+
+  <section>
+    <h2>One protocol, three brand names</h2>
+
+    <p>
+      The earbuds OPPO, OnePlus and realme sell are separate products, but the serial service they use
+      for settings is the same one. On the hardware measured here it is named
+      <code>oppointeraction</code> and published under the UUID
+      <code>0000799a-d102-11e1-9b23-00025b00a5a5</code>. A realme earbud that publishes that same
+      service is answering the same protocol, whichever name is on the box.
+    </p>
+
+    <p>
+      realme models also show that the family is not perfectly uniform underneath. A second serial
+      channel named <code>Realme Pearl</code> has been seen in the SDP record on some models, next to
+      the channel the measured unit uses. That is exactly why BudsDesk asks the device which channel
+      the service is on instead of assuming a number: a model that puts the service somewhere else
+      stays reachable, and no firmware service is ever opened on the way — the OTA channel is closed to
+      this app permanently.
+    </p>
+  </section>
+
+  <section>
+    <h2>What a realme connection reads today</h2>
+
+    <p>
+      A realme model that advertises the control service gets a session. What it shows is what the
+      earbuds report, and nothing is written:
+    </p>
+
+    <ul>
+      <li><strong>Battery</strong> — per bud where the earbuds report it, left and right never merged.
+      A model that does not report a figure shows as not having reported, not as 0%.</li>
+      <li><strong>Wear state</strong> — which bud is in your ear and whether the case is closed.</li>
+      <li><strong>Noise mode and equalizer preset</strong> — the current values, as the earbuds tell
+      them, with the controls to change them drawn disabled and the reason printed on the card.</li>
+      <li><strong>Codec and firmware string</strong> — the codec the link negotiated, and the firmware
+      string printed verbatim rather than tidied into a format that could hide a mismatch.</li>
+    </ul>
+
+    <div class="note">
+      <p><strong>Read-only means read-only.</strong> No setting on a realme model has been observed to
+      be accepted, so no control is enabled — the window's footer says
+      <strong>Verified write paths: none</strong>. Hidden controls would look like a smaller app;
+      disabled ones with the reason on them tell you the truth about the evidence behind them.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Another realme Mac app exists</h2>
+
+    <p>
+      This is not the only attempt, and a realme owner should know that before deciding anything.
+      <a href="https://github.com/anikket-b/Realme-TWS-Mac-Controller">Realme TWS Mac Controller</a> is
+      an independent, MIT-licensed macOS client for realme earbuds, and it documented the same absence
+      this project did: macOS exposes no control over these settings at all. It shares no code with
+      BudsDesk.
+    </p>
+
+    <p>
+      Two projects working on the same problem is not a problem. If one of them supports your model
+      and the other does not, use the one that does — and if you record your model for this project,
+      you have made the next person's afternoon shorter.
+    </p>
+  </section>
+
+  <section>
+    <h2>How a realme model becomes writable</h2>
+
+    <p>
+      Somebody records it. Turn tracing on, change one setting at a time while every frame in both
+      directions is written out as hex, and commit the recording with its provenance: model, firmware
+      string, date, tool and channel. Then add one JSON file to <code>devices/</code> describing what
+      that recording shows — each capability marked measured, inferred or unconfirmed, with its
+      evidence cited. No Swift is touched, and it takes about twenty minutes.
+    </p>
+
+    <p>
+      <a href="/BudsDesk/models.html">The supported-models page</a> has the full recipe and the rules
+      the registry enforces, including the one that decides whether a control gets a write path at all:
+      <code>writable: true</code> on anything that is not measured fails to load.
+    </p>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <dl class="faq">
+      <dt>Does BudsDesk work with realme Buds Air 5 Pro?</dt>
+      <dd>If it advertises the vendor's control service, it will connect and read: battery per bud
+      where the earbuds report it, wear state, the active noise mode, the equalizer preset, the codec
+      and the firmware string. It will not change any setting, because no realme model has been
+      recorded in this project yet — a write path only exists where a recording of that model does.
+      If the earbuds do not publish the service, nothing is sent at all.</dd>
+
+      <dt>What is the "Realme Pearl" channel?</dt>
+      <dd>A second Bluetooth serial channel that has been seen in the SDP record on some realme
+      models, alongside the one the measured unit uses for the vendor's control service. It is why
+      BudsDesk resolves the channel number from the device's own SDP record at runtime instead of
+      hard-coding one: a model that names or numbers its channels differently is still reachable. The
+      firmware OTA channel is a separate thing again, and it is never opened.</dd>
+
+      <dt>Is there another Mac app for realme earbuds?</dt>
+      <dd>Yes. Realme TWS Mac Controller is an independent, MIT-licensed macOS client for realme
+      earbuds, and it reached the same conclusion about macOS that this project did. It is somebody
+      else's free work, it shares no code with BudsDesk, and if it supports your model, use it.</dd>
+
+      <dt>Which realme models are measured by BudsDesk?</dt>
+      <dd>None yet, and the site says so rather than listing model names as supported. One model is
+      measured end to end across the whole family, the OnePlus Buds 4; every other OPPO, OnePlus and
+      realme model connects and reads under the same rules. Naming forty models as "supported" would
+      be the kind of claim this project exists to avoid.</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>The other two brands</h2>
+
+    <p>
+      See <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a> — the one brand with a
+      measured model — and <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a>, the brand the
+      control channel is named after.
+    </p>
+  </section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p class="fineprint">
+      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as factual
+      device names. No vendor code, icon, font or other asset is redistributed. Realme TWS Mac
+      Controller is an independent project, named here as an acknowledgement rather than an
+      affiliation.
+    </p>
+    <p>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a>
+    </p>
+    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+  </div>
+</footer>
+
+</body>
+</html>

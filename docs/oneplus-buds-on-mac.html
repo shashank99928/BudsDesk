@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OnePlus Buds on a Mac: Which Models Work — BudsDesk</title>
+<meta name="description" content="The OnePlus Buds line on macOS: the Buds 4 is measured end to end and every control writes to it, while the rest of the line connects and reads until somebody records it. What to expect, and how to change that.">
+<link rel="canonical" href="https://shashank99928.github.io/BudsDesk/oneplus-buds-on-mac.html">
+<meta name="theme-color" content="#0e1013">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BudsDesk">
+<meta property="og:title" content="OnePlus Buds on a Mac — BudsDesk">
+<meta property="og:description" content="Which OnePlus Buds models a Mac can drive today, and what changes when one of them is recorded.">
+<meta property="og:url" content="https://shashank99928.github.io/BudsDesk/oneplus-buds-on-mac.html">
+<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
+
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/icon.png" type="image/png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "BudsDesk", "item": "https://shashank99928.github.io/BudsDesk/" },
+        { "@type": "ListItem", "position": 2, "name": "OnePlus Buds", "item": "https://shashank99928.github.io/BudsDesk/oneplus-buds-on-mac.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Which OnePlus Buds models can BudsDesk control from a Mac today?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "One: the OnePlus Buds 4, which is measured end to end — noise control, equalizer, BassWave and touch gestures write to it, and battery, wear, codec, firmware string and multi-connect are read. Any other OnePlus model that advertises the same control service connects and shows what it reports, but no control is enabled, because nothing about writing to that model has been recorded."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "My OnePlus Buds connect but the controls are disabled. Is that a bug?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It is the design. An unrecorded model is offered read-only on purpose: the earbuds report their state, and every control the app cannot back with a recording is drawn disabled with the reason written on it. The window's footer says the same thing in one line — \"Verified write paths: none\". An enabled button that silently does nothing is the failure this app is arranged to avoid."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do changes I make on the Mac show up in the OnePlus phone app?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, for anything BudsDesk actually writes. Those settings live on the earbuds rather than in either app, so the phone app reads the same state on its next refresh, and a change made in the phone app appears here on the next poll. Nothing is stored on the Mac and nothing is synced through a server."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there an official OnePlus app for the Mac?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No vendor ships a desktop app for these earbuds. BudsDesk is an independent, open-source project and is not affiliated with OnePlus; the product names on this page are device names, nothing more."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+    <nav class="site" aria-label="Main">
+      <a href="/BudsDesk/">Home</a>
+      <a href="/BudsDesk/oneplus-buds-on-mac.html" aria-current="page">OnePlus Buds</a>
+      <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a>
+      <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a>
+      <a href="/BudsDesk/models.html">Models</a>
+      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
+      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+  <nav class="crumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li aria-current="page">OnePlus Buds</li>
+    </ol>
+  </nav>
+
+  <h1>Control OnePlus Buds from your Mac</h1>
+
+  <p class="lede">
+    OnePlus ships a phone app for these earbuds and nothing for the Mac, where they are a Bluetooth
+    audio device with one merged battery figure and no settings at all. BudsDesk is the missing
+    desktop app — and it is exact about which OnePlus models it can drive today, because only one of
+    them has been recorded.
+  </p>
+
+  <div class="buttons">
+    <a class="button primary" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download for macOS</a>
+    <a class="button" href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4 in detail</a>
+  </div>
+  <p style="font-size:14.5px;color:var(--faint);margin-bottom:26px">
+    Free, MIT licensed. macOS 26 or later on Apple silicon. Not on the Mac App Store.
+    Latest release <strong>v0.1.1</strong> —
+    <a href="https://github.com/shashank99928/BudsDesk/releases">what changed</a>.
+  </p>
+
+  <figure class="shot">
+    <img src="assets/connected.png" width="440" height="620"
+         alt="The BudsDesk window: OnePlus Buds 4 connected. Battery shows left 20% and right 20%, both in ear, with the note that the case has not reported a charge. Noise control shows Adaptive selected, with the cancellation levels High, Moderate, Low and Auto below it.">
+    <figcaption>
+      The measured model, drawn by the app itself from the recorded session in this project's capture
+      corpus: a OnePlus Buds 4 with both buds in ear at 20% and Adaptive noise control. The line at
+      the foot names the recording being replayed, because that is what the picture is — a drawing of
+      the app, not a photo of a desk.
+    </figcaption>
+  </figure>
+
+  <section>
+    <h2>Two answers, and only one of them is yes</h2>
+
+    <div class="scroll-x">
+    <table>
+      <thead>
+        <tr><th scope="col">OnePlus model</th><th scope="col">State</th><th scope="col">What that means</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>OnePlus Buds 4</strong></td>
+          <td class="yes">Measured</td>
+          <td>Noise control, equalizer, BassWave and touch gestures all write. Battery per bud, wear,
+          codec, firmware string and the multi-connect list read.
+          <a href="/BudsDesk/oneplus-buds-4.html">Every setting, in detail</a>.</td>
+        </tr>
+        <tr>
+          <td>Any other OnePlus model that advertises the vendor's control service</td>
+          <td class="partial">Read-only</td>
+          <td>Connects, names itself and shows everything it reports. Every control is drawn disabled
+          with the reason on it, rather than hidden or, worse, left switchable.</td>
+        </tr>
+        <tr>
+          <td>A OnePlus earbud that does not advertise the service</td>
+          <td class="no">No connection</td>
+          <td>Nothing is sent. The service UUID is the gate: an earbud that does not publish it is not
+          a BudsDesk device, and the app says it found nothing rather than guessing.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="note">
+      <p><strong>The line between the two rows is a recording, not a preference.</strong> A model is
+      writable here when a capture of that model exists in the repository. There is no other path to a
+      write, and no setting is written because it is probably supported — only because it has been
+      seen to be.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the measured model does</h2>
+
+    <p>
+      The OnePlus Buds 4 is the one model measured against hardware, so it carries the full surface.
+      In the app that means:
+    </p>
+
+    <ul>
+      <li><strong>Noise control</strong> — Off, Noise Cancellation at High, Moderate, Low or Auto,
+      Transparency and Adaptive, the same set the phone app offers.</li>
+      <li><strong>Equalizer</strong> — preset switching, including the earbuds' own custom slot when
+      one has been saved from the phone.</li>
+      <li><strong>BassWave</strong> — over the range the earbuds report, not one assumed by the app.</li>
+      <li><strong>Touch gestures</strong> — double tap, triple tap, touch and hold and slide, limited
+      to the actions this hardware has been seen to store.</li>
+      <li><strong>Battery, wear, codec, firmware string and multi-connect</strong> — read and shown as
+      reported, left and right never averaged, with the case's charge stated as unreported because on
+      this channel it never arrives.</li>
+    </ul>
+
+    <p>
+      <a href="/BudsDesk/oneplus-buds-4.html">The OnePlus Buds 4 page</a> goes through each of those,
+      including the two things that do not work and why.
+    </p>
+  </section>
+
+  <section>
+    <h2>What the rest of the line does instead</h2>
+
+    <p>
+      A OnePlus model nobody has recorded is not turned away. It connects, it answers, and it is read:
+      the window fills with whatever the earbuds report, and the controls are drawn disabled with the
+      reason printed on the card — <em>this model has no measured write path for noise control, so the
+      reported mode is shown and cannot be changed here</em>. The window's footer says the same thing
+      in one line: <strong>Verified write paths: none.</strong>
+    </p>
+
+    <p>
+      That sentence looks like an apology and is not one. An app whose buttons do nothing teaches you
+      to distrust all of them, and this one exists because the alternative — an app that claims a
+      setting it cannot confirm — is worse than a shorter menu.
+    </p>
+  </section>
+
+  <section>
+    <h2>How a OnePlus model becomes fully supported</h2>
+
+    <p>
+      Somebody records it. Turn tracing on, change one setting at a time while the traffic is written
+      out as hex, and commit the recording with its provenance: model, firmware string, date, tool and
+      channel. Then add one JSON file to <code>devices/</code> describing what that recording shows,
+      with each capability marked measured, inferred or unconfirmed and citing its evidence. No
+      compiler change is involved, and it takes about twenty minutes.
+    </p>
+
+    <p>
+      <a href="/BudsDesk/models.html">The supported-models page</a> has the whole recipe, the rules
+      the registry enforces, and what counts as evidence for each of the three levels.
+    </p>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <dl class="faq">
+      <dt>Which OnePlus Buds models can BudsDesk control from a Mac today?</dt>
+      <dd>One: the OnePlus Buds 4, which is measured end to end — noise control, equalizer, BassWave
+      and touch gestures write to it, and battery, wear, codec, firmware string and multi-connect are
+      read. Any other OnePlus model that advertises the same control service connects and shows what
+      it reports, but no control is enabled, because nothing about writing to that model has been
+      recorded.</dd>
+
+      <dt>My OnePlus Buds connect but the controls are disabled. Is that a bug?</dt>
+      <dd>It is the design. An unrecorded model is offered read-only on purpose: the earbuds report
+      their state, and every control the app cannot back with a recording is drawn disabled with the
+      reason written on it. The window's footer says the same thing in one line — "Verified write
+      paths: none". An enabled button that silently does nothing is the failure this app is arranged
+      to avoid.</dd>
+
+      <dt>Do changes I make on the Mac show up in the OnePlus phone app?</dt>
+      <dd>Yes, for anything BudsDesk actually writes. Those settings live on the earbuds rather than
+      in either app, so the phone app reads the same state on its next refresh, and a change made in
+      the phone app appears here on the next poll. Nothing is stored on the Mac and nothing is synced
+      through a server.</dd>
+
+      <dt>Is there an official OnePlus app for the Mac?</dt>
+      <dd>No vendor ships a desktop app for these earbuds. BudsDesk is an independent, open-source
+      project and is not affiliated with OnePlus; the product names on this page are device names,
+      nothing more.</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>The other two brands</h2>
+
+    <p>
+      These earbuds share one vendor control channel, so the same rules apply to
+      <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a> and
+      <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a> — connect and read today, writable
+      once recorded.
+    </p>
+  </section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p class="fineprint">
+      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as factual
+      device names. No vendor code, icon, font or other asset is redistributed.
+    </p>
+    <p>
+      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a> ·
+      <a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a>
+    </p>
+    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+  </div>
+</footer>
+
+</body>
+</html>

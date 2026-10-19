@@ -261,6 +261,63 @@ final class DocumentationTests: XCTestCase {
                        "a page a search engine is told about and a page that ships have diverged")
     }
 
+    /// The navigation is the site's map and it is copied into every page, which is the arrangement
+    /// that drifts: one page gains a link, another loses one, and both still look finished. The
+    /// current page is marked on the page it is current for, so that is the one thing allowed to
+    /// differ between two copies.
+    func testEveryPageCarriesTheSameNavigation() throws {
+        var navigation: [String: String] = [:]
+        for url in Self.pages {
+            let body = try page(url)
+            let nav = try XCTUnwrap(
+                captures(#"<nav class="site" aria-label="Main">(.*?)</nav>"#, in: body).first?
+                    .split(whereSeparator: \.isWhitespace).joined(separator: " ")
+                    .replacingOccurrences(of: #" aria-current="page""#, with: ""),
+                "\(url.lastPathComponent) has no main navigation")
+            navigation[url.lastPathComponent] = nav
+        }
+
+        let distinct = Set(navigation.values)
+        XCTAssertEqual(distinct.count, 1,
+                       "the pages disagree about the navigation: "
+                       + navigation.filter { $0.value != distinct.first }.keys.sorted()
+                           .joined(separator: ", "))
+
+        let shared = try XCTUnwrap(distinct.first)
+        for brand in ["oneplus-buds-on-mac.html", "oppo-buds-on-mac.html", "realme-buds-on-mac.html"] {
+            XCTAssertTrue(shared.contains("/BudsDesk/\(brand)"),
+                          "the navigation no longer reaches \(brand)")
+        }
+    }
+
+    /// A brand page is a page about models nobody has recorded here, which makes it exactly the
+    /// page that could quietly imply support it cannot back. So every one has to carry the download
+    /// and send the reader to the page that spells out what measured, inferred and unconfirmed
+    /// mean — and a brand with no measured model has to say `read-only` rather than leave the
+    /// absence to be inferred.
+    func testEveryBrandPageSaysWhatIsNotMeasured() throws {
+        let download = "https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg"
+        let registry = try CapabilityRegistry.load(from: Self.root.appendingPathComponent("devices"))
+        let measuredVendors = Set(registry.profiles.filter { $0.match.fallback != true }.map(\.vendor))
+
+        let brands = [("oneplus-buds-on-mac.html", "OnePlus"),
+                      ("oppo-buds-on-mac.html", "OPPO"),
+                      ("realme-buds-on-mac.html", "realme")]
+
+        for (name, vendor) in brands {
+            let body = try page(Self.site.appendingPathComponent(name))
+            XCTAssertTrue(body.contains(download), "\(name) does not carry the download link")
+            XCTAssertTrue(body.contains(#"href="/BudsDesk/models.html""#),
+                          "\(name) does not send the reader to the model list, which is where the "
+                          + "three evidence levels are explained")
+            if !measuredVendors.contains(vendor) {
+                XCTAssertTrue(body.lowercased().contains("read-only"),
+                              "\(name) is about \(vendor) earbuds, no \(vendor) model is measured, "
+                              + "and the page never says read-only")
+            }
+        }
+    }
+
     // MARK: - The site's support claims
 
     /// The table on the home page is the closest thing the site has to a specification, and the

@@ -140,7 +140,7 @@ it is.
 | `Sources/BudsDeskMac/` | Transport, discovery, session hosting and UI for macOS |
 | `Tests/` | Corpus replay, total-parser, registry and session tests, plus the ones that hold this README and the site to what the code says |
 | `Tests/Goldens/` | The window as the app draws it, for the states the site does not show. `build.sh` fails if a drawing stops matching |
-| `docs/` | The site as it ships, including the screenshot `--render` writes. The FAQ markup on each page is generated from the FAQ the page shows, so a crawler never reads a question a visitor cannot — see D9 and `Tools/faq-jsonld.py` |
+| `docs/` | The site as it ships: the app's own page, one page per brand, the measured model, the topic pages and the model list (D11), including the screenshot `--render` writes. The FAQ markup on each page is generated from the FAQ the page shows, so a crawler never reads a question a visitor cannot — see D9 and `Tools/faq-jsonld.py` |
 | `Tools/` | Capture freezing and harvesting, the SF Symbol check, icon and disk-image art, and the site's FAQ generator |
 
 ## Building

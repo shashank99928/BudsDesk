@@ -47,6 +47,9 @@ body {
     font-size: 17px;
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* A firmware string, a UUID or a long URL must wrap rather than push the page sideways. */
+    overflow-wrap: break-word;
 }
 
 /* Images are decoration here — diagrams and icons, never something to open, zoom, or drag out. */
@@ -58,7 +61,13 @@ img {
 }
 
 a { color: var(--accent); text-underline-offset: 3px; }
-a:hover { text-decoration-thickness: 2px; }
+
+/* Hover is a pointer affordance, so it is declared only where there is a pointer to hover with.
+ * On a touch screen a bare `:hover` rule sticks to the last link tapped, which reads as a
+ * selection that will not clear. */
+@media (hover: hover) {
+    a:hover { text-decoration-thickness: 2px; }
+}
 
 :focus-visible {
     outline: 2px solid var(--accent);
@@ -131,10 +140,36 @@ nav.site {
     flex-wrap: wrap;
 }
 
-nav.site a { color: var(--muted); text-decoration: none; }
-nav.site a:hover, nav.site a[aria-current="page"] { color: var(--text); }
+nav.site a {
+    color: var(--muted);
+    text-decoration: none;
+    /* The text is the target; padding makes it a comfortable ~39px tall one. Vertical only, so
+     * the row cannot get any wider and start wrapping earlier. */
+    padding-block: 8px;
+}
+nav.site a[aria-current="page"] { color: var(--text); }
 
-main { padding: 52px 0 72px; }
+/* A card that is one link: the whole surface is the target rather than the heading alone, so the
+ * shape that looks pressable is pressable. The heading takes the accent colour, which is what
+ * says "link" now that the anchor's own underline is off. */
+a.card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    transition-property: border-color, background-color;
+    transition-duration: 140ms;
+    transition-timing-function: ease-out;
+}
+a.card h3 { color: var(--accent); }
+
+@media (hover: hover) {
+    nav.site a:hover { color: var(--text); }
+    a.card:hover { border-color: var(--border); background-color: rgba(255, 255, 255, 0.07); }
+}
+
+/* The header is sticky, so a jump to `#main` — the skip link's target — would otherwise land with
+ * the first heading hidden underneath it. */
+main { padding: 52px 0 72px; scroll-margin-top: 76px; }
 
 section { margin: 0 0 52px; }
 section:last-of-type { margin-bottom: 0; }
@@ -176,6 +211,12 @@ h3 {
 
 p { margin: 0 0 16px; max-width: var(--measure); }
 p.lede { font-size: 19px; color: var(--muted); max-width: 62ch; }
+
+/* Wrap deliberately: headings balance across their lines rather than leaving one long one and one
+ * short one, and body text avoids a single word stranded on its own last line. Both are
+ * best-effort — a browser that does not know them wraps exactly as it did before. */
+h1, h2, h3 { text-wrap: balance; }
+p, li, dd, figcaption { text-wrap: pretty; }
 
 ul, ol { max-width: var(--measure); padding-left: 22px; }
 li + li { margin-top: 7px; }
@@ -274,6 +315,9 @@ a.button, button.button {
     font-weight: 550;
     cursor: pointer;
     font-family: inherit;
+    transition-property: transform, border-color, filter;
+    transition-duration: 140ms;
+    transition-timing-function: ease-out;
 }
 a.button.primary {
     background: linear-gradient(160deg, var(--accent), #2f6fd0);
@@ -281,8 +325,12 @@ a.button.primary {
     color: #06121f;
     font-weight: 640;
 }
-a.button:hover, button.button:hover { border-color: rgba(255, 255, 255, 0.22); }
-a.button.primary:hover { filter: brightness(1.06); }
+@media (hover: hover) {
+    a.button:hover, button.button:hover { border-color: rgba(255, 255, 255, 0.22); }
+    a.button.primary:hover { filter: brightness(1.06); }
+}
+/* Press feedback: one value, named properties, no bounce. */
+a.button:active, button.button:active { transform: scale(0.96); }
 
 table {
     width: 100%;
@@ -297,9 +345,12 @@ th, td {
     vertical-align: top;
 }
 th { color: var(--muted); font-weight: 600; font-size: 14px; }
-td.yes { color: var(--good); white-space: nowrap; }
-td.no { color: var(--faint); white-space: nowrap; }
-td.partial { color: var(--warning); white-space: nowrap; }
+/* Deliberately not `nowrap`: these cells carry short phrases like "Read-only until recorded", and
+ * at 320px or 200% zoom a table that refuses to wrap is the thing that scrolls out of the
+ * viewport with no cue that it can. */
+td.yes { color: var(--good); }
+td.no { color: var(--faint); }
+td.partial { color: var(--warning); }
 
 .scroll-x { overflow-x: auto; }
 
@@ -329,7 +380,9 @@ dl.faq dd {
     margin: 0 0 22px;
 }
 .crumb a { color: var(--muted); text-decoration: none; }
-.crumb a:hover { color: var(--text); }
+@media (hover: hover) {
+    .crumb a:hover { color: var(--text); }
+}
 .crumb ol { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; }
 .crumb li + li::before { content: "/"; margin-right: 8px; color: var(--border); }
 
