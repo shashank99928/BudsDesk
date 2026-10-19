@@ -13,7 +13,7 @@ measured, inferred, or unconfirmed.
 [Website](https://shashank99928.github.io/BudsDesk/) ·
 [Protocol notes](protocol/PROTOCOL.md)
 
-> **Status: v0.1.1, one model verified.** OnePlus Buds 4 is measured end to end and every control
+> **Status: v0.1.2, one model verified.** OnePlus Buds 4 is measured end to end and every control
 > listed as "measured" below writes to it. Any other model in the family connects and reads, with no
 > write path, because nothing about writing to it has been observed. That is a design decision, not a
 > gap waiting to be filled by optimism.

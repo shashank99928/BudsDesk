@@ -6,6 +6,54 @@ and [Semantic Versioning](https://semver.org/).
 The honesty rule applies here as everywhere else: a version is not described as supporting a model
 unless that model was measured. What is listed as *not* included is as deliberate as what is.
 
+## [0.1.2] — 2026-10-19
+
+### Changed
+
+- **The window answers the pointer.** Every control used `.buttonStyle(.plain)`, which on macOS
+  draws nothing while a button is held, so a pressed control looked identical to one that was not.
+  The pills, Disconnect, the BassWave steppers and the log toggle now compress to 0.96 on a 150 ms
+  ease-out curve — the same curve selection uses, so pressing and selecting do not fight.
+- **Cards are concentric.** The card's outer radius is the inner radius plus its own padding (24pt
+  over 10pt at 14pt of padding). Two curves of the same radius, one nested in the other, read as
+  thicker on the inside than the outside.
+- **The log says what it will draw.** "Show N lines" described a box that draws the newest 60, and
+  the number changed the button's width as it grew. It now says "Show the last 60 of 214 lines",
+  uses tabular digits, opens scrolled to the newest line, has an empty state, a hit target and
+  border to match the other controls, a tooltip, and ⌘L.
+- **The site uses the app's own icon in its header**, one flat accent on the primary button instead
+  of a gradient whose second blue belonged to nothing else, and the app's muted/faint values
+  instead of two that had drifted. The primary button's ink measured 3.86:1 and now measures 7.6:1.
+
+### Fixed
+
+- **Reduce Motion was ignored.** The flag was read by a helper struct that draws nothing, and
+  `@Environment` is filled in only while a view updates — so the app animated for anyone who had
+  asked it not to, with nothing failing. It is now read by the views that animate, and a test
+  refuses an `@Environment` declaration that is not inside a View.
+- **The published control service UUID was wrong.** The repository stated
+  `0000799a-d102-11e1-9b23-00025b00a5a5`; the earbuds' own SDP record and the vendor app's raw
+  string pool both say `0000079a-…`. The byte form the app opens the channel with was always
+  correct, so nothing failed — only the one digit that got published. The service's recorded name
+  was wrong for the same reason (`enco link` is what the device reports; the old value came from a
+  template in the ingest tool, not from hardware). See `EVIDENCE.md` and D13.
+
+### Added
+
+- **`EVIDENCE.md`**, the ledger every protocol fact is stated from: one row per fact, a confidence
+  of measured / inferred / unconfirmed, and a citation to a byte offset, a class and method, or a
+  frame, so anyone with the same file and hash can re-check it.
+- **`Tools/dex-strings.py`**, which reads a DEX string table directly with file offsets, because a
+  decompiler is lossy and has now hidden a literal here twice.
+- **The earbuds' SDP record as read** (`capture/sdp-oneplus-buds-4-2026-10-19.txt`), which is where
+  channel 29 (`WATCH`) first appears — advertised by hardware this project supports and described
+  nowhere in it.
+
+### Verified
+
+- 182 protocol checks (the self-check), 28 SF Symbol names, 25 recorded frames from one model,
+  and 59 tests.
+
 ## [0.1.1] — 2026-10-19
 
 ### Fixed
