@@ -100,6 +100,17 @@ final class DocumentationTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(captures(#""softwareVersion": "([0-9.]+)""#, in: home).first,
                                      "the site no longer advertises a version"),
                        built, "the site advertises a different version than the bundle builds")
+        XCTAssertEqual(try XCTUnwrap(
+            captures(#"Latest release <strong>v([0-9.]+)</strong>"#, in: home).first,
+            "the site no longer says which release is current"),
+                       built, "the site shows an older release than the one people can download")
+
+        // The changelog's newest heading is the release the version above describes, and a reader
+        // with a bug to report looks there first for whether it was already fixed.
+        let changelog = try document("CHANGELOG.md")
+        XCTAssertEqual(try XCTUnwrap(captures(#"## \[([0-9.]+)\]"#, in: changelog).first,
+                                     "the changelog has no released version at the top"),
+                       built, "the changelog's newest release is not the version the app is")
 
         // One download, named once: a reader who finds the app on the site and reads about it in
         // the README must be sent to the same place.
