@@ -21,12 +21,12 @@ change our mind. Newest last.
 - `OnePlusBuds4Mac` is a shipping product with a name, a bundle identifier, a site, a DMG and a
   release history. Its value is that it is honest about *one* device: it says "OnePlus Buds 4"
   everywhere and its README claims exactly what has been measured on that unit.
-- The same repository contains a protocol core (`Sources/BudsBarKit/Protocol.swift`, 1523 lines)
-  that is not model-specific at all: it is pure functions over `[UInt8]`, imports only
+- The sibling repository contains a protocol core (`OnePlusBuds4Mac:Sources/BudsBarKit/Protocol.swift`,
+  1523 lines) that is not model-specific at all: it is pure functions over `[UInt8]`, imports only
   `Foundation` and `os`, and its only link to the corpus is a single line that injects
   `FixtureCorpus.frames`.
-- The generic plan already existed as a written spec (`heymelody-master-prompt.md`, 314 lines)
-  and had never been turned into code or a repository.
+- The generic plan already existed as a written spec (the `heymelody-master-prompt.md` kept outside
+  this repository, 314 lines) and had never been turned into code or a repository.
 
 **Decision:** option 2. New repository, `BudsDesk`. `OnePlusBuds4Mac` keeps shipping unchanged.
 
