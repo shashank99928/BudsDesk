@@ -261,6 +261,32 @@ final class DocumentationTests: XCTestCase {
                        "a page a search engine is told about and a page that ships have diverged")
     }
 
+    // MARK: - Motion belongs to a view
+
+    /// `@Environment` is filled in while a **view** updates. Reduce Motion used to be read by a
+    /// small helper struct that drew nothing, so the value it saw was the default and the app
+    /// animated for anyone who had asked it not to — with nothing failing. The setting is now read
+    /// by the views that animate, and this states the rule against the source, because behaviour a
+    /// unit test cannot see is exactly how it went unnoticed.
+    func testReduceMotionIsReadByAViewAndNotByAHelperStruct() throws {
+        for path in ["Sources/BudsDeskMac/Theme.swift", "Sources/BudsDeskMac/Controls.swift"] {
+            let lines = try document(path).components(separatedBy: "\n")
+            for (index, line) in lines.enumerated() {
+                // Declarations only: the word also appears in the prose explaining this rule, and a
+                // comment is not a place SwiftUI injects anything.
+                guard line.trimmingCharacters(in: .whitespaces).hasPrefix("@Environment") else { continue }
+                let declaration = lines[..<index].last {
+                    let head = $0.trimmingCharacters(in: .whitespaces)
+                    return head.hasPrefix("struct ") || head.hasPrefix("private struct ")
+                        || head.hasPrefix("final class ") || head.hasPrefix("enum ")
+                }
+                XCTAssertTrue(declaration?.contains("View") == true,
+                              "\(path):\(index + 1) reads the environment from a type that is not "
+                              + "a View; the value will be the default and Reduce Motion ignored")
+            }
+        }
+    }
+
     // MARK: - One value, in every form it is written
 
     /// The control service UUID was wrong here for the life of the repository. The byte array the

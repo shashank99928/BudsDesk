@@ -185,7 +185,7 @@ final class AppModel: ObservableObject {
         } catch {
             registry = nil
             problem = error.localizedDescription
-            status = "The capability registry could not be read."
+            status = "The capability registry could not be read. Reinstalling BudsDesk restores it."
         }
     }
 
@@ -262,7 +262,8 @@ final class AppModel: ObservableObject {
         guard let profile = registry.profile(
             advertisedName: candidate.advertisedName,
             serviceUUIDs: [DeviceCatalog.controlServiceUUIDString]) else {
-            problem = "No profile matched and the registry has no fallback."
+            problem = "No profile matched, and the registry has no fallback for this device. "
+                    + "Update BudsDesk, or pair a model it knows."
             return
         }
         self.profile = profile

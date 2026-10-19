@@ -14,7 +14,7 @@ struct DeviceWindow: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 16) {
                 StatusHeader(model: model)
 
                 if !model.hasRegistry {
@@ -71,6 +71,7 @@ extension EQPreset {
 
 private struct StatusHeader: View {
     @ObservedObject var model: AppModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -86,12 +87,15 @@ private struct StatusHeader: View {
             Spacer(minLength: 8)
             if model.isReady || model.isOpening {
                 Button("Disconnect") { model.disconnect() }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressButtonStyle(animation: Theme.motion(reduceMotion)))
                     .font(.system(size: 11))
                     .foregroundStyle(Theme.secondaryText)
                     .padding(.horizontal, 10)
                     .frame(height: 26)
                     .background(Color.white.opacity(0.06), in: Capsule())
+                    .contentShape(Capsule())
+                    .help("Close the control channel. The earbuds stay connected to this Mac as "
+                          + "audio devices.")
                     .accessibilityLabel("Disconnect from the earbuds")
             }
         }
@@ -349,6 +353,7 @@ private struct BassWaveCard: View {
     @ObservedObject var model: AppModel
     let session: Session
     let profile: DeviceProfile
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Card(title: "BassWave", subtitle: subtitle, note: note) {
@@ -415,9 +420,10 @@ private struct BassWaveCard: View {
                 .background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 8))
                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.cardStroke, lineWidth: 1))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressButtonStyle(animation: Theme.motion(reduceMotion)))
         .disabled(!enabled)
         .opacity(enabled ? 1 : 0.5)
+        .help(symbol == "plus" ? "Raise BassWave by one step" : "Lower BassWave by one step")
         .accessibilityLabel(symbol == "plus" ? "Increase BassWave" : "Decrease BassWave")
     }
 }
@@ -482,7 +488,7 @@ private struct GesturesCard: View {
         }
         .foregroundStyle(Theme.primaryText)
         .padding(.horizontal, 10)
-        .frame(height: Theme.unselectedHeight)
+        .frame(minHeight: Theme.unselectedHeight)
         .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
     }
 
@@ -498,7 +504,7 @@ private struct GesturesCard: View {
 
     private var note: String? {
         var lines = ["Only action codes this hardware has been seen to store are offered — the "
-                     + "firmware validates nothing, so a value outside the phone's own list would "
+                     + "firmware validates nothing, so a value outside the phone’s own list would "
                      + "leave its screen with no selection."]
         if !profile.canWrite(.gestures) {
             lines.append("This model has no measured write path for gestures.")
@@ -534,6 +540,9 @@ private struct LinkedDevicesCard: View {
                                 .font(.system(size: 12))
                                 .foregroundStyle(Theme.primaryText)
                                 .lineLimit(1)
+                                // A truncated name is unrecoverable otherwise, and on a
+                                // multi-connect list two long names are the common case.
+                                .help(device.name)
                             Spacer(minLength: 6)
                             if device.isMainAudioDevice {
                                 tag("audio", Theme.accent)
@@ -568,14 +577,14 @@ private struct LinkedDevicesCard: View {
     }
 
     private var subtitle: String {
-        "Read from the earbuds' own table: one getter, answered with the same body the device "
+        "Read from the earbuds’ own table: one getter, answered with the same body the device "
         + "pushes when the list changes."
     }
 
     private var note: String? {
         profile.canWrite(.multipoint)
             ? nil
-            : "The vendor's SDK does implement a setter for this, and its shape is known — but it "
+            : "The vendor’s SDK does implement a setter for this, and its shape is known — but it "
               + "has never been seen working on this hardware, so there is no way to make a linked "
               + "device come or go from here."
     }
@@ -626,31 +635,63 @@ private struct DetailsCard: View {
 private struct ActivityCard: View {
     @ObservedObject var model: AppModel
     @State private var isExpanded = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// How many of the newest lines the open log draws. Named, because the button's label has to
+    /// agree with it: a control offering "200 lines" over a box holding sixty is a small lie.
+    private static let shownLines = 60
 
     var body: some View {
         Card(title: "Activity", subtitle: subtitle) {
             if isExpanded {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 3) {
-                        ForEach(Array(model.activity.suffix(60).enumerated()), id: \.offset) { _, line in
-                            Text(line)
-                                .font(.system(size: 10, design: .monospaced))
-                                .foregroundStyle(Theme.secondaryText)
-                                .textSelection(.enabled)
-                                .fixedSize(horizontal: false, vertical: true)
+                if model.activity.isEmpty {
+                    Text("Nothing yet. Commands and replies are listed here as they happen.")
+                        .font(.system(size: 10))
+                        .foregroundStyle(Theme.tertiaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 3) {
+                            ForEach(Array(model.activity.suffix(Self.shownLines).enumerated()),
+                                    id: \.offset) { _, line in
+                                Text(line)
+                                    .font(.system(size: 10, design: .monospaced))
+                                    .foregroundStyle(Theme.secondaryText)
+                                    .textSelection(.enabled)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: 140)
+                    // The newest line is the one being looked for, so the log opens at its end.
+                    .defaultScrollAnchor(.bottom)
                 }
-                .frame(height: 140)
             }
-            Button(isExpanded ? "Hide" : "Show \(model.activity.count) lines") {
-                isExpanded.toggle()
-            }
-            .buttonStyle(.plain)
-            .font(.system(size: 11))
-            .foregroundStyle(Theme.accent)
+            Button(toggleLabel) { isExpanded.toggle() }
+                .buttonStyle(PressButtonStyle(animation: Theme.motion(reduceMotion)))
+                .font(.system(size: 11))
+                .foregroundStyle(Theme.accent)
+                .monospacedDigit()
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
+                .background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 8))
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.cardStroke, lineWidth: 1))
+                .contentShape(RoundedRectangle(cornerRadius: 8))
+                .help("Show or hide the protocol log")
+                // The shortcut a log is expected to have, so it does not have to be found.
+                .keyboardShortcut("l", modifiers: .command)
         }
+    }
+
+    /// The count is what the log will draw, not what it holds.
+    private var toggleLabel: String {
+        if isExpanded { return "Hide" }
+        let total = model.activity.count
+        if total == 0 { return "Show the log" }
+        let shown = min(total, Self.shownLines)
+        let noun = total == 1 ? "line" : "lines"
+        return total > shown ? "Show the last \(shown) of \(total) \(noun)" : "Show \(total) \(noun)"
     }
 
     private var subtitle: String {

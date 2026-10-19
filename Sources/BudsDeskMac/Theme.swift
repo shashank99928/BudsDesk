@@ -37,16 +37,43 @@ enum Theme {
 
     static let selectedHeight: CGFloat = 36
     static let unselectedHeight: CGFloat = 30
+    /// The radius of the small controls inside a card.
     static let corner: CGFloat = 10
+    /// The radius of the card itself: `corner` plus the card's own 14-point padding, so the inner
+    /// and outer curves share a centre. Two curves of the same radius, one nested in the other,
+    /// read as thicker on the inside — which is the tell of a template rather than a design.
+    static let cardCorner: CGFloat = 24
+
+    // MARK: Motion
+
+    /// Whether the system asks for less movement. Every animation in this app is decorative, so
+    /// honouring this costs nothing — but it must be read from a **view**. `@Environment` is filled
+    /// in while a view updates, so a helper struct that draws nothing reads the default and the
+    /// setting is quietly ignored. Hence a function that takes the flag rather than a type that
+    /// holds it.
+    static func motion(_ reduceMotion: Bool) -> Animation? {
+        reduceMotion ? nil : .easeOut(duration: 0.15)
+    }
 }
 
-/// Whether the system asks for less movement. Every animation in this app is decorative, so
-/// honouring this costs nothing but must not be forgotten.
-struct Motion {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+/// Press feedback, for every button in the window.
+///
+/// A plain SwiftUI button draws no pressed state on macOS, so a control that is being held looks
+/// exactly like one that is not, and the window reads as unresponsive. `0.96` is the smallest
+/// scale that is clearly visible without the label appearing to move, and it runs on the same
+/// 150 ms curve as selection so pressing and selecting do not fight each other.
+///
+/// The animation arrives as a parameter rather than being read here, for the reason above: a
+/// `ButtonStyle` is not a view, so a value read inside this body would come from wherever the
+/// style happened to be created rather than from the window being drawn.
+struct PressButtonStyle: ButtonStyle {
+    var animation: Animation?
+    var pressedScale: CGFloat = 0.96
 
-    func animation(_ animation: Animation = .easeInOut(duration: 0.18)) -> Animation? {
-        reduceMotion ? nil : animation
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? pressedScale : 1)
+            .animation(animation, value: configuration.isPressed)
     }
 }
 
@@ -66,6 +93,10 @@ struct Card<Content: View>: View {
                 Text(title)
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Theme.primaryText)
+                    // A card title is a heading in the window's structure, not just bold text: a
+                    // screen-reader user can then move card to card instead of listening through
+                    // every control in between.
+                    .accessibilityAddTraits(.isHeader)
                 if let subtitle {
                     Text(subtitle)
                         .font(.system(size: 11))
@@ -83,8 +114,8 @@ struct Card<Content: View>: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.card, in: RoundedRectangle(cornerRadius: Theme.corner))
-        .overlay(RoundedRectangle(cornerRadius: Theme.corner).stroke(Theme.cardStroke, lineWidth: 1))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: Theme.cardCorner))
+        .overlay(RoundedRectangle(cornerRadius: Theme.cardCorner).stroke(Theme.cardStroke, lineWidth: 1))
     }
 }
 
@@ -105,7 +136,12 @@ struct Pill: View {
     let action: () -> Void
 
     @State private var isHovering = false
-    private var motion = Motion()
+    /// Read here, in the view that animates, rather than in a helper: `@Environment` is filled in
+    /// during a view's own update, so a value read outside one is the default and Reduce Motion
+    /// would be ignored without anything failing.
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var pressAnimation: Animation? { Theme.motion(reduceMotion) }
 
     /// Explicit rather than the memberwise one, which the private state above makes private.
     init(label: String, symbol: String? = nil, detail: String? = nil,
@@ -163,12 +199,12 @@ struct Pill: View {
             }
             .contentShape(RoundedRectangle(cornerRadius: Theme.corner))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressButtonStyle(animation: pressAnimation))
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.62)
         .onHover { isHovering = isEnabled && $0 }
-        .animation(motion.animation(), value: isSelected)
-        .animation(motion.animation(), value: isPending)
+        .animation(pressAnimation, value: isSelected)
+        .animation(pressAnimation, value: isPending)
         // Accessibility: the label is the name, the selection is the value, and the selected
         // trait is set so a screen reader announces which one is chosen rather than making the
         // user infer it from the name alone.

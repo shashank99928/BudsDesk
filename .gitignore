@@ -23,3 +23,7 @@ xcuserdata/
 *.apk
 apk/
 jadx-out/
+
+# Third-party agent skills installed locally for a design pass. Kept out of the repository:
+# they are somebody else's writing, and this project ships its own source, not a skill bundle.
+.agents/
