@@ -461,7 +461,7 @@ public enum BudsDeskCLI {
     }
 
     /// The version to report when there is no bundle to ask.
-    static let sourceFallbackVersion = "0.1.0"
+    static let sourceFallbackVersion = "0.1.1"
 
     static let usage = """
     budsdesk — a macOS app for OPPO / OnePlus / realme TWS earbuds, by measurement.

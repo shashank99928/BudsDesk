@@ -6,7 +6,7 @@ and [Semantic Versioning](https://semver.org/).
 The honesty rule applies here as everywhere else: a version is not described as supporting a model
 unless that model was measured. What is listed as *not* included is as deliberate as what is.
 
-## [Unreleased]
+## [0.1.1] — 2026-10-19
 
 ### Fixed
 
