@@ -119,6 +119,21 @@ Edit `devices/<model>.json`:
 A capture that shows a setting being refused is a fixture like any other. It is what stops the next
 person from spending an evening rediscovering it.
 
+### 6. Redraw the window
+
+A promoted capability turns on a card that was not there before, and the drawings in the repository
+are of the window without it — so `./build.sh` will now fail its `--compare`, which is the check
+working rather than a problem. Regenerate deliberately, look at the result, and commit it with the
+capture:
+
+```sh
+./BudsDesk.app/Contents/MacOS/BudsDesk --render
+open docs/assets/connected.png
+```
+
+That is where a broken row, a clipped label or a card that does not fit gets found — the compiler
+cannot see any of them, and neither can a test that only reads state.
+
 ## What this loop cannot establish, on any model
 
 - **The charging case's charge.** It never appears on this channel. Full captures on a measured unit
