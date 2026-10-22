@@ -396,7 +396,8 @@ final class DocumentationTests: XCTestCase {
             let links = captures(#"(?:href|src)="/BudsDesk/([^#"?]*)""#, in: body)
             // A page's own assets, written relative. A missing one draws nothing at all, which is
             // the kind of absence nobody reports as a bug.
-            let assets = captures(#"(?:href|src)="(assets/[^"]+)""#, in: body)
+            // A cache-busting query after the path names the same file, so it is not part of it.
+            let assets = captures(#"(?:href|src)="(assets/[^"?]+)(?:\?[^"]*)?""#, in: body)
 
             for target in Set(links + assets) {
                 let file = Self.site.appendingPathComponent(target.isEmpty ? "index.html" : target)
