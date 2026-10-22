@@ -54,7 +54,7 @@
             toggle.addEventListener("click", function () {
                 var next = isDark() ? "light" : "dark";
                 root.dataset.theme = next;
-                try { localStorage.setItem("budsdesk-theme", next); } catch (error) { }
+                try { localStorage.setItem("budsdesk-appearance", next); } catch (error) { }
                 paint(toggle);
             });
 
