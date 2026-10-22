@@ -10,6 +10,13 @@ unless that model was measured. What is listed as *not* included is as deliberat
 
 ### Changed
 
+- **The window on the site is the app's window, and you can press it.** The picture the app draws
+  is still there and still verified by the build, but the page now shows the window itself,
+  rebuilt in HTML and CSS with the app's own colours, labels and values: press a noise mode and it
+  goes pending, waits for the readback, and settles on the mode the earbuds answered with, with
+  the answering frame shown beside it. The brand pages for the models nobody has recorded carry
+  the same window with every control drawn disabled and the reason on the card, which is the state
+  an Enco or a realme earbud actually gets. See D15.
 - **The site is a product page now.** It was a dark document of the project's reasoning; it is
   a plain bar, one first screen with the app's own window in it, and the argument in sections:
   what it does, what it will not do, which models work, how to install, and the questions. The
@@ -33,12 +40,17 @@ unless that model was measured. What is listed as *not* included is as deliberat
 
 - **`Tools/capture-html.py`**, which writes the site's frames section out of the capture file
   rather than out of a transcription of it, and **`Tools/refresh-chrome.py`**, which puts the
-  bar and the footer on every page in one place instead of one copy per page.
+  bar, the footer and the read-only window on every page in one place instead of one copy per
+  page.
+- **Three tests that hold the window to the app**: the controls it offers are the ones the
+  registry says the model has, with the labels the app draws them with; the values it shows are
+  the ones the recording carries; and a page about a model nobody has recorded draws every
+  control disabled and quotes no bytes.
 
 ### Verified
 
 - 182 protocol checks (the self-check), 28 SF Symbol names, 25 recorded frames from one model,
-  and 60 tests.
+  and 62 tests.
 
 ## [0.1.2] — 2026-10-19
 

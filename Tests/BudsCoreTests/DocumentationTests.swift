@@ -269,6 +269,120 @@ final class DocumentationTests: XCTestCase {
             XCTAssertTrue(frames.values.contains { $0 == normalised },
                           "the site shows bytes that are not in the capture: \(normalised)")
         }
+
+        // The window quotes its frames as data, so the same check applies to that block.
+        let data = try XCTUnwrap(captures(#"<script type="application/json" id="budsdesk-frames">\s*(.*?)\s*</script>"#,
+                                          in: home).first,
+                                 "the page has no frames for the window to quote")
+        let quoted = try XCTUnwrap(try JSONSerialization.jsonObject(with: Data(data.utf8))
+                                 as? [String: [String: String]],
+                                 "the window's frames are not a dictionary of frames")
+        XCTAssertGreaterThanOrEqual(quoted.count, 8, "the window quotes too few frames")
+        for (name, frame) in quoted {
+            let recorded = try XCTUnwrap(frames[name],
+                                         "the window quotes a frame the capture does not hold: \(name)")
+            XCTAssertEqual(frame["hex"], recorded, "the window's copy of \(name) is not the capture's")
+        }
+    }
+
+    // MARK: - The window on the page is the app's window
+
+    /// The home page carries the app's window, rebuilt in the page so that it can be pressed.
+    /// A rebuilt window is a second version of the app, and a second version is exactly what
+    /// this project exists to avoid: so the window is held to the code for what it offers and
+    /// to the capture for what it says.
+    ///
+    /// The controls come from the registry, the labels from the same enums the app draws them
+    /// from, and the values from the recording the app replays.
+    func testTheWindowOnThePageOffersWhatTheAppOffers() throws {
+        let home = try page(Self.site.appendingPathComponent("index.html"))
+        let registry = try CapabilityRegistry.load(from: Self.root.appendingPathComponent("devices"))
+        let profile = try XCTUnwrap(registry.profile(id: "oneplus-buds-4"),
+                                    "the model the window shows is not in the registry")
+
+        // The noise modes, each with the label the app draws it with.
+        for mode in profile.noiseModes {
+            XCTAssertTrue(home.contains("data-mode=\"\(mode.rawValue)\""),
+                          "the window does not offer the mode \(mode.label)")
+            XCTAssertTrue(home.contains(">\(mode.label)<"),
+                          "the window does not call the mode \(mode.label) by the app's name")
+        }
+        XCTAssertEqual(captures(#"data-mode="([a-zA-Z]+)""#, in: home).count,
+                       profile.noiseModes.count,
+                       "the window offers a mode the registry does not have for this model")
+
+        // The cancellation levels.
+        for level in profile.ancLevels {
+            XCTAssertTrue(home.contains("data-level=\"\(level.rawValue)\""),
+                          "the window does not offer the level \(level.label)")
+        }
+        XCTAssertEqual(captures(#"data-level="([a-z]+)""#, in: home).count,
+                       profile.ancLevels.count,
+                       "the window offers a level the registry does not have for this model")
+
+        // The equalizer presets, by the app's own names.
+        for preset in profile.eqPresets {
+            XCTAssertTrue(home.contains(">\(preset.label)<"),
+                          "the window does not offer the preset \(preset.label)")
+        }
+
+        // The values the window shows are the recording's. The capture's own comment says what
+        // the earbuds reported, so the page has to say the same thing.
+        let capture = try document("captures/oneplus-buds-4-2026-10-17/frames.hex")
+        let reported = try XCTUnwrap(captures(#"# 0x8106: ([^\n]*)"#, in: capture).first,
+                                     "the capture does not say what the battery reply carried")
+        let figures = captures(#"[LR] (\d+)%"#, in: reported)
+        XCTAssertEqual(figures.count, 2, "the capture does not say what both buds reported")
+        for value in figures {
+            XCTAssertTrue(home.contains(">\(value)%<"),
+                          "the window shows a battery figure the recording does not carry: \(value)%")
+        }
+
+        // The firmware string is the earbuds' own, comma separated and not tidied up.
+        let version = try XCTUnwrap(captures(#"firmware-reply = ([0-9a-f ]+)"#, in: capture).first,
+                                     "the capture has no firmware reply")
+        let bytes = version.split(separator: " ").compactMap { UInt8(String($0), radix: 16) }
+        let text = String(decoding: bytes.dropFirst(11), as: UTF8.self)
+        XCTAssertTrue(home.contains(text),
+                      "the window does not show the firmware string the earbuds reported")
+    }
+
+    /// The brand pages carry the same window in the state a model nobody has recorded is in:
+    /// every control drawn disabled with the reason on it. A page about an unmeasured model
+    /// that showed working controls would be claiming a support that does not exist.
+    func testTheBrandPagesShowTheWindowWithEveryControlDisabled() throws {
+        let registry = try CapabilityRegistry.load(from: Self.root.appendingPathComponent("devices"))
+        let fallback = try XCTUnwrap(registry.profile(id: "generic-family"),
+                                     "the fallback profile the brand pages show is not in the registry")
+
+        for name in ["oppo-buds-on-mac.html", "realme-buds-on-mac.html"] {
+            let body = try page(Self.site.appendingPathComponent(name))
+            XCTAssertTrue(body.contains("class=\"window\""), "\(name) has no window")
+            XCTAssertTrue(body.contains("Verified write paths: none"),
+                          "\(name) does not say the write paths it has, which are none")
+
+            // Every control the window offers is the one the fallback profile offers, and not
+            // one of them can be pressed.
+            for mode in fallback.noiseModes {
+                XCTAssertTrue(body.contains(">\(mode.label)<"),
+                              "\(name) does not show the mode \(mode.label)")
+            }
+            for level in fallback.ancLevels {
+                XCTAssertTrue(body.contains(">\(level.label)<"),
+                              "\(name) does not show the level \(level.label)")
+            }
+            for preset in fallback.eqPresets {
+                XCTAssertTrue(body.contains(">\(preset.label)<"),
+                              "\(name) does not show the preset \(preset.label)")
+            }
+            XCTAssertEqual(captures(#"class="wpill is-disabled""#, in: body).count,
+                           fallback.noiseModes.count + fallback.ancLevels.count
+                               + fallback.eqPresets.count,
+                           "\(name) draws a control that can be pressed on a model with no "
+                           + "measured write path")
+            XCTAssertFalse(body.contains("data-frame="),
+                           "\(name) quotes bytes for a model that has not been recorded")
+        }
     }
 
     // MARK: - The site's own links

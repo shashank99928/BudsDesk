@@ -574,3 +574,61 @@ recording on the page is the part that no competitor can copy, because theirs di
 would say the recording was decoration. And a recording that stops being quotable — if the frames
 ever had to be paraphrased to fit a page, the page would be making the project say something it
 does not say, and the frames would come off it.
+
+---
+
+## D15 — The window on the page is the app's window, rebuilt in HTML and pressed, not a picture of one
+
+**Date:** 2026-10-22
+
+**Options**
+
+1. Keep the picture. The site's window is the PNG the app draws, cropped and captioned, and the
+   visitor looks at it.
+2. Rebuild the window in the page — the same cards, the same labels, the same values, in HTML and
+   CSS — and let a visitor press it.
+3. Embed the app itself, so what is on the page is literally the program. The app is a macOS
+   binary; there is no way to run it in a browser, and the site must work with no network at all.
+
+**Evidence**
+
+- The picture was already a drawing, not a photograph: `BudsDesk --render` draws the window from
+  the recording and `build.sh` fails if the drawing stops matching. So the honest part was never
+  in question; what the picture could not do was answer a question. A visitor looking at a
+  screenshot of a control panel learns what the panel looks like; a visitor who presses it learns
+  what the control *does*, and this project's whole claim is about what the control does.
+- The app has one rule that a picture cannot show and a press can: a write is not applied when it
+  is sent, it is applied when the earbuds read it back (`Session.write` marks the capability
+  unconfirmed, and only the readback settles it). That rule is the difference between this app and
+  one that claims success, and it was being stated in prose on a page that showed a still of a
+  window that had already settled.
+- The frames the earbuds answered with are in the capture, one per mode and one per level, so a
+  press can show the real answer rather than a plausible one: `anc-reply-off`, `anc-reply-nc-high`,
+  `anc-reply-adaptive` and the rest, each with the bytes and the note that came with it.
+- A rebuilt window is a second version of the app, and the project's own evidence ledger says a
+  second copy that drifts is the failure mode that matters. The D13 rule ("a tool may only write
+  what it can see") is the same rule applied to a page: the window may only offer the controls the
+  registry says the model has, may only show the values the recording carries, and may only quote
+  bytes the capture holds. Three tests now hold it to exactly that.
+
+**Decision:** option 2, and the same window in two states. On the front page it is the measured
+model, and pressing a mode goes pending, waits for the readback, and settles on the mode the
+earbuds answered with — with the answering frame shown beside it. On the brand pages for the
+models nobody has recorded it is the same window with every control drawn disabled and the reason
+on the card, and its own foot reading *Verified write paths: none*, which is the app's own words
+for the thing those pages are about.
+
+The picture the app draws is not deleted: it is one click away from the window, and the build
+still checks it. It is no longer what the page shows, because a window you can press says more
+than a picture of one.
+
+**Why:** the site's job is to make a claim and let a reader check it. The claim is that this app
+controls the earbuds and never claims a control it cannot back. A picture is evidence of the
+first half only. A press is evidence of both, and the bytes that answer the press are the same
+bytes the app's tests replay.
+
+**What would change our mind:** if the window drifted from the app — if it offered a control the
+registry does not have, or showed a value the recording does not carry, or quoted a frame the
+capture does not hold. The tests are what makes that impossible rather than unlikely; if a
+control arrives in the app that the page cannot show, the page is what has to change, and if the
+window's own layout in the app changes, the page follows it.

@@ -21,6 +21,7 @@ the file.
 
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import sys
@@ -57,6 +58,25 @@ ENTRIES: list[tuple[str, list[tuple[str, str]]]] = [
 ]
 
 FRAME = re.compile(r"^(?P<name>[a-z0-9-]+)\s*=\s*(?P<hex>[0-9a-f ]+)$")
+
+# The frames the interactive window quotes, one per control it draws. The window shows the
+# bytes the earbuds sent back, so every one of these has to be a frame the capture holds:
+# a control that showed a frame nobody recorded would be the app inventing an answer.
+WINDOW_FRAMES = [
+    "anc-reply-off",
+    "anc-reply-nc-high",
+    "anc-reply-nc-moderate",
+    "anc-reply-nc-low",
+    "anc-reply-nc-auto",
+    "anc-reply-transparency",
+    "anc-reply-adaptive",
+    "eq-reply-balanced",
+    "eq-reply-bass",
+    "eq-push-balanced",
+    "eq-push-bass",
+    "basswave-reply-0",
+    "basswave-reply-2",
+]
 
 
 def read_capture() -> dict[str, dict[str, str]]:
@@ -122,6 +142,17 @@ def build(frames: dict[str, dict[str, str]]) -> str:
             lines.append(f"        <p class=\"wire-note\">{shorten(frame['comment'])}</p>")
         lines.append("      </div>")
     lines.append("    </div>")
+    lines.append("    <script type=\"application/json\" id=\"budsdesk-frames\">")
+    quoted = {}
+    for name in WINDOW_FRAMES:
+        frame = frames.get(name)
+        if frame is None:
+            raise SystemExit(
+                f"the capture has no frame named `{name}`; the window cannot show a frame that "
+                "was not recorded")
+        quoted[name] = {"hex": frame["hex"], "note": shorten(frame["comment"])}
+    lines.append(json.dumps(quoted, indent=2, sort_keys=True))
+    lines.append("    </script>")
     return "\n".join(lines)
 
 

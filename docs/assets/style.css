@@ -625,6 +625,10 @@ figure.crop figcaption {
     align-items: start;
 }
 
+/* The read-only window in the second column of a split, at the width the app draws it. */
+.split .window { max-width: 440px; }
+.split figure.shot { margin-top: 28px; }
+
 @media (max-width: 860px) {
     .split { grid-template-columns: minmax(0, 1fr); gap: 32px; }
 }
@@ -785,6 +789,343 @@ footer.site {
 }
 .crumb ol { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; }
 .crumb li + li::before { content: "/"; margin-right: 8px; color: var(--faint); }
+
+/* ---------- The app's window, rebuilt so it can be pressed ----------
+ *
+ * The values here are the app's own (`Sources/BudsDeskMac/Theme.swift`): the window's
+ * ground, the card fill over it, the three inks, the accent, the selection fill and the
+ * stroke that carries the selection for anyone who cannot see the colour. The window is a
+ * real interface fragment, so it keeps the app's borders and its own conventions rather
+ * than the page's.
+ */
+
+/* The tokens every fragment carries, so a card that is not inside a window still draws
+ * itself in the app's colours. */
+[data-ui] {
+    --w-ground: #0e1013;
+    --w-card: rgba(255, 255, 255, 0.045);
+    --w-stroke: rgba(255, 255, 255, 0.08);
+    --w-ink: rgba(255, 255, 255, 0.94);
+    --w-muted: rgba(255, 255, 255, 0.66);
+    --w-faint: rgba(255, 255, 255, 0.50);
+    --w-accent: #59a8ff;
+    --w-select: rgba(255, 255, 255, 0.16);
+    --w-select-stroke: rgba(255, 255, 255, 0.38);
+    --w-warn: #fac25c;
+}
+
+.window {
+    background: var(--w-ground);
+    color: var(--w-ink);
+    font-size: 13px;
+    line-height: 1.4;
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: left;
+}
+
+.window[data-ui] { border: 1px solid var(--w-stroke); }
+
+.window-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px 10px;
+}
+
+.window-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    color: var(--w-ink);
+}
+
+.window-sub {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--w-muted);
+}
+
+.window-ghost {
+    font: inherit;
+    font-size: 12px;
+    font-weight: 560;
+    color: var(--w-ink);
+    background: rgba(255, 255, 255, 0.08);
+    border: 0;
+    border-radius: 9px;
+    padding: 5px 12px;
+    cursor: default;
+}
+
+/* The window scrolls, as the app's does: the content is taller than the frame. */
+.window-scroll {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+    padding: 0 16px 16px;
+    max-height: 520px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.window-scroll::-webkit-scrollbar { width: 8px; }
+.window-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 4px;
+}
+
+.wcard {
+    margin: 0;
+    background: var(--w-card);
+    border-radius: 24px;
+    padding: 14px;
+}
+
+/* The rest of the window, in the order the app puts it in, on the app's own ground. */
+.wstack {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 16px;
+    background: var(--w-ground);
+    border-radius: 12px;
+}
+
+.wstack[data-ui] { border: 1px solid var(--w-stroke); }
+
+.wcard[data-ui] { border: 1px solid var(--w-stroke); }
+
+.wcard-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 620;
+    color: var(--w-ink);
+}
+
+.wcard-sub {
+    margin: 2px 0 10px;
+    font-size: 12px;
+    color: var(--w-muted);
+}
+
+.wcard-note {
+    margin: 10px 0 0;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--w-faint);
+}
+
+.wcard-label {
+    margin: 12px 0 4px;
+    font-size: 10px;
+    font-weight: 540;
+    color: var(--w-faint);
+}
+
+/* The battery: three slots, read separately, never averaged. */
+.wcells {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.wcell {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    padding: 9px 10px;
+    text-align: center;
+}
+
+.wcell-label {
+    display: block;
+    font-size: 11px;
+    color: var(--w-faint);
+}
+
+.wcell-value {
+    display: block;
+    margin: 1px 0;
+    font-size: 21px;
+    font-weight: 640;
+    letter-spacing: -0.02em;
+    color: var(--w-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.wcell-foot {
+    display: block;
+    font-size: 10px;
+    color: var(--w-faint);
+}
+
+/* A reading that has not arrived is drawn in the faint ink, as the app draws it. */
+.wcell-value.is-quiet { color: var(--w-faint); }
+
+/* The pills. The selection says so three ways: a fill, a stroke, and the weight of the
+ * label — so it survives greyscale, and it survives being read rather than seen. */
+[data-ui] .wpills {
+    display: grid;
+    gap: 8px;
+}
+
+[data-ui] .wpill {
+    display: block;
+    width: 100%;
+    min-height: 30px;
+    padding: 4px 12px;
+    font: inherit;
+    font-size: 12px;
+    color: var(--w-ink);
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--w-stroke);
+    border-radius: 10px;
+    cursor: pointer;
+    transition-property: transform, background-color, border-color;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+}
+
+[data-ui] .wpill-detail {
+    display: block;
+    font-size: 10px;
+    color: var(--w-faint);
+}
+
+[data-ui] .wpill[aria-pressed="true"],
+[data-ui] .wpill.is-selected {
+    background: var(--w-select);
+    border-color: var(--w-select-stroke);
+    font-weight: 620;
+    min-height: 36px;
+}
+
+[data-ui] .wpill:disabled,
+[data-ui] .wpill.is-disabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+}
+
+/* A write that has been sent and not yet read back. The app marks the control it is waiting
+ * on; here it is the same mark, and nothing else on the card moves until the answer. */
+[data-ui] .wpill.is-pending {
+    opacity: 0.72;
+}
+
+[data-ui] .wpill.is-pending::after {
+    content: "···";
+    color: var(--w-warn);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    margin-left: 6px;
+}
+
+/* The BassWave level, and the key/value rows of the device card. */
+.wlevel {
+    margin: 2px 0 0;
+    font-size: 20px;
+    font-weight: 620;
+    letter-spacing: -0.01em;
+    color: var(--w-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.wrow {
+    display: flex;
+    gap: 10px;
+    margin: 7px 0 0;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.wrow-key {
+    width: 74px;
+    flex: none;
+    color: var(--w-faint);
+}
+
+.wrow-value {
+    color: var(--w-ink);
+    font-size: 12px;
+}
+
+[data-ui] .wpill:active { transform: scale(0.96); }
+
+@media (hover: hover) {
+    .wpill:hover:not(:disabled) { background: rgba(255, 255, 255, 0.06); }
+    .wpill[aria-pressed="true"]:hover { background: var(--w-select); }
+}
+
+/* The activity log: the app's own lines, in the app's own monospace. */
+.wlog {
+    background: var(--w-card);
+    border-radius: 24px;
+    padding: 14px;
+}
+
+.wlog pre {
+    margin: 8px 0 0;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--w-muted);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.wlog-hex { color: var(--w-accent); }
+
+/* The provenance footer: what the app can write, and what it will never open. */
+.wfoot {
+    padding: 10px 16px 14px;
+    display: grid;
+    gap: 4px;
+}
+
+.wfoot p {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.45;
+    color: var(--w-faint);
+}
+
+/* The window's readback strip: what the earbuds answered, in the bytes they answered in. */
+.wread {
+    margin: 10px 0 0;
+    padding: 9px 11px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    font-size: 11px;
+    line-height: 1.55;
+    color: var(--w-muted);
+    min-height: 38px;
+}
+
+.wread b { color: var(--w-ink); font-weight: 620; }
+.wread code {
+    background: none;
+    padding: 0;
+    color: var(--w-accent);
+    font-size: 11px;
+    display: block;
+    margin-top: 3px;
+    overflow-wrap: anywhere;
+}
+
+.wread i {
+    display: block;
+    font-style: normal;
+    color: var(--w-faint);
+    font-size: 10px;
+    margin-top: 2px;
+}
 
 /* ---------- The older pages' cards, now a column of text on a band ---------- */
 

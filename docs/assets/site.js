@@ -91,4 +91,96 @@
             select(button.dataset.frame);
         });
     });
+
+    // ---- The window -------------------------------------------------------
+    //
+    // The noise control in the window, pressed. The rule it follows is the app's own: a write
+    // is not applied when it is sent, it is applied when the earbuds read it back. So the
+    // control goes pending, and only the answer settles it — and the answer is a frame from
+    // the capture, not a picture of one.
+
+    var frames = {};
+    var frameData = document.getElementById("budsdesk-frames");
+    if (frameData) {
+        try {
+            frames = JSON.parse(frameData.textContent);
+        } catch (error) {
+            frames = {};
+        }
+    }
+
+    var card = document.querySelector("[data-card='noise']");
+    var log = document.querySelector("[data-window-log]");
+    if (!card || !log || !Object.keys(frames).length) {
+        return;
+    }
+
+    var modeLabel = {
+        off: "Off",
+        noiseCancellation: "Noise cancellation",
+        transparency: "Transparency",
+        adaptive: "Adaptive"
+    };
+    var levelLabel = { high: "High", moderate: "Moderate", low: "Low", auto: "Auto" };
+
+    function mark(pills, chosen) {
+        pills.forEach(function (pill) {
+            pill.setAttribute("aria-pressed", chosen(pill) ? "true" : "false");
+        });
+    }
+
+    function press(pill, mode, level, frameName) {
+        var frame = frames[frameName];
+
+        // The write is on the wire and the earbuds have not answered yet: the control says so
+        // and nothing else moves.
+        card.querySelectorAll(".wpill").forEach(function (other) {
+            other.classList.remove("is-pending");
+        });
+        pill.classList.add("is-pending");
+        log.innerHTML = "<b>write sent</b> &mdash; waiting for the earbuds to read it back";
+
+        window.setTimeout(function () {
+            pill.classList.remove("is-pending");
+
+            mark(card.querySelectorAll("[data-mode]"), function (other) {
+                return other.dataset.mode === mode;
+            });
+            mark(card.querySelectorAll("[data-level]"), function (other) {
+                return mode === "noiseCancellation" && other.dataset.level === level;
+            });
+
+            var subtitle = card.querySelector("[data-window-mode]");
+            if (subtitle) {
+                subtitle.textContent = mode === "noiseCancellation" && level
+                    ? modeLabel[mode] + " · " + levelLabel[level]
+                    : modeLabel[mode];
+            }
+
+            // The app's own log line, then the frame that answered.
+            log.innerHTML = "<b>" + (level ? "level reported: " + levelLabel[level]
+                                          : "mode reported: " + modeLabel[mode]) + "</b>"
+                + (frame ? "<code>" + frame.hex + "</code><i>" + frame.note + "</i>" : "");
+        }, 700);
+    }
+
+    card.querySelectorAll("[data-mode]").forEach(function (pill) {
+        pill.addEventListener("click", function () {
+            var mode = pill.dataset.mode;
+            if (mode === "noiseCancellation") {
+                // The mask carries the mode and the level together, so choosing cancellation
+                // without a level uses the one the earbuds last reported — here, the highest.
+                press(pill, mode, "high", "anc-reply-nc-high");
+                return;
+            }
+            press(pill, mode, null, pill.dataset.frame);
+        });
+    });
+
+    card.querySelectorAll("[data-level]").forEach(function (pill) {
+        pill.addEventListener("click", function () {
+            var level = pill.dataset.level;
+            press(pill, "noiseCancellation", level, pill.dataset.frame);
+        });
+    });
 })();
