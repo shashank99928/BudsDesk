@@ -6,8 +6,9 @@
 <title>Supported Earbuds Models — BudsDesk for macOS</title>
 <meta name="description" content="Which OPPO, OnePlus and realme earbuds BudsDesk controls on a Mac, what read-only means, what the capability registry enforces, and how to add a model by recording it.">
 <link rel="canonical" href="https://shashank99928.github.io/BudsDesk/models.html">
-<meta name="theme-color" content="#0e1013">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="BudsDesk">
@@ -18,6 +19,21 @@
 <meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
 
 <link rel="stylesheet" href="assets/style.css">
+
+<!-- The motion layer. This one line marks the document before the first paint, so the page
+     is only ever hidden by an animation it has already decided to run. Without it, nothing
+     is hidden at all.
+
+     The timer is the other half of that promise: if the script that runs the animation
+     never arrives, the mark is taken back off and the page is simply a page. -->
+<script>
+document.documentElement.classList.add("js");
+setTimeout(function () {
+    if (!document.documentElement.classList.contains("motion")) {
+        document.documentElement.classList.remove("js");
+    }
+}, 3000);
+</script>
 <link rel="icon" href="assets/icon.png" type="image/png">
 
 <script type="application/ld+json">
@@ -72,14 +88,12 @@
   <div class="wrap">
     <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
     <nav class="site" aria-label="Main">
-      <a href="/BudsDesk/">Home</a>
       <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a>
       <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a>
       <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a>
       <a href="/BudsDesk/models.html" aria-current="page">Models</a>
-      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
-      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
     </nav>
+    <a class="nav-download" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download</a>
   </div>
 </header>
 
@@ -88,35 +102,35 @@
 
   <nav class="crumb" aria-label="Breadcrumb">
     <ol>
-      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li data-reveal><a href="/BudsDesk/">BudsDesk</a></li>
       <li aria-current="page">Supported models</li>
     </ol>
   </nav>
 
   <h1>Which earbuds BudsDesk works with</h1>
 
-  <p class="lede">
+  <p class="lede" data-reveal>
     One model is measured end to end. The rest of the family is expected to connect and read, and
     none of it is writable yet. This page explains exactly what that does and does not mean, because
     the difference is the whole point of the project.
   </p>
 
-  <section>
-    <h2>The three levels, and why they are not the same</h2>
+  <section data-reveal>
+    <h2 data-reveal>The three levels, and why they are not the same</h2>
 
     <div class="grid">
       <div class="card">
-        <h3>Measured</h3>
+        <h3 data-reveal>Measured</h3>
         <p>A recording of that model shows the behaviour, frame by frame. These are the only
         capabilities with a write path.</p>
       </div>
       <div class="card">
-        <h3>Inferred</h3>
+        <h3 data-reveal>Inferred</h3>
         <p>Read out of the vendor app's own constants, and <em>not</em> yet confirmed against
         hardware. Useful as a map, not as a permission slip.</p>
       </div>
       <div class="card">
-        <h3>Unconfirmed</h3>
+        <h3 data-reveal>Unconfirmed</h3>
         <p>Plausible from the protocol's shape and nothing more. Shown as a reading when the device
         reports it; never written to.</p>
       </div>
@@ -129,8 +143,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>The list</h2>
+  <section data-reveal>
+    <h2 data-reveal>The list</h2>
 
     <div class="scroll-x">
     <table>
@@ -180,34 +194,34 @@
     </p>
   </section>
 
-  <section>
-    <h2>Adding a model</h2>
+  <section data-reveal>
+    <h2 data-reveal>Adding a model</h2>
 
     <ol>
-      <li>
+      <li data-reveal>
         <strong>Record it.</strong> Run the app with tracing enabled so every frame in both
         directions is written out as hex, then change one setting at a time, slowly, and note what
         you changed. A recording without a note is only half the evidence.
       </li>
-      <li>
+      <li data-reveal>
         <strong>Freeze it into the corpus.</strong> The recording becomes
         <code>captures/&lt;id&gt;/frames.hex</code> with a <code>capture.json</code> carrying its
         provenance: model, firmware string, date, tool and channel. The Swift corpus is generated
         from that file, and a test asserts the two agree, so a fixture cannot be edited out of step
         with its provenance.
       </li>
-      <li>
+      <li data-reveal>
         <strong>Write the profile.</strong> One JSON file in <code>devices/</code>. Each capability
         gets <code>read</code>, <code>writable</code> and a <code>confidence</code>, and the
         confidence has to cite its evidence — a capture for measured, a class and method in the
         vendor app for inferred, and nothing at all for unconfirmed.
       </li>
-      <li>
+      <li data-reveal>
         <strong>Run the tests.</strong> <code>swift test</code> replays the corpus through the real
         session and checks the state it lands in; the registry has its own rules and refuses
         profiles that break them.
       </li>
-      <li>
+      <li data-reveal>
         <strong>Open a pull request.</strong> Model, firmware string, what you set, what came back.
       </li>
     </ol>
@@ -219,8 +233,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>What the registry refuses</h2>
+  <section data-reveal>
+    <h2 data-reveal>What the registry refuses</h2>
 
     <p>
       The registry is not documentation, it is enforced. A profile that breaks any of these does not
@@ -228,13 +242,13 @@
     </p>
 
     <ul>
-      <li>A capability key that is not in the vocabulary.</li>
-      <li>A value the protocol does not have, or values where none belong and none where one does.</li>
-      <li><code>measured</code> citing anything other than a capture or a hardware loop-back.</li>
-      <li><code>inferred</code> not citing the vendor app, or <code>unconfirmed</code> citing
+      <li data-reveal>A capability key that is not in the vocabulary.</li>
+      <li data-reveal>A value the protocol does not have, or values where none belong and none where one does.</li>
+      <li data-reveal><code>measured</code> citing anything other than a capture or a hardware loop-back.</li>
+      <li data-reveal><code>inferred</code> not citing the vendor app, or <code>unconfirmed</code> citing
       anything at all.</li>
-      <li><code>writable: true</code> on anything that is not measured.</li>
-      <li>Two fallback profiles, or none.</li>
+      <li data-reveal><code>writable: true</code> on anything that is not measured.</li>
+      <li data-reveal>Two fallback profiles, or none.</li>
     </ul>
 
     <p>
@@ -243,8 +257,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>Questions</h2>
+  <section data-reveal>
+    <h2 data-reveal>Questions</h2>
     <dl class="faq">
       <dt>Will BudsDesk work with my OPPO Enco, OnePlus Buds or realme Buds?</dt>
       <dd>If your model advertises the vendor's control service, BudsDesk will connect and show
@@ -268,8 +282,8 @@
     </dl>
   </section>
 
-  <section>
-    <h2>Related work worth knowing</h2>
+  <section data-reveal>
+    <h2 data-reveal>Related work worth knowing</h2>
 
     <p>
       This is not the first project to notice that these earbuds deserve a desktop client. If yours
@@ -278,14 +292,14 @@
     </p>
 
     <ul>
-      <li><a href="https://github.com/anikket-b/Realme-TWS-Mac-Controller">Realme TWS Mac
+      <li data-reveal><a href="https://github.com/anikket-b/Realme-TWS-Mac-Controller">Realme TWS Mac
       Controller</a> — a macOS client for realme earbuds, MIT licensed, and independently documented
       the same thing this project did: that macOS exposes no control at all.</li>
-      <li><a href="https://github.com/timschneeb/GalaxyBudsClient">GalaxyBudsClient</a> and
+      <li data-reveal><a href="https://github.com/timschneeb/GalaxyBudsClient">GalaxyBudsClient</a> and
       <a href="https://github.com/nikiomori/nothing-x-macos">nothing-x-macos</a> — the same idea for
       Samsung and Nothing, and both worth reading if you want to see how far a reverse-engineered
       companion client can go.</li>
-      <li><a href="https://github.com/TheLastGimbus/FreeBuddy">FreeBuddy</a> — the same problem for
+      <li data-reveal><a href="https://github.com/TheLastGimbus/FreeBuddy">FreeBuddy</a> — the same problem for
       Huawei FreeBuds.</li>
     </ul>
 
@@ -300,21 +314,53 @@
 
 <footer class="site">
   <div class="wrap">
-    <p class="fineprint">
-      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
-      Electronics, or the publisher of the phone companion app. Product names appear only as factual
-      device names. The projects listed above are independent and are named here as acknowledgements,
-      not as affiliations.
-    </p>
-    <p>
-      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a>
-    </p>
-    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+        <p>The missing desktop app for OPPO, OnePlus and realme earbuds. Free, MIT licensed, and
+        it never talks to the network.</p>
+      </div>
+
+      <nav aria-label="Models">
+        <h2 data-reveal>Models</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a></li>
+          <li data-reveal><a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/models.html">Every model</a></li>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Reading">
+        <h2 data-reveal>Reading</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/anc-eq-on-mac.html">ANC and EQ on Mac</a></li>
+          <li data-reveal><a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Project">
+        <h2 data-reveal>Project</h2>
+        <ul>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk">Source</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-fine">
+      <p>BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as
+      factual device names. No vendor code, icon, font or other asset is redistributed.</p>
+      <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    </div>
   </div>
 </footer>
+
+<script src="assets/site.js" defer></script>
 
 </body>
 </html>

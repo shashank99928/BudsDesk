@@ -6,6 +6,40 @@ and [Semantic Versioning](https://semver.org/).
 The honesty rule applies here as everywhere else: a version is not described as supporting a model
 unless that model was measured. What is listed as *not* included is as deliberate as what is.
 
+## [Unreleased]
+
+### Changed
+
+- **The site is a product page now.** It was a dark document of the project's reasoning; it is
+  a plain bar, one first screen with the app's own window in it, and the argument in sections:
+  what it does, what it will not do, which models work, how to install, and the questions. The
+  capability table, the registry's rules and the recipe for adding a model are unchanged and
+  still say what they said.
+- **The recording is on the page.** A new section shows eight frames off a real OnePlus Buds 4,
+  which a visitor can pick through, each with the note that came with it in the capture. The
+  bytes are generated from `captures/oneplus-buds-4-2026-10-17/frames.hex` by
+  `Tools/capture-html.py` and a test holds the page to that file, so the site cannot quote a
+  frame the recording does not contain.
+- **The page is light, and follows the system.** The app is pinned to Dark Aqua because that is
+  the appearance it was verified in; the page is not an app, and it is now light with a dark
+  scheme for a system that asks for one. The accent is still the app's own blue, darkened in the
+  light scheme until the running text clears 7:1 against the ground.
+- **Everything arrives in pieces.** Each section's heading, text and picture rise into place as
+  the section arrives, and the whole layer is dropped under Reduce Motion. With the script
+  blocked, the page is the same page with nothing hidden: the mark that hides the animation is
+  taken back off if the script that runs it never arrives.
+
+### Added
+
+- **`Tools/capture-html.py`**, which writes the site's frames section out of the capture file
+  rather than out of a transcription of it, and **`Tools/refresh-chrome.py`**, which puts the
+  bar and the footer on every page in one place instead of one copy per page.
+
+### Verified
+
+- 182 protocol checks (the self-check), 28 SF Symbol names, 25 recorded frames from one model,
+  and 60 tests.
+
 ## [0.1.2] — 2026-10-19
 
 ### Changed

@@ -6,8 +6,9 @@
 <title>HeyMelody for Mac? A Native Alternative — BudsDesk</title>
 <meta name="description" content="HeyMelody is a phone app with no desktop build. What that means on macOS, what we have and have not tested, and how BudsDesk differs — including where the phone app does more than BudsDesk does.">
 <link rel="canonical" href="https://shashank99928.github.io/BudsDesk/heymelody-on-mac.html">
-<meta name="theme-color" content="#0e1013">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="BudsDesk">
@@ -18,6 +19,21 @@
 <meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
 
 <link rel="stylesheet" href="assets/style.css">
+
+<!-- The motion layer. This one line marks the document before the first paint, so the page
+     is only ever hidden by an animation it has already decided to run. Without it, nothing
+     is hidden at all.
+
+     The timer is the other half of that promise: if the script that runs the animation
+     never arrives, the mark is taken back off and the page is simply a page. -->
+<script>
+document.documentElement.classList.add("js");
+setTimeout(function () {
+    if (!document.documentElement.classList.contains("motion")) {
+        document.documentElement.classList.remove("js");
+    }
+}, 3000);
+</script>
 <link rel="icon" href="assets/icon.png" type="image/png">
 
 <script type="application/ld+json">
@@ -80,14 +96,12 @@
   <div class="wrap">
     <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
     <nav class="site" aria-label="Main">
-      <a href="/BudsDesk/">Home</a>
       <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a>
       <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a>
       <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a>
       <a href="/BudsDesk/models.html">Models</a>
-      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
-      <a href="/BudsDesk/heymelody-on-mac.html" aria-current="page">HeyMelody on Mac</a>
     </nav>
+    <a class="nav-download" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download</a>
   </div>
 </header>
 
@@ -96,20 +110,20 @@
 
   <nav class="crumb" aria-label="Breadcrumb">
     <ol>
-      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li data-reveal><a href="/BudsDesk/">BudsDesk</a></li>
       <li aria-current="page">HeyMelody on Mac</li>
     </ol>
   </nav>
 
   <h1>HeyMelody on a Mac, honestly</h1>
 
-  <p class="lede">
+  <p class="lede" data-reveal>
     People search for this because the phone app is the only thing that ever worked. So here is what
     is actually true, including the parts that are not flattering to BudsDesk.
   </p>
 
-  <section>
-    <h2>What we can state, and what we will not</h2>
+  <section data-reveal>
+    <h2 data-reveal>What we can state, and what we will not</h2>
 
     <p>
       HeyMelody is published for iPhone and Android. There is no desktop build. Some App Store
@@ -130,16 +144,16 @@
     </p>
   </section>
 
-  <section>
-    <h2>Where the phone app does more than BudsDesk</h2>
+  <section data-reveal>
+    <h2 data-reveal>Where the phone app does more than BudsDesk</h2>
 
     <ul>
-      <li><strong>Firmware updates.</strong> It does them. BudsDesk will not, ever — the update channel
+      <li data-reveal><strong>Firmware updates.</strong> It does them. BudsDesk will not, ever — the update channel
       is never opened by this app. If your earbuds need a fix from the vendor, that app is the only
       tool here that can apply it.</li>
-      <li><strong>Model coverage.</strong> It knows dozens of models. BudsDesk has one measured end to
+      <li data-reveal><strong>Model coverage.</strong> It knows dozens of models. BudsDesk has one measured end to
       end.</li>
-      <li><strong>Editing a custom equalizer curve.</strong> The phone app builds one; BudsDesk only
+      <li data-reveal><strong>Editing a custom equalizer curve.</strong> The phone app builds one; BudsDesk only
       offers the custom slot once a curve already exists on the earbuds.</li>
     </ul>
 
@@ -149,8 +163,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>Where they are simply different</h2>
+  <section data-reveal>
+    <h2 data-reveal>Where they are simply different</h2>
 
     <div class="scroll-x">
     <table>
@@ -180,8 +194,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>Shared settings, not competing ones</h2>
+  <section data-reveal>
+    <h2 data-reveal>Shared settings, not competing ones</h2>
 
     <p>
       The settings live on the earbuds. Change the noise mode from the Mac and the phone app will show
@@ -196,8 +210,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>Why this is not a wrapper</h2>
+  <section data-reveal>
+    <h2 data-reveal>Why this is not a wrapper</h2>
 
     <p>
       BudsDesk does not contain the phone app, does not call it, and does not read its data. There is
@@ -212,8 +226,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>Questions</h2>
+  <section data-reveal>
+    <h2 data-reveal>Questions</h2>
     <dl class="faq">
       <dt>Is there a Mac version of HeyMelody?</dt>
       <dd>There is no desktop build. It is a phone app published for iPhone and Android. Some
@@ -245,20 +259,53 @@
 
 <footer class="site">
   <div class="wrap">
-    <p class="fineprint">
-      HeyMelody is named here only to describe the situation truthfully; this page makes no claim to
-      speak for it or about its internals beyond what its public store listing shows. BudsDesk is not
-      made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK Electronics, or the
-      publisher of that app. If anything on this page is wrong, an issue with a correction is welcome.
-    </p>
-    <p>
-      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a>
-    </p>
-    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+        <p>The missing desktop app for OPPO, OnePlus and realme earbuds. Free, MIT licensed, and
+        it never talks to the network.</p>
+      </div>
+
+      <nav aria-label="Models">
+        <h2 data-reveal>Models</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a></li>
+          <li data-reveal><a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/models.html">Every model</a></li>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Reading">
+        <h2 data-reveal>Reading</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/anc-eq-on-mac.html">ANC and EQ on Mac</a></li>
+          <li data-reveal><a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Project">
+        <h2 data-reveal>Project</h2>
+        <ul>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk">Source</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-fine">
+      <p>BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as
+      factual device names. No vendor code, icon, font or other asset is redistributed.</p>
+      <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    </div>
   </div>
 </footer>
+
+<script src="assets/site.js" defer></script>
 
 </body>
 </html>

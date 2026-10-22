@@ -6,8 +6,9 @@
 <title>How to Change OnePlus Buds EQ &amp; ANC on a Mac (No Phone Needed)</title>
 <meta name="description" content="macOS has no control for OPPO, OnePlus or realme earbuds' noise cancelling and equalizer. Here is why, what macOS does and does not expose, and how to change ANC, EQ, BassWave and touch gestures from a Mac without the phone.">
 <link rel="canonical" href="https://shashank99928.github.io/BudsDesk/anc-eq-on-mac.html">
-<meta name="theme-color" content="#0e1013">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="BudsDesk">
@@ -18,6 +19,21 @@
 <meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
 
 <link rel="stylesheet" href="assets/style.css">
+
+<!-- The motion layer. This one line marks the document before the first paint, so the page
+     is only ever hidden by an animation it has already decided to run. Without it, nothing
+     is hidden at all.
+
+     The timer is the other half of that promise: if the script that runs the animation
+     never arrives, the mark is taken back off and the page is simply a page. -->
+<script>
+document.documentElement.classList.add("js");
+setTimeout(function () {
+    if (!document.documentElement.classList.contains("motion")) {
+        document.documentElement.classList.remove("js");
+    }
+}, 3000);
+</script>
 <link rel="icon" href="assets/icon.png" type="image/png">
 
 <script type="application/ld+json">
@@ -117,14 +133,12 @@
   <div class="wrap">
     <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
     <nav class="site" aria-label="Main">
-      <a href="/BudsDesk/">Home</a>
       <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a>
       <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a>
       <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a>
       <a href="/BudsDesk/models.html">Models</a>
-      <a href="/BudsDesk/anc-eq-on-mac.html" aria-current="page">ANC &amp; EQ on Mac</a>
-      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
     </nav>
+    <a class="nav-download" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download</a>
   </div>
 </header>
 
@@ -133,22 +147,22 @@
 
   <nav class="crumb" aria-label="Breadcrumb">
     <ol>
-      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li data-reveal><a href="/BudsDesk/">BudsDesk</a></li>
       <li aria-current="page">ANC &amp; EQ on a Mac</li>
     </ol>
   </nav>
 
-  <h1>How to change the equalizer and noise cancelling on OPPO, OnePlus or realme earbuds from a Mac</h1>
+  <h1>Noise cancelling and the equalizer</h1>
 
-  <p class="lede">
+  <p class="lede" data-reveal>
     Short answer: macOS has no control for it, and nothing in System Settings is hiding one. The
     settings live on the earbuds and travel over a separate Bluetooth channel that Apple's software
     never opens. An app that opens that channel can change them, and on a Mac that means installing
     one.
   </p>
 
-  <section>
-    <h2>First, why there is no setting to find</h2>
+  <section data-reveal>
+    <h2 data-reveal>First, why there is no setting to find</h2>
 
     <p>
       It is easy to spend an hour in the Bluetooth pane looking for a noise-control switch that is not
@@ -171,37 +185,37 @@
     </div>
   </section>
 
-  <section>
-    <h2>What macOS does give you</h2>
+  <section data-reveal>
+    <h2 data-reveal>What macOS does give you</h2>
 
     <ul>
-      <li><strong>Pairing and connection.</strong> System Settings &rarr; Bluetooth. The earbuds play
+      <li data-reveal><strong>Pairing and connection.</strong> System Settings &rarr; Bluetooth. The earbuds play
       audio on the Mac fine, with no extra software at all.</li>
-      <li><strong>Microphone and output selection.</strong> The Sound pane and per-app output
+      <li data-reveal><strong>Microphone and output selection.</strong> The Sound pane and per-app output
       selection.</li>
-      <li><strong>Codec visibility</strong> — for some devices, not all, and not with any useful
+      <li data-reveal><strong>Codec visibility</strong> — for some devices, not all, and not with any useful
       control over which codec is chosen.</li>
-      <li><strong>Battery</strong> — for some third-party earbuds macOS shows nothing, or one merged
+      <li data-reveal><strong>Battery</strong> — for some third-party earbuds macOS shows nothing, or one merged
       figure covering both buds.</li>
     </ul>
 
     <p>That is the whole list. Nothing above changes a setting on the earbuds.</p>
   </section>
 
-  <section>
-    <h2>The two-minute version that works</h2>
+  <section data-reveal>
+    <h2 data-reveal>The two-minute version that works</h2>
 
     <ol>
-      <li><strong>Pair the earbuds with the Mac once</strong> in System Settings &rarr; Bluetooth. If
+      <li data-reveal><strong>Pair the earbuds with the Mac once</strong> in System Settings &rarr; Bluetooth. If
       they are already paired from a phone-only setup, they may need putting into pairing mode
       again.</li>
-      <li><strong>Install BudsDesk</strong> from
+      <li data-reveal><strong>Install BudsDesk</strong> from
       <a href="https://github.com/shashank99928/BudsDesk/releases/latest">GitHub Releases</a> and
       open it. macOS asks for Bluetooth access the first time; the permission is tied to the app, so
       it survives updates.</li>
-      <li><strong>Change the mode or the preset</strong> in the window, or straight from the
+      <li data-reveal><strong>Change the mode or the preset</strong> in the window, or straight from the
       menu-bar item if you only want the noise mode.</li>
-      <li><strong>Watch what it settles on.</strong> The app writes the setting and then reads the
+      <li data-reveal><strong>Watch what it settles on.</strong> The app writes the setting and then reads the
       value back off the earbuds. If the earbuds decline, the control returns to what they actually
       hold — which is the honest behaviour, and the reason a stuck setting never looks applied when
       it is not.</li>
@@ -213,18 +227,18 @@
     </p>
   </section>
 
-  <section>
-    <h2>Does the equalizer on the earbuds beat an equalizer on the Mac?</h2>
+  <section data-reveal>
+    <h2 data-reveal>The earbuds' equalizer, or the Mac's?</h2>
 
     <p>
       They are different things and both are legitimate.
     </p>
 
     <ul>
-      <li><strong>On-device (the earbuds' own presets and BassWave)</strong> applies to whatever
+      <li data-reveal><strong>On-device (the earbuds' own presets and BassWave)</strong> applies to whatever
       source is playing — the Mac, the phone, a TV. It is stored in the earbuds, and it is what the
       phone app's equalizer screen changes.</li>
-      <li><strong>On the Mac (Audio MIDI Setup, or a player's own equalizer)</strong> shapes only the
+      <li data-reveal><strong>On the Mac (Audio MIDI Setup, or a player's own equalizer)</strong> shapes only the
       audio the Mac is playing. It disappears when you switch source.</li>
     </ul>
 
@@ -235,26 +249,26 @@
     </p>
   </section>
 
-  <section>
-    <h2>If it does not connect</h2>
+  <section data-reveal>
+    <h2 data-reveal>If it does not connect</h2>
 
     <ul>
-      <li><strong>The earbuds are asleep in the case, or out of range.</strong> This is the most common
+      <li data-reveal><strong>The earbuds are asleep in the case, or out of range.</strong> This is the most common
       one by a distance. BudsDesk will say exactly that rather than showing stale values.</li>
-      <li><strong>Another device is holding them.</strong> These earbuds accept one active source;
+      <li data-reveal><strong>Another device is holding them.</strong> These earbuds accept one active source;
       if the phone is playing, the Mac may be refused or will take over. Some models allow two
       connected devices — the app lists what the earbuds report as linked.</li>
-      <li><strong>Bluetooth permission was declined.</strong> macOS returns an <em>empty device
+      <li data-reveal><strong>Bluetooth permission was declined.</strong> macOS returns an <em>empty device
       list</em> rather than an error when a process lacks Bluetooth access, which looks identical to
       "no earbuds paired". Check System Settings &rarr; Privacy &amp; Security &rarr; Bluetooth.</li>
-      <li><strong>The model is not catalogued.</strong> It will still connect and read, but nothing
+      <li data-reveal><strong>The model is not catalogued.</strong> It will still connect and read, but nothing
       will be writable until that model has been recorded. See
       <a href="/BudsDesk/models.html">models</a>.</li>
     </ul>
   </section>
 
-  <section>
-    <h2>Questions</h2>
+  <section data-reveal>
+    <h2 data-reveal>Questions</h2>
     <dl class="faq">
       <dt>Why can't macOS change the noise cancelling?</dt>
       <dd>Because the setting does not travel over the audio connection. The earbuds expose a separate
@@ -293,19 +307,53 @@
 
 <footer class="site">
   <div class="wrap">
-    <p class="fineprint">
-      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
-      Electronics, or the publisher of the phone companion app. Product names appear only as factual
-      device names.
-    </p>
-    <p>
-      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a>
-    </p>
-    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+        <p>The missing desktop app for OPPO, OnePlus and realme earbuds. Free, MIT licensed, and
+        it never talks to the network.</p>
+      </div>
+
+      <nav aria-label="Models">
+        <h2 data-reveal>Models</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a></li>
+          <li data-reveal><a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/models.html">Every model</a></li>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Reading">
+        <h2 data-reveal>Reading</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/anc-eq-on-mac.html">ANC and EQ on Mac</a></li>
+          <li data-reveal><a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Project">
+        <h2 data-reveal>Project</h2>
+        <ul>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk">Source</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-fine">
+      <p>BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as
+      factual device names. No vendor code, icon, font or other asset is redistributed.</p>
+      <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    </div>
   </div>
 </footer>
+
+<script src="assets/site.js" defer></script>
 
 </body>
 </html>

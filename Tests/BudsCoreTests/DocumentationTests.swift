@@ -228,6 +228,49 @@ final class DocumentationTests: XCTestCase {
         }
     }
 
+    // MARK: - The site's frames are the capture's frames
+
+    /// The home page shows real bytes: the frames that came off a real OnePlus Buds 4. A
+    /// page that quotes a frame the recording does not contain is making things up, and a
+    /// page that quotes one of them wrongly is worse, so the bytes on the page are compared
+    /// with the bytes in `captures/`.
+    ///
+    /// `Tools/capture-html.py` writes the block from that file, and this test is what holds
+    /// the two together if it is ever run with the wrong file or not run at all.
+    func testTheFramesTheSiteShowsAreFramesTheCaptureHolds() throws {
+        let home = try page(Self.site.appendingPathComponent("index.html"))
+        let capture = try document("captures/oneplus-buds-4-2026-10-17/frames.hex")
+
+        // Every frame in the capture, by name, with the bytes it carries.
+        var frames: [String: String] = [:]
+        for line in capture.components(separatedBy: "\n") {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard let equals = trimmed.firstIndex(of: "=") else { continue }
+            let name = String(trimmed[..<equals]).trimmingCharacters(in: .whitespaces)
+            let hex = String(trimmed[trimmed.index(after: equals)...])
+                .trimmingCharacters(in: .whitespaces)
+            frames[name] = hex
+        }
+        XCTAssertGreaterThan(frames.count, 20, "the capture file was not read")
+
+        // The frames the page names must be frames the capture holds.
+        let named = Set(captures(#"data-frame="([a-z0-9-]+)""#, in: home))
+        XCTAssertGreaterThanOrEqual(named.count, 8, "the site lost its frames")
+        for name in named {
+            XCTAssertNotNil(frames[name],
+                            "the site names a frame the capture does not hold: \(name)")
+        }
+
+        // And the bytes it shows must be that frame's bytes.
+        let blocks = captures(#"<pre>([0-9a-f ]+)</pre>"#, in: home)
+        XCTAssertGreaterThanOrEqual(blocks.count, 8, "the site shows no frames")
+        for hex in blocks {
+            let normalised = hex.split(separator: " ").map(String.init).joined(separator: " ")
+            XCTAssertTrue(frames.values.contains { $0 == normalised },
+                          "the site shows bytes that are not in the capture: \(normalised)")
+        }
+    }
+
     // MARK: - The site's own links
 
     func testEveryInternalLinkAndAssetResolvesToAFileThatShips() throws {

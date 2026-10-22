@@ -6,8 +6,9 @@
 <title>OnePlus Buds 4 on Mac: ANC, EQ &amp; Battery — BudsDesk</title>
 <meta name="description" content="Control OnePlus Buds 4 from a Mac: noise cancelling modes and levels, equalizer presets, BassWave, touch gesture remapping, per-bud battery, codec and multi-connect state. What works, what does not, and how it was measured.">
 <link rel="canonical" href="https://shashank99928.github.io/BudsDesk/oneplus-buds-4.html">
-<meta name="theme-color" content="#0e1013">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="BudsDesk">
@@ -18,6 +19,21 @@
 <meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
 
 <link rel="stylesheet" href="assets/style.css">
+
+<!-- The motion layer. This one line marks the document before the first paint, so the page
+     is only ever hidden by an animation it has already decided to run. Without it, nothing
+     is hidden at all.
+
+     The timer is the other half of that promise: if the script that runs the animation
+     never arrives, the mark is taken back off and the page is simply a page. -->
+<script>
+document.documentElement.classList.add("js");
+setTimeout(function () {
+    if (!document.documentElement.classList.contains("motion")) {
+        document.documentElement.classList.remove("js");
+    }
+}, 3000);
+</script>
 <link rel="icon" href="assets/icon.png" type="image/png">
 
 <script type="application/ld+json">
@@ -116,14 +132,12 @@
   <div class="wrap">
     <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
     <nav class="site" aria-label="Main">
-      <a href="/BudsDesk/">Home</a>
       <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a>
       <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a>
       <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a>
       <a href="/BudsDesk/models.html">Models</a>
-      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
-      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
     </nav>
+    <a class="nav-download" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download</a>
   </div>
 </header>
 
@@ -132,26 +146,26 @@
 
   <nav class="crumb" aria-label="Breadcrumb">
     <ol>
-      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li data-reveal><a href="/BudsDesk/">BudsDesk</a></li>
       <li aria-current="page">OnePlus Buds 4</li>
     </ol>
   </nav>
 
   <h1>Control the OnePlus Buds 4 from your Mac</h1>
 
-  <p class="lede">
+  <p class="lede" data-reveal>
     The OnePlus Buds 4 is the one model BudsDesk has been measured against end to end. Every setting
     below was sent to the earbuds, read back off the wire, and recorded — so this page can be
     specific about what works, and equally specific about the two things that do not.
   </p>
 
-  <div class="buttons">
+  <div class="buttons" data-reveal>
     <a class="button primary" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download for macOS</a>
     <a class="button" href="/BudsDesk/models.html">Other models</a>
   </div>
 
-  <section>
-    <h2>Noise control: every mode the phone app has</h2>
+  <section data-reveal>
+    <h2 data-reveal>Noise control: every mode the phone app has</h2>
 
     <p>
       macOS gives you no way to change this, so it is the reason most people go looking. BudsDesk
@@ -191,8 +205,8 @@
     </div>
   </section>
 
-  <section>
-    <h2>Equalizer and BassWave</h2>
+  <section data-reveal>
+    <h2 data-reveal>Equalizer and BassWave</h2>
 
     <p>
       Preset switching works, including the earbuds' own custom slot when one has been saved from the
@@ -209,8 +223,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>Touch gestures</h2>
+  <section data-reveal>
+    <h2 data-reveal>Touch gestures</h2>
 
     <p>
       Double tap, triple tap, touch and hold, and slide can each be remapped. What you can assign is
@@ -225,56 +239,56 @@
     </p>
   </section>
 
-  <section>
-    <h2>Battery, wear, codec and the rest</h2>
+  <section data-reveal>
+    <h2 data-reveal>Battery, wear, codec and the rest</h2>
 
     <ul>
-      <li><strong>Battery</strong> is reported per bud, never merged. In the reference recording both
+      <li data-reveal><strong>Battery</strong> is reported per bud, never merged. In the reference recording both
       were at 20%. macOS shows one merged figure; this shows which bud is running down.</li>
-      <li><strong>Wear state</strong> says which bud is in your ear and whether the case is shut —
+      <li data-reveal><strong>Wear state</strong> says which bud is in your ear and whether the case is shut —
       useful when one bud is draining while the other sits in its slot.</li>
-      <li><strong>Codec</strong> is read from the earbuds and shown, which is the difference between
+      <li data-reveal><strong>Codec</strong> is read from the earbuds and shown, which is the difference between
       knowing you are on AAC and assuming it.</li>
-      <li><strong>Firmware string</strong> is shown verbatim, exactly as the earbuds report it, rather
+      <li data-reveal><strong>Firmware string</strong> is shown verbatim, exactly as the earbuds report it, rather
       than tidied into a format that could hide a mismatch. The reference device reports
       <code>1,2,138,2,2,138,3,1,01,3,2,105</code>.</li>
-      <li><strong>Multi-connect</strong> lists every device the earbuds are linked to, with each
+      <li data-reveal><strong>Multi-connect</strong> lists every device the earbuds are linked to, with each
       one's connection state and which is current. It is read-only: switching which device is active
       has not been measured on this channel, so no control is offered for it.</li>
     </ul>
   </section>
 
-  <section>
-    <h2>What does not work, and why</h2>
+  <section data-reveal>
+    <h2 data-reveal>What does not work, and why</h2>
 
     <div class="grid">
       <div class="card">
-        <h3>Charging case battery</h3>
+        <h3 data-reveal>Charging case battery</h3>
         <p>Not a missing feature — a missing report. Every battery reply in a full session carried
         exactly two slots, left and right, even while the wear reply named the case on every poll.
         The app prints that the case has not reported a charge rather than drawing an empty battery.</p>
       </div>
       <div class="card">
-        <h3>Find my earbuds</h3>
+        <h3 data-reveal>Find my earbuds</h3>
         <p>The command exists and the earbuds answer it. But the acknowledgement is the same single
         byte whether or not a tone actually plays, so nothing on this side can tell success from
         silence. A button that might do nothing is worse than no button.</p>
       </div>
       <div class="card">
-        <h3>Firmware updates</h3>
+        <h3 data-reveal>Firmware updates</h3>
         <p>Out of scope permanently. Firmware travels over a different service that this app never
         opens — not for discovery, not for testing, not out of curiosity.</p>
       </div>
       <div class="card">
-        <h3>Switching the active device</h3>
+        <h3 data-reveal>Switching the active device</h3>
         <p>The multi-connect list is read-only here. Writing it has not been observed, so no control
         is drawn.</p>
       </div>
     </div>
   </section>
 
-  <section>
-    <h2>How this was measured</h2>
+  <section data-reveal>
+    <h2 data-reveal>How this was measured</h2>
 
     <p>
       Not by reading a specification — there isn't one. The vendor's Android app was run against real
@@ -296,8 +310,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>Questions</h2>
+  <section data-reveal>
+    <h2 data-reveal>Questions</h2>
     <dl class="faq">
       <dt>Can the OnePlus Buds 4 firmware be updated from a Mac?</dt>
       <dd>Not with BudsDesk, and not by design. Firmware updates travel over a separate vendor service
@@ -338,20 +352,53 @@
 
 <footer class="site">
   <div class="wrap">
-    <p class="fineprint">
-      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
-      Electronics, or the publisher of the phone companion app. Product names appear only as factual
-      device names. The firmware string on this page is a value read from a device, not a claim about
-      which version is current.
-    </p>
-    <p>
-      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a>
-    </p>
-    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+        <p>The missing desktop app for OPPO, OnePlus and realme earbuds. Free, MIT licensed, and
+        it never talks to the network.</p>
+      </div>
+
+      <nav aria-label="Models">
+        <h2 data-reveal>Models</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a></li>
+          <li data-reveal><a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/models.html">Every model</a></li>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Reading">
+        <h2 data-reveal>Reading</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/anc-eq-on-mac.html">ANC and EQ on Mac</a></li>
+          <li data-reveal><a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Project">
+        <h2 data-reveal>Project</h2>
+        <ul>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk">Source</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-fine">
+      <p>BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as
+      factual device names. No vendor code, icon, font or other asset is redistributed.</p>
+      <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    </div>
   </div>
 </footer>
+
+<script src="assets/site.js" defer></script>
 
 </body>
 </html>

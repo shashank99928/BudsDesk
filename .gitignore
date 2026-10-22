@@ -27,3 +27,9 @@ jadx-out/
 # Third-party agent skills installed locally for a design pass. Kept out of the repository:
 # they are somebody else's writing, and this project ships its own source, not a skill bundle.
 .agents/
+
+# The design pass's scratch: screenshots and the direction sheet it dealt.
+.taste-skill/
+
+# Python's bytecode cache, from the tools in Tools/.
+__pycache__/

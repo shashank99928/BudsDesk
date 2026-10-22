@@ -519,3 +519,58 @@ still cheap to fix.
 **What would change our mind:** nothing about the need for citations. A row whose citation nobody
 else can reproduce is wrong and gets deleted rather than softened, and a fact that only the author
 can verify belongs in the open questions, not in the table.
+
+---
+
+## D14 — The site is a Mac app's page: one first screen, the argument in sections, and the recording as the proof
+
+**Date:** 2026-10-22
+
+**Options**
+
+1. Leave the site as it was: a dark, dense document of the project's reasoning, with the
+   capability table, the registry rules and the recipe for adding a model all on the front page.
+2. Rebuild the site as a product page, in the shape a Mac utility's site usually has: a plain
+   bar, one first screen with the app in it, the argument in sections, a short question list, and
+   a close. Keep every claim, drop the arrangement.
+3. Option 2, and put the recording itself on the page: the bytes that came off the earbuds, as
+   the proof of the thing the page is selling.
+
+**Evidence**
+
+- The site was measured, not guessed at. Before the rebuild it was 1,676 words over seven screens
+  with one picture, the smallest thing on it 13px, and a reader's path to the download was four
+  scrolls down a column of paragraphs. The inspector that checks such pages found six failures on
+  it: no focal point on the first screen, one picture, rules and outlined boxes where surfaces
+  should be, and a headline that ran to three lines on a phone.
+- The nearest competitor for this product is not another earbud app; it is the phone app the
+  earbuds shipped with, and the Mac utility sites around it. Those sell with a picture of the
+  product and a paragraph about what it does. The thing this project has that none of them has
+  is the recording: `captures/oneplus-buds-4-2026-10-17/frames.hex`, twenty-five frames off a real
+  earbud with the note that came with each one.
+- The project's own claim is that every byte it sends was seen on real hardware first. That claim
+  was made in the README, in the changelog and in the protocol notes, and never shown to a
+  visitor. The site had a picture of the app and a table of what it supports, and nothing that
+  could be checked.
+- The frames are already quoted in eleven published places, in prose, and every one of those
+  quotes is a hand transcription. The risk the project spends its effort avoiding — a second copy
+  that can drift from the first — is exactly what a hand-typed hex block on a web page is.
+
+**Decision:** option 3. The site becomes a product page: a plain bar, one first screen carrying
+the app's own window, the argument in sections (what it does, what it will not do, which models
+work, how to install, questions), and a close. The middle section is the capture itself, eight
+frames a visitor can pick through, generated from `frames.hex` by `Tools/capture-html.py` and held
+to that file by a test. The page is light with a dark scheme for the system that asks for one,
+because a Mac utility's page is read on a Mac, and the accent is the app's own blue with the
+secondary ink darkened until the running text clears 7:1.
+
+**Why:** the site was carrying the project's whole argument in the shape of a manual, which is the
+shape that asks the reader to already believe the thing. A product page asks for one thing, which
+here is the download, and then earns it: the window is the app, the frames are the recording, the
+table is the registry, and every claim on the page is the same claim the code makes. Putting the
+recording on the page is the part that no competitor can copy, because theirs did not keep one.
+
+**What would change our mind:** a page that gets downloads without the recording section, which
+would say the recording was decoration. And a recording that stops being quotable — if the frames
+ever had to be paraphrased to fit a page, the page would be making the project say something it
+does not say, and the frames would come off it.

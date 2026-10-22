@@ -6,8 +6,9 @@
 <title>BudsDesk — Control OnePlus &amp; OPPO Earbuds on Mac</title>
 <meta name="description" content="A free, open-source macOS app that controls OPPO, OnePlus and realme wireless earbuds: noise cancelling, equalizer, BassWave, touch gestures and battery. Verified against real hardware. No phone, no account, no network.">
 <link rel="canonical" href="https://shashank99928.github.io/BudsDesk/">
-<meta name="theme-color" content="#0e1013">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BudsDesk">
@@ -19,6 +20,21 @@
 
 <link rel="stylesheet" href="assets/style.css">
 <link rel="icon" href="assets/icon.png" type="image/png">
+
+<!-- The motion layer. This one line marks the document before the first paint, so the page
+     is only ever hidden by an animation it has already decided to run. Without it, nothing
+     is hidden at all.
+
+     The timer is the other half of that promise: if the script that runs the animation
+     never arrives, the mark is taken back off and the page is simply a page. -->
+<script>
+document.documentElement.classList.add("js");
+setTimeout(function () {
+    if (!document.documentElement.classList.contains("motion")) {
+        document.documentElement.classList.remove("js");
+    }
+}, 3000);
+</script>
 
 <script type="application/ld+json">
 {
@@ -112,7 +128,7 @@
           "name": "Why does only one model write settings?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Because only one model has been recorded. The protocol is shared across the family, which is why other models connect and read, but a setting is only enabled once it has been observed working on that model. Guessing is how an app starts lying."
+            "text": "Because only one model has been recorded. The protocol is shared across the family, which is why other models connect and read, but a setting is only enabled once it has been observed to work on that model. Guessing is how an app starts lying."
           }
         },
         {
@@ -161,295 +177,454 @@
   <div class="wrap">
     <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
     <nav class="site" aria-label="Main">
-      <a href="/BudsDesk/" aria-current="page">Home</a>
       <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a>
       <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a>
       <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a>
       <a href="/BudsDesk/models.html">Models</a>
-      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
-      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
     </nav>
+    <a class="nav-download" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download</a>
   </div>
 </header>
 
 <main id="main">
-<div class="wrap">
 
-  <h1>Control your OPPO, OnePlus or realme earbuds from your Mac</h1>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>Control your earbuds from your Mac</h1>
 
-  <p class="lede">
-    The earbuds came with a phone app. On a Mac they are a Bluetooth audio device and nothing
-    more — no noise cancelling control, no equalizer, no gesture remapping, and a single merged
-    battery icon at best. BudsDesk is the missing desktop app.
-  </p>
+        <p class="lede" data-reveal>
+          The earbuds came with a phone app. On a Mac they are a Bluetooth audio device and
+          nothing more. BudsDesk opens the control channel the phone app uses, so noise
+          control, the equalizer, BassWave, touch gestures and per-bud battery all work from
+          the Mac.
+        </p>
 
-  <div class="buttons">
-    <a class="button primary" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download for macOS</a>
-    <a class="button" href="https://github.com/shashank99928/BudsDesk">Read the source</a>
-  </div>
-  <p style="font-size:14.5px;color:var(--faint);margin-bottom:26px">
-    Free, MIT licensed. macOS 26 or later on Apple silicon. Not on the Mac App Store.
-    Latest release <strong>v0.1.2</strong> —
-    <a href="https://github.com/shashank99928/BudsDesk/releases">what changed</a>.
-  </p>
+        <div class="buttons" data-reveal>
+          <a class="button primary" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download for macOS</a>
+          <a class="button" href="https://github.com/shashank99928/BudsDesk">Read the source</a>
+        </div>
 
-  <figure class="shot">
-    <img src="assets/connected.png" width="440" height="620" fetchpriority="high" decoding="async"
-         alt="The BudsDesk window: OnePlus Buds 4 connected. Battery shows left 20% and right 20%, both in ear, with the note that the case has not reported a charge. Noise control shows Adaptive selected, with the cancellation levels High, Moderate, Low and Auto below it.">
-    <figcaption>
-      The real window, drawn by the app itself from the recorded session in this project's capture
-      corpus: a OnePlus Buds 4 with both buds in ear at 20%, Adaptive noise control, and the
-      cancellation levels below it. The window scrolls on from there to the equalizer, BassWave,
-      gestures, the multi-connect list and the details. The line at the foot names the recording
-      being replayed, because that is what the picture is — a drawing of the app, not a photo of a
-      desk.
-    </figcaption>
-  </figure>
-
-  <div class="note good">
-    <p><strong>What &ldquo;verified&rdquo; means here.</strong> Every byte the app sends was first seen
-    in a recording of real hardware, and every feature is labelled <em>measured</em> (a recording
-    shows it), <em>inferred</em> (read out of the vendor's own app constants, not yet confirmed) or
-    <em>unconfirmed</em> (plausible, nothing observed). A feature that is not measured has no write
-    path in the app at all. That is a design decision, not a caveat.</p>
-  </div>
-
-  <section>
-    <h2>What it does</h2>
-
-    <p>On the one model measured end to end, the OnePlus Buds 4:</p>
-
-    <div class="grid">
-      <div class="card">
-        <h3>Noise control</h3>
-        <p>Off, Noise Cancellation at High, Moderate, Low or Auto, Transparency, and Adaptive — the
-        same set the phone app offers, switchable from the menu bar or the window.</p>
+        <p class="release" data-reveal>
+          Free and MIT licensed. macOS 26 or later on Apple silicon. Not on the Mac App Store.
+          Latest release <strong>v0.1.2</strong> &mdash;
+          <a href="https://github.com/shashank99928/BudsDesk/releases">what changed</a>.
+        </p>
       </div>
-      <div class="card">
-        <h3>Equalizer &amp; BassWave</h3>
-        <p>Preset switching including the custom slot when one is saved on the earbuds, and BassWave
-        over the range the device itself reports rather than a guessed one.</p>
-      </div>
-      <div class="card">
-        <h3>Touch gestures</h3>
-        <p>Remap double tap, triple tap, touch and hold, and slide — limited to the actions the
-        hardware has actually been observed to store.</p>
-      </div>
-      <div class="card">
-        <h3>Battery &amp; wear</h3>
-        <p>Left and right read separately, never averaged, plus which bud is in your ear and which
-        is in the case. Shown in the menu bar as well as the window.</p>
-      </div>
-      <div class="card">
-        <h3>Details worth seeing</h3>
-        <p>The active audio codec, the firmware version string verbatim, and the multi-connect
-        device list with each device's connection state.</p>
-      </div>
-      <div class="card">
-        <h3>A command line, too</h3>
-        <p>The same binary replays a capture, prints the capability registry, and runs the protocol
-        self-check — so the parts can be inspected without a window.</p>
-      </div>
-    </div>
 
-    <p>
-      Every control is gated by a capability registry (<code>devices/*.json</code>) rather than by
-      model-name branches in the code. A model nobody has catalogue yet still connects, still shows
-      everything it reports, and simply has no write path — the app tells you that instead of
-      pretending.
-    </p>
-  </section>
-
-  <section>
-    <h2>What it will not do</h2>
-
-    <ul>
-      <li><strong>It will not touch firmware.</strong> Updates live on a separate service, and the app
-      never opens it — not for discovery, not for testing. Firmware updates are out of scope
-      permanently. A failed firmware write turns earbuds into a brick; nothing here is worth that.</li>
-      <li><strong>It will not guess.</strong> No fuzzing, no enumerating command ids, no sending a
-      frame that was not first seen from the hardware.</li>
-      <li><strong>It will not write a setting the hardware has not been seen to accept.</strong> An
-      unconfirmed capability has no write path.</li>
-      <li><strong>It will not touch the network.</strong> No accounts, no telemetry, no analytics,
-      no update checks. It speaks to the earbuds and to nothing else.</li>
-      <li><strong>It will not claim the case's battery.</strong> See below — the earbuds do not report
-      it on this channel, so the app says so rather than drawing an empty cell.</li>
-    </ul>
-
-    <div class="note warn">
-      <p><strong>Case battery is a missing report, not a missing feature.</strong> Across a whole
-      recording session every battery reply carried exactly two slots — left and right — even while
-      the wear reply named the case on every single poll. Whatever path the case's charge takes to
-      the phone app, this channel is not it.</p>
+      <figure class="shot" data-reveal>
+        <img src="assets/connected.png" width="440" height="620" fetchpriority="high" decoding="async"
+             alt="The BudsDesk window: OnePlus Buds 4 connected. Battery shows left 20% and right 20%, both in ear, with the note that the case has not reported a charge. Noise control shows Adaptive selected, with the cancellation levels High, Moderate, Low and Auto below it.">
+        <figcaption>
+          The app's own window, drawn by the app from the recorded session in this project: a
+          OnePlus Buds 4 with both buds in ear at 20% and Adaptive noise control. The line at
+          the foot names the recording being replayed, because that is what the picture is.
+        </figcaption>
+      </figure>
     </div>
   </section>
 
-  <section>
-    <h2>Which models work</h2>
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-reveal>What it does</h2>
+        <p class="lede" data-reveal>
+          Every control below writes to the earbuds and then reads the answer back. Nothing is
+          drawn that the hardware has not been seen to accept.
+        </p>
+      </div>
 
-    <div class="scroll-x">
-    <table>
-      <caption class="sr-only" style="position:absolute;left:-9999px">Feature support by model</caption>
-      <thead>
-        <tr><th scope="col">Feature</th><th scope="col">OnePlus Buds 4</th><th scope="col">Other family models</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Connect and read state</td><td class="yes">Measured</td><td class="partial">Read-only until recorded</td></tr>
-        <tr><td>Battery, left and right</td><td class="yes">Measured</td><td class="partial">Read-only until recorded</td></tr>
-        <tr><td>Charging case battery</td><td class="no">Never reported on this channel</td><td class="no">Unknown</td></tr>
-        <tr><td>Wear / in-ear state</td><td class="yes">Measured</td><td class="partial">Read-only until recorded</td></tr>
-        <tr><td>Noise control</td><td class="yes">Measured, writes</td><td class="no">No write path</td></tr>
-        <tr><td>Equalizer presets</td><td class="yes">Measured, writes</td><td class="no">No write path</td></tr>
-        <tr><td>BassWave</td><td class="yes">Measured, writes</td><td class="no">No write path</td></tr>
-        <tr><td>Touch gesture remapping</td><td class="yes">Measured, writes</td><td class="no">No write path</td></tr>
-        <tr><td>Multi-connect list</td><td class="yes">Measured, read-only</td><td class="no">No write path</td></tr>
-        <tr><td>Firmware version string</td><td class="yes">Measured, read-only</td><td class="partial">Read-only until recorded</td></tr>
-        <tr><td>Active audio codec</td><td class="yes">Measured, read-only</td><td class="partial">Read-only until recorded</td></tr>
-        <tr><td>Firmware update</td><td class="no">Out of scope, permanently</td><td class="no">Out of scope</td></tr>
-      </tbody>
-    </table>
+      <div class="feature-grid">
+        <ul class="feature-list">
+          <li data-reveal>
+            <h3>Noise control</h3>
+            <p>Off, Noise Cancellation at High, Moderate, Low or Auto, Transparency and Adaptive,
+            the same set the phone app offers, switched from the window or the menu bar.</p>
+          </li>
+          <li data-reveal>
+            <h3>Equalizer and BassWave</h3>
+            <p>Preset switching, including the custom slot when the earbuds report one, and
+            BassWave over the range the device itself reports rather than a guessed one.</p>
+          </li>
+          <li data-reveal>
+            <h3>Touch gestures</h3>
+            <p>Double tap, triple tap, touch and hold and slide, limited to the actions this
+            hardware has actually been observed to store.</p>
+          </li>
+          <li data-reveal>
+            <h3>Battery and wear</h3>
+            <p>Left and right read separately and never averaged, plus which bud is in your ear
+            and which is in the case, in the window and in the menu bar.</p>
+          </li>
+          <li data-reveal>
+            <h3>Details worth seeing</h3>
+            <p>The active audio codec, the firmware version string verbatim, and the
+            multi-connect list with each device's connection state.</p>
+          </li>
+          <li data-reveal>
+            <h3>A command line too</h3>
+            <p>The same binary replays a capture, prints the capability registry and runs the
+            protocol self-check, so every part can be inspected without a window.</p>
+          </li>
+        </ul>
+
+        <div class="detail-stack" data-reveal>
+          <figure class="crop" data-reveal style="--x: 33; --y: 268; --w: 814; --h: 162;">
+            <div class="frame">
+              <img src="assets/connected.png" width="880" height="1240" loading="lazy" decoding="async"
+                   alt="The battery card of the BudsDesk window: Left 20% in ear, Right 20% in ear, and the case with a dash for its charge and the word in case.">
+            </div>
+            <figcaption>Battery, as the earbuds report it: the two buds separately, and the
+            case marked as having reported nothing.</figcaption>
+          </figure>
+
+          <figure class="crop" data-reveal style="--x: 33; --y: 600; --w: 814; --h: 312;">
+            <div class="frame">
+              <img src="assets/connected.png" width="880" height="1240" loading="lazy" decoding="async"
+                   alt="The noise control card of the BudsDesk window: Off, Noise cancellation, Transparency and Adaptive, with Adaptive selected.">
+            </div>
+            <figcaption>Noise control, with the mode the app read back selected.</figcaption>
+          </figure>
+
+          <figure class="crop" data-reveal style="--x: 33; --y: 915; --w: 814; --h: 325;">
+            <div class="frame">
+              <img src="assets/connected.png" width="880" height="1240" loading="lazy" decoding="async"
+                   alt="The cancellation level rows of the BudsDesk window: High, Moderate, Low and Auto.">
+            </div>
+            <figcaption>The cancellation levels the earbuds themselves report, rather than a
+            fixed list the app made up.</figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
-
-    <p>
-      <a href="/BudsDesk/models.html">How a model gets added, and what the registry contains &rarr;</a>
-      The measured model, in full: <a href="/BudsDesk/oneplus-buds-4.html">the OnePlus Buds 4</a>.
-    </p>
   </section>
 
-  <section>
-    <h2>By brand</h2>
+  <section id="wire" class="band">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-reveal>Every byte was seen first</h2>
+        <p class="lede" data-reveal>
+          None of these was written by hand. They came off a real OnePlus Buds 4, and the
+          app's own tests replay this same recording. Pick a frame to read what the earbuds
+          sent.
+        </p>
+      </div>
 
-    <p>
-      One control channel serves all three brands, so the rule is the same for each — but what that
-      rule means in practice differs today, and each page says which half of it applies to your
-      earbuds.
-    </p>
-
-    <div class="grid">
-      <a class="card" href="/BudsDesk/oneplus-buds-on-mac.html">
-        <h3>OnePlus Buds</h3>
-        <p>The Buds 4 is the one model measured end to end, so it carries the full set of controls.
-        The rest of the line connects and reads.</p>
-      </a>
-      <a class="card" href="/BudsDesk/oppo-buds-on-mac.html">
-        <h3>OPPO Enco</h3>
-        <p>The brand this control channel is named after. An Enco model that advertises the service
-        reads today; a recording is what makes it writable.</p>
-      </a>
-      <a class="card" href="/BudsDesk/realme-buds-on-mac.html">
-        <h3>realme Buds</h3>
-        <p>The same protocol under a third name, and the independent realme Mac client worth knowing
-        about before deciding anything.</p>
-      </a>
-    </div>
-  </section>
-
-  <section>
-    <h2>Install</h2>
-
-    <ol>
-      <li>Download the disk image and drag <strong>BudsDesk</strong> into Applications.</li>
-      <li>Pair the earbuds with the Mac in <em>System Settings &rarr; Bluetooth</em> if they are not
-      already paired. They connect as audio devices without BudsDesk.</li>
-      <li>Open BudsDesk and allow Bluetooth access when macOS asks. The permission is tied to the
-      app's bundle identifier, so it survives updates.</li>
+      <div class="wire">
+      <!-- BEGIN capture frames -->
+<ol class="wire-list">
+      <li><button class="wire-item" type="button" data-frame="battery-reply" data-reveal aria-selected="true">Battery <span>battery-reply</span></button></li>
+      <li><button class="wire-item" type="button" data-frame="wear-reply" data-reveal aria-selected="false">Wear <span>wear-reply</span></button></li>
+      <li><button class="wire-item" type="button" data-frame="anc-reply-adaptive" data-reveal aria-selected="false">Noise control <span>anc-reply-adaptive</span></button></li>
+      <li><button class="wire-item" type="button" data-frame="setack-eq" data-reveal aria-selected="false">Equalizer <span>setack-eq</span></button></li>
+      <li><button class="wire-item" type="button" data-frame="setack-basswave" data-reveal aria-selected="false">BassWave <span>setack-basswave</span></button></li>
+      <li><button class="wire-item" type="button" data-frame="touch-reply" data-reveal aria-selected="false">Touch gestures <span>touch-reply</span></button></li>
+      <li><button class="wire-item" type="button" data-frame="firmware-reply" data-reveal aria-selected="false">Firmware <span>firmware-reply</span></button></li>
+      <li><button class="wire-item" type="button" data-frame="multiconnect-reply" data-reveal aria-selected="false">Multi-connect <span>multiconnect-reply</span></button></li>
     </ol>
+    <div class="wire-detail">
+      <div class="wire-frame is-active" data-frame="battery-reply">
+        <h3>Battery</h3>
+        <p class="wire-kind">The battery getter, answered</p>
+        <pre>aa 0d 00 00 06 81 03 06 00 00 02 01 14 02 14</pre>
+        <p class="wire-note">0x8106: L 20%, R 20%, case absent</p>
+      </div>
+      <div class="wire-frame" data-frame="wear-reply">
+        <h3>Wear</h3>
+        <p class="wire-kind">The wear getter, answered</p>
+        <pre>aa 0f 00 00 09 81 04 08 00 00 03 01 07 02 07 03 04</pre>
+        <p class="wire-note">0x8109: L in ear, R in ear, case in case</p>
+      </div>
+      <div class="wire-frame" data-frame="anc-reply-adaptive">
+        <h3>Noise control</h3>
+        <p class="wire-kind">The noise getter, answered</p>
+        <pre>aa 0c 00 00 0c 81 07 05 00 00 01 01 00 08</pre>
+        <p class="wire-note">0x810c readback: 0x0800 adaptive</p>
+      </div>
+      <div class="wire-frame" data-frame="setack-eq">
+        <h3>Equalizer</h3>
+        <p class="wire-kind">A write, answered</p>
+        <pre>aa 08 00 00 06 84 12 01 00 00</pre>
+        <p class="wire-note">0x0684: EQ preset setter</p>
+        <p class="wire-kind">The preset, read back</p>
+        <pre>aa 09 00 00 0f 81 08 02 00 00 02</pre>
+        <p class="wire-note">0x810f: preset 0x02</p>
+      </div>
+      <div class="wire-frame" data-frame="setack-basswave">
+        <h3>BassWave</h3>
+        <p class="wire-kind">A write, answered</p>
+        <pre>aa 08 00 00 1b 84 14 01 00 00</pre>
+        <p class="wire-note">0x1b84: BassWave setter</p>
+        <p class="wire-kind">The level, read back</p>
+        <pre>aa 0b 00 00 24 81 09 04 00 00 fb 05 02</pre>
+        <p class="wire-note">0x8124 read back after setting +2</p>
+      </div>
+      <div class="wire-frame" data-frame="touch-reply">
+        <h3>Touch gestures</h3>
+        <p class="wire-kind">The gesture table, answered</p>
+        <pre>aa 51 00 00 08 81 06 4a 00 00 12 01 01 01 00 01 01 02 06 01 01 03 05 01 01 04 08 01 01 06 00 01 01 05 07 02 01 01 00 02 01 02 06 02 01 03 05 02 01 04 08 02 01 06 00 02 01 05 07 01 06 02 1d 01 06 03 00 01 06 06 1c 02 06 02 1d 02 06 03 00 02 06 06 1c</pre>
+        <p class="wire-note">0x8108: 18 four-byte records behind a count</p>
+      </div>
+      <div class="wire-frame" data-frame="firmware-reply">
+        <h3>Firmware</h3>
+        <p class="wire-kind">The version string, answered</p>
+        <pre>aa 27 00 00 05 81 05 20 00 00 04 31 2c 32 2c 31 33 38 2c 32 2c 32 2c 31 33 38 2c 33 2c 31 2c 30 31 2c 33 2c 32 2c 31 30 35</pre>
+        <p class="wire-note">0x8105: ASCII, comma separated</p>
+      </div>
+      <div class="wire-frame" data-frame="multiconnect-reply">
+        <h3>Multi-connect</h3>
+        <p class="wire-kind">The device list, answered</p>
+        <pre>aa 3f 00 00 12 81 32 38 00 00 02 26 68 69 83 be b0 1b 02 01 18 53 68 61 73 68 61 6e 6b e2 80 99 73 20 4d 61 63 42 6f 6f 6b 20 50 72 6f 6f af 4d 25 a8 b8 0d 02 00 0a 73 68 73 78 6e 6b 20 53 32 33</pre>
+        <p class="wire-note">0x8112: the multi-connect table read back on request</p>
+      </div>
+    </div>
+<!-- END capture frames -->
+      </div>
 
-    <p>
-      The build is ad-hoc signed, not notarised, so the first launch needs a confirmation:
-      right-click the app and choose <em>Open</em>, or allow it in <em>System Settings &rarr;
-      Privacy &amp; Security</em>. This is what an app distributed outside the App Store looks like
-      without a paid developer account; saying so is better than pretending otherwise.
-    </p>
-
-    <div class="card">
-      <h3>Or build it</h3>
-      <pre><code>git clone https://github.com/shashank99928/BudsDesk
-cd BudsDesk
-swift test        # corpus replay, total parsers, registry and session tests
-./build.sh        # assembles BudsDesk.app, checks symbols, runs the self-check</code></pre>
-      <p style="margin-bottom:0">Requires macOS 26+, Apple silicon and Swift 6.2. The app bundle
-      carries its own capability registry, and the build verifies the bundled copy loads — a
-      registry that is valid on disk and missing inside the app fails the build.</p>
+      <p data-reveal>
+        The recording is in the repository byte for byte, and this page's copy of it is
+        generated from that file rather than typed out. The protocol notes spell out what
+        each byte means.
+      </p>
     </div>
   </section>
 
-  <section>
-    <h2>Questions people actually ask</h2>
+  <section id="limits">
+    <div class="wrap split">
+      <div data-reveal>
+        <h2 data-reveal>What it will not do</h2>
+        <p>
+          The list is short because the app is arranged around it. Every one of these is a
+          decision, not an omission.
+        </p>
+        <ul>
+          <li><strong>It will not touch firmware.</strong> Updates live on a separate service,
+          and the app never opens it: not for discovery, not for testing. A failed firmware
+          write turns earbuds into a brick, and nothing here is worth that.</li>
+          <li><strong>It will not guess.</strong> No command id is sent that has not been seen
+          in a recording, and no frame is fuzzed to find out.</li>
+          <li><strong>It will not write a setting the hardware has not been seen to
+          accept.</strong> An unconfirmed capability has no write path at all, and its control
+          is drawn disabled with the reason on it.</li>
+          <li><strong>It will not talk to the network.</strong> No accounts, no telemetry, no
+          analytics, no update checks. It speaks to the earbuds and to nothing else, and
+          behaves the same with the network down.</li>
+          <li><strong>It will not claim the case's battery.</strong> The earbuds do not report
+          it on this channel, so the app says so instead of drawing an empty cell.</li>
+        </ul>
+      </div>
 
-    <dl class="faq">
-      <dt>Can I change noise cancelling on these earbuds from a Mac?</dt>
-      <dd>Not through macOS. Its Bluetooth settings connect and disconnect the earbuds and nothing
-      more, because the noise-control and equalizer settings live on a separate vendor control channel
-      that no Apple software opens. BudsDesk opens that channel, which is why it can change the mode
-      from the Mac. Pairing still happens in System Settings, and the earbuds connect as audio devices
-      without it.</dd>
-
-      <dt>Do I still need the phone app?</dt>
-      <dd>For firmware updates, yes. For daily use — noise mode, equalizer, BassWave, gestures — no.
-      Those settings are stored on the earbuds, so a change made here shows up on the phone and the
-      other way round.</dd>
-
-      <dt>Does BudsDesk replace the HeyMelody app on the Mac?</dt>
-      <dd>It is not a port of it and shares none of its code: it was written separately by recording
-      what the earbuds' own control channel carries. It covers the settings that were measured on this
-      channel, and it deliberately does not do firmware updates. See
-      <a href="/BudsDesk/heymelody-on-mac.html">the honest comparison</a>.</dd>
-
-      <dt>Which earbuds models are supported?</dt>
-      <dd>One model is verified end to end against hardware: the OnePlus Buds 4. Any other OPPO,
-      OnePlus or realme model that advertises the same control service will connect and show everything
-      it reports, but with no write path, because writing a setting that has not been observed to work
-      on that model would be a guess. Adding a model means recording it and adding one JSON file.</dd>
-
-      <dt>Why does only one model write settings?</dt>
-      <dd>Because only one model has been recorded. The protocol is shared across the family, which is
-      why other models connect and read, but a setting is only enabled once it has been observed
-      working on that model. Guessing is how an app starts lying.</dd>
-
-      <dt>Is the charging case's battery shown?</dt>
-      <dd>No, because the earbuds never report it on this channel. Across a full recording session
-      every battery reply carried exactly two slots, left and right, even while the wear reply named
-      the case. BudsDesk says "the case is present but has not reported a charge — on this channel it
-      never does" rather than drawing an empty cell.</dd>
-
-      <dt>Does BudsDesk update the earbuds' firmware?</dt>
-      <dd>No, and it never will. Firmware updates live on a separate service that is never opened by
-      this app — not for discovery, not for testing. A failed firmware write bricks hardware, and the
-      payoff does not justify the risk.</dd>
-
-      <dt>Does it send anything to a server?</dt>
-      <dd>No. No accounts, no telemetry, no analytics and no update checks. It is not sandboxed but
-      makes no network calls, and it can be run with the network down and behaves identically. The
-      source is public, so this is checkable rather than promised.</dd>
-
-      <dt>Is it free, and is it on the App Store?</dt>
-      <dd>It is MIT licensed and free: no account, no paid tier, no in-app purchase. It is not on the
-      Mac App Store. It ships as a disk image from GitHub Releases and is ad-hoc signed, so the first
-      launch asks you to confirm opening it.</dd>
-    </dl>
+      <div class="note warn" data-reveal>
+        <p><strong>The case's charge is a missing report, not a missing feature.</strong>
+        Across a whole recording session every battery reply carried exactly two slots, left
+        and right, even while the wear reply named the case on every poll. Whatever path the
+        case's charge takes to the phone app, this channel is not it.</p>
+      </div>
+    </div>
   </section>
 
-</div>
+  <section id="models">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-reveal>Which models work</h2>
+        <p class="lede" data-reveal>
+          One model is measured end to end. The rest of the family connects and reads, and
+          none of it is writable yet.
+        </p>
+      </div>
+
+      <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th scope="col">Feature</th><th scope="col">OnePlus Buds 4</th><th scope="col">Other family models</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Connect and read state</td><td class="yes">Measured</td><td class="partial">Read-only until recorded</td></tr>
+          <tr><td>Battery, left and right</td><td class="yes">Measured</td><td class="partial">Read-only until recorded</td></tr>
+          <tr><td>Charging case battery</td><td class="no">Never reported on this channel</td><td class="no">Unknown</td></tr>
+          <tr><td>Wear / in-ear state</td><td class="yes">Measured</td><td class="partial">Read-only until recorded</td></tr>
+          <tr><td>Noise control</td><td class="yes">Measured, writes</td><td class="no">No write path</td></tr>
+          <tr><td>Equalizer presets</td><td class="yes">Measured, writes</td><td class="no">No write path</td></tr>
+          <tr><td>BassWave</td><td class="yes">Measured, writes</td><td class="no">No write path</td></tr>
+          <tr><td>Touch gesture remapping</td><td class="yes">Measured, writes</td><td class="no">No write path</td></tr>
+          <tr><td>Multi-connect list</td><td class="yes">Measured, read-only</td><td class="no">No write path</td></tr>
+          <tr><td>Firmware version string</td><td class="yes">Measured, read-only</td><td class="partial">Read-only until recorded</td></tr>
+          <tr><td>Active audio codec</td><td class="yes">Measured, read-only</td><td class="partial">Read-only until recorded</td></tr>
+          <tr><td>Firmware update</td><td class="no">Out of scope, permanently</td><td class="no">Out of scope</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="grid" data-reveal>
+        <div class="card">
+          <h3>OnePlus Buds</h3>
+          <p>The Buds 4 is the one model measured end to end, so it carries the full set of
+          controls. <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds on Mac</a>.</p>
+        </div>
+        <div class="card">
+          <h3>OPPO Enco</h3>
+          <p>The brand this control channel is named after. An Enco model that advertises the
+          service reads today. <a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco on Mac</a>.</p>
+        </div>
+        <div class="card">
+          <h3>realme Buds</h3>
+          <p>The same protocol under a third name, and an independent realme Mac client worth
+          knowing about. <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds on Mac</a>.</p>
+        </div>
+      </div>
+
+      <p>
+        <a href="/BudsDesk/models.html">How a model gets added, and what the registry
+        contains</a> &rarr; The measured model, in full:
+        <a href="/BudsDesk/oneplus-buds-4.html">the OnePlus Buds 4</a>.
+      </p>
+    </div>
+  </section>
+
+  <section id="install" class="band">
+    <div class="wrap split">
+      <div data-reveal>
+        <h2 data-reveal>Installing it</h2>
+        <ol class="steps">
+          <li><strong>Download the disk image.</strong>
+          <p>Drag BudsDesk into Applications.</p></li>
+          <li><strong>Pair the earbuds.</strong>
+          <p>In System Settings, Bluetooth, if they are not paired already. They connect as
+          audio devices without BudsDesk.</p></li>
+          <li><strong>Open BudsDesk.</strong>
+          <p>Allow Bluetooth access when macOS asks. The permission belongs to the app, so it
+          survives updates.</p></li>
+        </ol>
+      </div>
+
+      <div data-reveal>
+        <h2 data-reveal>Or build it</h2>
+        <pre><code>git clone https://github.com/shashank99928/BudsDesk
+cd BudsDesk
+swift test        # corpus replay, total parsers, registry and session
+./build.sh        # assembles BudsDesk.app, checks symbols, runs the self-check</code></pre>
+        <p>
+          Requires macOS 26+, Apple silicon and Swift 6.2. The build is ad-hoc signed rather
+          than notarised, so the first launch asks you to confirm opening it: right-click the
+          app and choose Open, or allow it in System Settings, Privacy &amp; Security. That is
+          what an app distributed outside the App Store looks like without a paid developer
+          account, and saying so is better than pretending otherwise.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="questions">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-reveal>Questions</h2>
+      </div>
+
+      <dl class="faq">
+        <dt>Can I change noise cancelling on these earbuds from a Mac?</dt>
+        <dd>Not through macOS. Its Bluetooth settings connect and disconnect the earbuds and nothing
+        more, because the noise-control and equalizer settings live on a separate vendor control channel
+        that no Apple software opens. BudsDesk opens that channel, which is why it can change the mode
+        from the Mac. Pairing still happens in System Settings, and the earbuds connect as audio devices
+        without it.</dd>
+
+        <dt>Do I still need the phone app?</dt>
+        <dd>For firmware updates, yes. For daily use &mdash; noise mode, equalizer, BassWave, gestures &mdash; no.
+        Those settings are stored on the earbuds, so a change made here shows up on the phone and the other
+        way round.</dd>
+
+        <dt>Does BudsDesk replace the HeyMelody app on the Mac?</dt>
+        <dd>It is not a port of it and shares none of its code: it was written separately by recording
+        what the earbuds' own control channel carries. It covers the settings that were measured on this
+        channel, and it deliberately does not do firmware updates. See
+        <a href="/BudsDesk/heymelody-on-mac.html">the honest comparison</a>.</dd>
+
+        <dt>Which earbuds models are supported?</dt>
+        <dd>One model is verified end to end against hardware: the OnePlus Buds 4. Any other OPPO,
+        OnePlus or realme model that advertises the same control service will connect and show everything
+        it reports, but with no write path, because writing a setting that has not been observed to work
+        on that model would be a guess. Adding a model means recording it and adding one JSON file.</dd>
+
+        <dt>Why does only one model write settings?</dt>
+        <dd>Because only one model has been recorded. The protocol is shared across the family, which is
+        why other models connect and read, but a setting is only enabled once it has been observed to
+        work on that model. Guessing is how an app starts lying.</dd>
+
+        <dt>Is the charging case's battery shown?</dt>
+        <dd>No, because the earbuds never report it on this channel. Across a full recording session
+        every battery reply carried exactly two slots, left and right, even while the wear reply named
+        the case. BudsDesk says "the case is present but has not reported a charge &mdash; on this channel it
+        never does" rather than drawing an empty cell.</dd>
+
+        <dt>Does BudsDesk update the earbuds' firmware?</dt>
+        <dd>No, and it never will. Firmware updates live on a separate service that is never opened by this
+        app &mdash; not for discovery, not for testing. A failed firmware write bricks hardware, and the
+        payoff does not justify the risk.</dd>
+
+        <dt>Does it send anything to a server?</dt>
+        <dd>No. No accounts, no telemetry, no analytics and no update checks. It is not sandboxed but
+        makes no network calls, and it can be run with the network down and behaves identically. The
+        source is public, so this is checkable rather than promised.</dd>
+
+        <dt>Is it free, and is it on the App Store?</dt>
+        <dd>It is MIT licensed and free: no account, no paid tier, no in-app purchase. It is not on the
+        Mac App Store. It ships as a disk image from GitHub Releases and is ad-hoc signed, so the first
+        launch asks you to confirm opening it.</dd>
+      </dl>
+    </div>
+  </section>
+
 </main>
 
 <footer class="site">
   <div class="wrap">
-    <p class="fineprint">
-      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
-      Electronics, or the publisher of the phone companion app. Product names appear only as factual
-      device names. No vendor code, icon, font or other asset is redistributed.
-    </p>
-    <p>
-      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a>
-    </p>
-    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+        <p>The missing desktop app for OPPO, OnePlus and realme earbuds. Free, MIT licensed, and
+        it never talks to the network.</p>
+      </div>
+
+      <nav aria-label="Models">
+        <h2>Models</h2>
+        <ul>
+          <li><a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a></li>
+          <li><a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a></li>
+          <li><a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a></li>
+          <li><a href="/BudsDesk/models.html">Every model</a></li>
+          <li><a href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Reading">
+        <h2>Reading</h2>
+        <ul>
+          <li><a href="/BudsDesk/anc-eq-on-mac.html">ANC and EQ on Mac</a></li>
+          <li><a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Project">
+        <h2>Project</h2>
+        <ul>
+          <li><a href="https://github.com/shashank99928/BudsDesk">Source</a></li>
+          <li><a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a></li>
+          <li><a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a></li>
+          <li><a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-fine">
+      <p>BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as
+      factual device names. No vendor code, icon, font or other asset is redistributed.</p>
+      <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    </div>
   </div>
 </footer>
+
+<script src="assets/site.js" defer></script>
 
 </body>
 </html>

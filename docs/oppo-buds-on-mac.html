@@ -6,8 +6,9 @@
 <title>OPPO Enco Buds on a Mac: ANC, EQ &amp; Battery — BudsDesk</title>
 <meta name="description" content="OPPO Enco earbuds on macOS: what the Mac will not do, the vendor control channel BudsDesk opens, what it reads from an Enco connection today, and what turns an Enco model from read-only into supported.">
 <link rel="canonical" href="https://shashank99928.github.io/BudsDesk/oppo-buds-on-mac.html">
-<meta name="theme-color" content="#0e1013">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="BudsDesk">
@@ -18,6 +19,21 @@
 <meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
 
 <link rel="stylesheet" href="assets/style.css">
+
+<!-- The motion layer. This one line marks the document before the first paint, so the page
+     is only ever hidden by an animation it has already decided to run. Without it, nothing
+     is hidden at all.
+
+     The timer is the other half of that promise: if the script that runs the animation
+     never arrives, the mark is taken back off and the page is simply a page. -->
+<script>
+document.documentElement.classList.add("js");
+setTimeout(function () {
+    if (!document.documentElement.classList.contains("motion")) {
+        document.documentElement.classList.remove("js");
+    }
+}, 3000);
+</script>
 <link rel="icon" href="assets/icon.png" type="image/png">
 
 <script type="application/ld+json">
@@ -80,14 +96,12 @@
   <div class="wrap">
     <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
     <nav class="site" aria-label="Main">
-      <a href="/BudsDesk/">Home</a>
       <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a>
       <a href="/BudsDesk/oppo-buds-on-mac.html" aria-current="page">OPPO Enco</a>
       <a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a>
       <a href="/BudsDesk/models.html">Models</a>
-      <a href="/BudsDesk/anc-eq-on-mac.html">ANC &amp; EQ on Mac</a>
-      <a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a>
     </nav>
+    <a class="nav-download" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download</a>
   </div>
 </header>
 
@@ -96,32 +110,32 @@
 
   <nav class="crumb" aria-label="Breadcrumb">
     <ol>
-      <li><a href="/BudsDesk/">BudsDesk</a></li>
+      <li data-reveal><a href="/BudsDesk/">BudsDesk</a></li>
       <li aria-current="page">OPPO Enco</li>
     </ol>
   </nav>
 
   <h1>OPPO Enco earbuds on your Mac</h1>
 
-  <p class="lede">
+  <p class="lede" data-reveal>
     The Enco line is where this protocol comes from: the vendor's serial service is named after OPPO,
     and the OnePlus and realme earbuds that answer it are the same protocol under other names. What no
     Enco model has yet is a recording in this project — and a recording is the only thing that turns a
     connection from readable into writable.
   </p>
 
-  <div class="buttons">
+  <div class="buttons" data-reveal>
     <a class="button primary" href="https://github.com/shashank99928/BudsDesk/releases/latest/download/BudsDesk.dmg">Download for macOS</a>
     <a class="button" href="/BudsDesk/models.html">What "read-only" means</a>
   </div>
-  <p style="font-size:14.5px;color:var(--faint);margin-bottom:26px">
+  <p class="release" data-reveal>
     Free, MIT licensed. macOS 26 or later on Apple silicon. Not on the Mac App Store.
     Latest release <strong>v0.1.2</strong> —
     <a href="https://github.com/shashank99928/BudsDesk/releases">what changed</a>.
   </p>
 
-  <section>
-    <h2>Why a Mac sees an audio device and nothing else</h2>
+  <section data-reveal>
+    <h2 data-reveal>Why a Mac sees an audio device and nothing else</h2>
 
     <p>
       Every setting on an Enco earbud — the noise mode, the equalizer, BassWave, which gesture does
@@ -137,8 +151,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>The channel, as measured</h2>
+  <section data-reveal>
+    <h2 data-reveal>The channel, as measured</h2>
 
     <p>
       This is not a guess about how OPPO earbuds might work; it is what the SDP record on real
@@ -167,8 +181,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>What an Enco connection shows today</h2>
+  <section data-reveal>
+    <h2 data-reveal>What an Enco connection shows today</h2>
 
     <p>
       Connect an OPPO Enco model that advertises the control service and BudsDesk will have a session
@@ -177,17 +191,17 @@
 
     <div class="grid">
       <div class="card">
-        <h3>Read</h3>
+        <h3 data-reveal>Read</h3>
         <p>Battery where the earbuds report it per bud, wear state, the active noise-control mode, the
         equalizer preset, the codec the link negotiated, and the firmware string verbatim.</p>
       </div>
       <div class="card">
-        <h3>Not written</h3>
+        <h3 data-reveal>Not written</h3>
         <p>No mode, preset, BassWave level or gesture is changed, because no Enco model has been
         recorded here yet. Every such control is drawn disabled with the reason on the card.</p>
       </div>
       <div class="card">
-        <h3>Never</h3>
+        <h3 data-reveal>Never</h3>
         <p>Firmware. Updates travel over a different service that this app does not open at all — a
         failed firmware write bricks hardware, and nothing here is worth that risk.</p>
       </div>
@@ -201,8 +215,8 @@
     </div>
   </section>
 
-  <section>
-    <h2>How an Enco model becomes writable</h2>
+  <section data-reveal>
+    <h2 data-reveal>How an Enco model becomes writable</h2>
 
     <p>
       Somebody records it. Tracing on, one setting changed at a time, the traffic written out as hex,
@@ -218,8 +232,8 @@
     </p>
   </section>
 
-  <section>
-    <h2>Questions</h2>
+  <section data-reveal>
+    <h2 data-reveal>Questions</h2>
     <dl class="faq">
       <dt>Does BudsDesk work with my OPPO Enco model?</dt>
       <dd>If it advertises the vendor's control service, yes — it will connect and show what it
@@ -248,8 +262,8 @@
     </dl>
   </section>
 
-  <section>
-    <h2>The other two brands</h2>
+  <section data-reveal>
+    <h2 data-reveal>The other two brands</h2>
 
     <p>
       The same channel serves <a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a> and
@@ -264,20 +278,53 @@
 
 <footer class="site">
   <div class="wrap">
-    <p class="fineprint">
-      BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
-      Electronics, or the publisher of the phone companion app. Product names appear only as factual
-      device names. No vendor code, icon, font or other asset is redistributed.
-    </p>
-    <p>
-      <a href="https://github.com/shashank99928/BudsDesk">Source</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a> ·
-      <a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a>
-    </p>
-    <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a class="brand" href="/BudsDesk/"><span class="mark" aria-hidden="true"></span>BudsDesk</a>
+        <p>The missing desktop app for OPPO, OnePlus and realme earbuds. Free, MIT licensed, and
+        it never talks to the network.</p>
+      </div>
+
+      <nav aria-label="Models">
+        <h2 data-reveal>Models</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-on-mac.html">OnePlus Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/oppo-buds-on-mac.html">OPPO Enco</a></li>
+          <li data-reveal><a href="/BudsDesk/realme-buds-on-mac.html">realme Buds</a></li>
+          <li data-reveal><a href="/BudsDesk/models.html">Every model</a></li>
+          <li data-reveal><a href="/BudsDesk/oneplus-buds-4.html">OnePlus Buds 4</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Reading">
+        <h2 data-reveal>Reading</h2>
+        <ul>
+          <li data-reveal><a href="/BudsDesk/anc-eq-on-mac.html">ANC and EQ on Mac</a></li>
+          <li data-reveal><a href="/BudsDesk/heymelody-on-mac.html">HeyMelody on Mac</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Project">
+        <h2 data-reveal>Project</h2>
+        <ul>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk">Source</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/releases">Releases</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/blob/main/protocol/PROTOCOL.md">Protocol notes</a></li>
+          <li data-reveal><a href="https://github.com/shashank99928/BudsDesk/issues">Issues</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-fine">
+      <p>BudsDesk is not made by, endorsed by, or affiliated with OPPO, OnePlus, realme, BBK
+      Electronics, or the publisher of the phone companion app. Product names appear only as
+      factual device names. No vendor code, icon, font or other asset is redistributed.</p>
+      <p>MIT licensed. Built by measuring hardware, not by guessing.</p>
+    </div>
   </div>
 </footer>
+
+<script src="assets/site.js" defer></script>
 
 </body>
 </html>
