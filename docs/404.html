@@ -9,6 +9,9 @@
 <meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
 <link rel="stylesheet" href="/BudsDesk/assets/style.css">
+<script>
+try { var saved = localStorage.getItem("budsdesk-theme"); if (saved === "light" || saved === "dark") { document.documentElement.dataset.theme = saved; } } catch (error) { }
+</script>
 <link rel="icon" href="/BudsDesk/assets/icon.png" type="image/png">
 
 <!-- The motion layer. This one line marks the document before the first paint, so the page

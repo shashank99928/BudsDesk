@@ -10,13 +10,21 @@
  * page around it are the same product.
  */
 
-:root {
+/* Light is the default, as the Mac's own pages are. Dark follows the system setting unless
+ * the reader has chosen a scheme with the switch in the bar, which the script records in
+ * localStorage and the head applies before the first paint. */
+:root,
+:root[data-theme="light"] {
+    color-scheme: light;
+
     /* Ground and surfaces. A surface is a tone step from the ground, never a line and never
      * a shadow: a page made of outlines reads as a grid of boxes. */
     --bg: #ffffff;
     --band: #f5f5f7;
     --surface: #ffffff;
     --surface-2: #f0f0f2;
+    --line: #d2d2d7;
+    --header-bg: rgba(255, 255, 255, 0.72);
 
     /* Ink. Every one of these clears 4.5:1 on the grounds above it, which is why the
      * secondary grey is #626268 and not the lighter one macOS uses in places. */
@@ -26,9 +34,9 @@
 
     /* One accent: the app's own blue, darkened for a light ground so that text and fills
      * both clear the contrast bar. The dark scheme puts the app's own #59a8ff back. */
-    --accent: #0b64c8;
+    --accent: #0066cc;
     --accent-ink: #ffffff;
-    --accent-soft: #eaf2fd;
+    --accent-soft: #e8f1fb;
 
     --good: #1f7a43;
     --warning: #8a5a00;
@@ -37,10 +45,10 @@
     --radius-lg: 20px;
     --measure: 70ch;
 
-    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
 
-    --step-display: clamp(2.1rem, 1.1rem + 4.6vw, 4.4rem);
-    --step-head: clamp(1.55rem, 1.25rem + 1.25vw, 2.1rem);
+    --step-display: clamp(2.6rem, 1.4rem + 5vw, 5rem);
+    --step-head: clamp(1.75rem, 1.35rem + 1.5vw, 2.6rem);
     --step-lead: clamp(1.125rem, 1.06rem + 0.32vw, 1.3125rem);
     --step-body: 1.0625rem;
     --step-small: 0.875rem;
@@ -48,12 +56,19 @@
 
 /* The dark scheme is the app's own: the window is pinned to Dark Aqua because that is the
  * appearance it was verified in, so the page that shows it is dark in the same way. */
+:root[data-theme="dark"],
+:root:not([data-theme="light"]) {
+    color-scheme: dark;
+}
+
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
         --bg: #0e1013;
         --band: #171a1f;
         --surface: #171a1f;
         --surface-2: #20242a;
+        --line: #2c3036;
+        --header-bg: rgba(14, 16, 19, 0.72);
 
         --ink: #f3f4f6;
         --muted: #a9aeb6;
@@ -66,6 +81,26 @@
         --good: #6bd18c;
         --warning: #fac25c;
     }
+}
+
+:root[data-theme="dark"] {
+    --bg: #0e1013;
+    --band: #171a1f;
+    --surface: #171a1f;
+    --surface-2: #20242a;
+    --line: #2c3036;
+    --header-bg: rgba(14, 16, 19, 0.72);
+
+    --ink: #f3f4f6;
+    --muted: #a9aeb6;
+    --faint: #9aa0a8;
+
+    --accent: #59a8ff;
+    --accent-ink: #06121f;
+    --accent-soft: #16273a;
+
+    --good: #6bd18c;
+    --warning: #fac25c;
 }
 
 * { box-sizing: border-box; }
@@ -178,17 +213,26 @@ section[id], h2[id] { scroll-margin-top: 88px; }
 /* ---------- The bar ---------- */
 
 header.site {
-    background: var(--bg);
+    background: var(--header-bg);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid transparent;
     position: sticky;
     top: 0;
     z-index: 5;
+    transition-property: border-color;
+    transition-duration: 200ms;
 }
+
+/* The hairline is there only once the page has moved under the bar, so the top of a page
+ * is one ground and not a bar with a rule on it. */
+header.site.is-scrolled { border-bottom-color: var(--line); }
 
 header.site .wrap {
     display: flex;
     align-items: center;
     gap: 24px;
-    min-height: 64px;
+    min-height: 56px;
     flex-wrap: wrap;
 }
 .brand {
@@ -239,10 +283,10 @@ nav.site a[aria-current="page"] { color: var(--ink); }
 .nav-download {
     background: var(--accent);
     color: var(--accent-ink);
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 14.5px;
+    padding: 6px 16px;
+    border-radius: 980px;
+    font-weight: 560;
+    font-size: 14px;
     text-decoration: none;
     white-space: nowrap;
     transition-property: filter;
@@ -250,8 +294,35 @@ nav.site a[aria-current="page"] { color: var(--ink); }
     transition-timing-function: ease-out;
 }
 @media (hover: hover) {
-    .nav-download:hover { filter: brightness(1.07); }
+    .nav-download:hover { filter: brightness(1.08); }
 }
+
+/* The light and dark switch. Both glyphs are in the markup and the attribute picks one, so
+ * the control costs no image and no script beyond the one that sets the attribute. */
+.theme-toggle {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition-property: background-color, color;
+    transition-duration: 140ms;
+    transition-timing-function: ease-out;
+}
+.theme-toggle svg { width: 18px; height: 18px; grid-area: 1 / 1; }
+.theme-toggle .icon-sun { opacity: 0; }
+.theme-toggle[aria-pressed="true"] .icon-sun { opacity: 1; }
+.theme-toggle[aria-pressed="true"] .icon-moon { opacity: 0; }
+@media (hover: hover) {
+    .theme-toggle:hover { background: var(--surface-2); color: var(--ink); }
+}
+.theme-toggle:active { transform: scale(0.94); }
 
 /* On a phone the bar is two rows: the wordmark and the one action, then the links. */
 @media (max-width: 860px) {
@@ -270,7 +341,7 @@ nav.site a[aria-current="page"] { color: var(--ink); }
         font-size: 14px;
     }
     nav.site a { padding-block: 6px; }
-    .nav-download { order: 1; }
+    .nav-download, .theme-toggle { order: 1; }
 }
 
 /* ---------- Type ---------- */
@@ -349,16 +420,26 @@ pre code { background: none; padding: 0; font-size: inherit; }
     align-items: center;
 }
 
-.hero-copy { max-width: 620px; }
+.hero-copy { max-width: 720px; margin-inline: auto; }
 
-.hero .lede { margin-bottom: 28px; }
+.hero .lede { margin: 0 auto 28px; }
+
+/* The first screen is one centred column: the statement, its two actions, then the product
+ * on its own ground, the way an Apple product page opens. */
+.hero .hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    text-align: center;
+    gap: 56px;
+}
+.hero .hero-copy p,
+.hero .hero-copy .release { margin-inline: auto; }
+.hero .buttons { justify-content: center; }
+.hero figure.shot figcaption { margin-inline: auto; text-align: center; }
 
 @media (max-width: 960px) {
     .hero { padding: 44px 0 24px; }
-    .hero-grid {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 40px;
-    }
+    .hero .hero-grid { gap: 40px; }
     .hero-copy { max-width: 640px; }
 }
 
@@ -393,22 +474,25 @@ figure.shot figcaption {
     margin: 0 0 18px;
 }
 
+/* Pills, as the Mac's own product pages draw them: the primary action is filled, the
+ * second is an outline in the same blue. */
 a.button, button.button {
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    padding: 12px 22px;
+    padding: 11px 24px;
     min-height: 46px;
-    border-radius: 10px;
+    border-radius: 980px;
     border: 0;
-    background: var(--surface-2);
-    color: var(--ink);
+    background: transparent;
+    color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
     text-decoration: none;
     font-size: 1rem;
     font-weight: 560;
     cursor: pointer;
     font-family: inherit;
-    transition-property: transform, filter;
+    transition-property: transform, filter, background-color;
     transition-duration: 140ms;
     transition-timing-function: ease-out;
 }
@@ -416,7 +500,15 @@ a.button, button.button {
 a.button.primary {
     background: var(--accent);
     color: var(--accent-ink);
-    font-weight: 620;
+    box-shadow: none;
+    font-weight: 560;
+}
+
+@media (hover: hover) {
+    a.button:not(.primary):hover, button.button:not(.primary):hover {
+        background: var(--accent-soft);
+        filter: none;
+    }
 }
 
 @media (hover: hover) {
@@ -788,6 +880,7 @@ footer.site {
     .crumb a:hover { color: var(--ink); }
 }
 .crumb ol { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; }
+.crumb li + li { margin-top: 0; }
 .crumb li + li::before { content: "/"; margin-right: 8px; color: var(--faint); }
 
 /* ---------- The app's window, rebuilt so it can be pressed ----------

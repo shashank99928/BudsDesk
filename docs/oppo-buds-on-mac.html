@@ -19,6 +19,9 @@
 <meta property="og:image" content="https://shashank99928.github.io/BudsDesk/assets/icon.png">
 
 <link rel="stylesheet" href="assets/style.css">
+<script>
+try { var saved = localStorage.getItem("budsdesk-theme"); if (saved === "light" || saved === "dark") { document.documentElement.dataset.theme = saved; } } catch (error) { }
+</script>
 
 <!-- The motion layer. This one line marks the document before the first paint, so the page
      is only ever hidden by an animation it has already decided to run. Without it, nothing

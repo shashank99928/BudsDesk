@@ -22,6 +22,62 @@
 
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // ---- The bar and the appearance -----------------------------------------
+    //
+    // Light is the default and dark follows the system until the reader picks one. The head
+    // applies a saved choice before the first paint; this only draws the switch and records
+    // a new one. The switch is added here rather than written into every page's bar, so the
+    // bar stays identical everywhere.
+
+    var root = document.documentElement;
+    var systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+    var header = document.querySelector("header.site");
+
+    function isDark() {
+        if (root.dataset.theme) { return root.dataset.theme === "dark"; }
+        return !!(systemDark && systemDark.matches);
+    }
+
+    function paint(button) {
+        button.setAttribute("aria-pressed", isDark() ? "true" : "false");
+    }
+
+    if (header) {
+        var download = header.querySelector(".nav-download");
+        if (download) {
+            var toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "theme-toggle";
+            toggle.setAttribute("aria-label", "Dark appearance");
+            toggle.innerHTML =
+                '<svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>' +
+                '<svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+
+            toggle.addEventListener("click", function () {
+                var next = isDark() ? "light" : "dark";
+                root.dataset.theme = next;
+                try { localStorage.setItem("budsdesk-theme", next); } catch (error) { }
+                paint(toggle);
+            });
+
+            download.parentNode.insertBefore(toggle, download);
+            paint(toggle);
+
+            if (systemDark && systemDark.addEventListener) {
+                systemDark.addEventListener("change", function () {
+                    if (!root.dataset.theme) { paint(toggle); }
+                });
+            }
+        }
+
+        // The bar gets its hairline only once the page has moved under it.
+        var onScroll = function () {
+            header.classList.toggle("is-scrolled", window.scrollY > 8);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+    }
+
     // ---- The entrance -------------------------------------------------------
 
     var parts = [].slice.call(document.querySelectorAll("[data-reveal]"));
