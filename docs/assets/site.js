@@ -24,18 +24,16 @@
 
     // ---- The bar and the appearance -----------------------------------------
     //
-    // Light is the default and dark follows the system until the reader picks one. The head
-    // applies a saved choice before the first paint; this only draws the switch and records
-    // a new one. The switch is added here rather than written into every page's bar, so the
-    // bar stays identical everywhere.
+    // Light is the default whatever the system says; dark is used only when the reader picks
+    // it. The head applies a saved choice before the first paint; this only draws the switch
+    // and records a new one. The switch is added here rather than written into every page's
+    // bar, so the bar stays identical everywhere.
 
     var root = document.documentElement;
-    var systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
     var header = document.querySelector("header.site");
 
     function isDark() {
-        if (root.dataset.theme) { return root.dataset.theme === "dark"; }
-        return !!(systemDark && systemDark.matches);
+        return root.dataset.theme === "dark";
     }
 
     function paint(button) {
@@ -62,12 +60,6 @@
 
             download.parentNode.insertBefore(toggle, download);
             paint(toggle);
-
-            if (systemDark && systemDark.addEventListener) {
-                systemDark.addEventListener("change", function () {
-                    if (!root.dataset.theme) { paint(toggle); }
-                });
-            }
         }
 
         // The bar gets its hairline only once the page has moved under it.

@@ -10,9 +10,9 @@
  * page around it are the same product.
  */
 
-/* Light is the default, as the Mac's own pages are. Dark follows the system setting unless
- * the reader has chosen a scheme with the switch in the bar, which the script records in
- * localStorage and the head applies before the first paint. */
+/* Light is the default whatever the system setting says. Dark is used only when the reader
+ * chooses it with the switch in the bar; the script records that in localStorage and the
+ * head applies it before the first paint. */
 :root,
 :root[data-theme="light"] {
     color-scheme: light;
@@ -56,34 +56,8 @@
 
 /* The dark scheme is the app's own: the window is pinned to Dark Aqua because that is the
  * appearance it was verified in, so the page that shows it is dark in the same way. */
-:root[data-theme="dark"],
-:root:not([data-theme="light"]) {
-    color-scheme: dark;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-        --bg: #0e1013;
-        --band: #171a1f;
-        --surface: #171a1f;
-        --surface-2: #20242a;
-        --line: #2c3036;
-        --header-bg: rgba(14, 16, 19, 0.72);
-
-        --ink: #f3f4f6;
-        --muted: #a9aeb6;
-        --faint: #9aa0a8;
-
-        --accent: #59a8ff;
-        --accent-ink: #06121f;
-        --accent-soft: #16273a;
-
-        --good: #6bd18c;
-        --warning: #fac25c;
-    }
-}
-
 :root[data-theme="dark"] {
+    color-scheme: dark;
     --bg: #0e1013;
     --band: #171a1f;
     --surface: #171a1f;
@@ -881,6 +855,8 @@ footer.site {
 }
 .crumb ol { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; }
 .crumb li + li { margin-top: 0; }
+/* The trail is the first thing on the page: it is never held back for an entrance. */
+.js .crumb [data-reveal] { opacity: 1; transform: none; }
 .crumb li + li::before { content: "/"; margin-right: 8px; color: var(--faint); }
 
 /* ---------- The app's window, rebuilt so it can be pressed ----------
