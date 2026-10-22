@@ -855,8 +855,6 @@ footer.site {
 }
 .crumb ol { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; }
 .crumb li + li { margin-top: 0; }
-/* The trail is the first thing on the page: it is never held back for an entrance. */
-.js .crumb [data-reveal] { opacity: 1; transform: none; }
 .crumb li + li::before { content: "/"; margin-right: 8px; color: var(--faint); }
 
 /* ---------- The app's window, rebuilt so it can be pressed ----------
