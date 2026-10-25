@@ -26,6 +26,24 @@
     --line: #d2d2d7;
     --header-bg: rgba(255, 255, 255, 0.72);
 
+    /* The app's window in light appearance: the same roles as its dark one, in the light
+     * ink and fills macOS draws. */
+    --w-ground: #ffffff;
+    --w-card: #f5f5f7;
+    --w-cell: #ffffff;
+    --w-stroke: rgba(0, 0, 0, 0.1);
+    --w-ink: #1d1d1f;
+    --w-muted: #4f4f54;
+    --w-faint: #63636a;
+    --w-accent: #0066cc;
+    --w-select: rgba(0, 0, 0, 0.08);
+    --w-select-stroke: rgba(0, 0, 0, 0.3);
+    --w-ghost: rgba(0, 0, 0, 0.06);
+    --w-pill: #ffffff;
+    --w-hover: rgba(0, 0, 0, 0.04);
+    --w-scroll: rgba(0, 0, 0, 0.18);
+    --w-warn: #8a5a00;
+
     /* Ink. Every one of these clears 4.5:1 on the grounds above it, which is why the
      * secondary grey is #626268 and not the lighter one macOS uses in places. */
     --ink: #1d1d1f;
@@ -64,6 +82,22 @@
     --surface-2: #20242a;
     --line: #2c3036;
     --header-bg: rgba(14, 16, 19, 0.72);
+
+    --w-ground: #0e1013;
+    --w-card: rgba(255, 255, 255, 0.045);
+    --w-cell: rgba(255, 255, 255, 0.04);
+    --w-stroke: rgba(255, 255, 255, 0.08);
+    --w-ink: rgba(255, 255, 255, 0.94);
+    --w-muted: rgba(255, 255, 255, 0.66);
+    --w-faint: rgba(255, 255, 255, 0.5);
+    --w-accent: #59a8ff;
+    --w-select: rgba(255, 255, 255, 0.16);
+    --w-select-stroke: rgba(255, 255, 255, 0.38);
+    --w-ghost: rgba(255, 255, 255, 0.08);
+    --w-pill: rgba(255, 255, 255, 0.02);
+    --w-hover: rgba(255, 255, 255, 0.06);
+    --w-scroll: rgba(255, 255, 255, 0.16);
+    --w-warn: #fac25c;
 
     --ink: #f3f4f6;
     --muted: #a9aeb6;
@@ -866,20 +900,8 @@ footer.site {
  * than the page's.
  */
 
-/* The tokens every fragment carries, so a card that is not inside a window still draws
- * itself in the app's colours. */
-[data-ui] {
-    --w-ground: #0e1013;
-    --w-card: rgba(255, 255, 255, 0.045);
-    --w-stroke: rgba(255, 255, 255, 0.08);
-    --w-ink: rgba(255, 255, 255, 0.94);
-    --w-muted: rgba(255, 255, 255, 0.66);
-    --w-faint: rgba(255, 255, 255, 0.50);
-    --w-accent: #59a8ff;
-    --w-select: rgba(255, 255, 255, 0.16);
-    --w-select-stroke: rgba(255, 255, 255, 0.38);
-    --w-warn: #fac25c;
-}
+/* The window's colours are the page's theme tokens (see `:root`), so the window is light on a
+ * light page and dark on a dark one, and a card outside a window draws the same way. */
 
 .window {
     background: var(--w-ground);
@@ -920,7 +942,7 @@ footer.site {
     font-size: 12px;
     font-weight: 560;
     color: var(--w-ink);
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--w-ghost);
     border: 0;
     border-radius: 9px;
     padding: 5px 12px;
@@ -936,12 +958,12 @@ footer.site {
     max-height: 520px;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+    scrollbar-color: var(--w-scroll) transparent;
 }
 
 .window-scroll::-webkit-scrollbar { width: 8px; }
 .window-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.16);
+    background: var(--w-scroll);
     border-radius: 4px;
 }
 
@@ -1002,7 +1024,7 @@ footer.site {
 }
 
 .wcell {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--w-cell);
     border-radius: 10px;
     padding: 9px 10px;
     text-align: center;
@@ -1049,7 +1071,7 @@ footer.site {
     font-size: 12px;
     color: var(--w-ink);
     text-align: center;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--w-pill);
     border: 1px solid var(--w-stroke);
     border-radius: 10px;
     cursor: pointer;
@@ -1124,7 +1146,7 @@ footer.site {
 [data-ui] .wpill:active { transform: scale(0.96); }
 
 @media (hover: hover) {
-    .wpill:hover:not(:disabled) { background: rgba(255, 255, 255, 0.06); }
+    .wpill:hover:not(:disabled) { background: var(--w-hover); }
     .wpill[aria-pressed="true"]:hover { background: var(--w-select); }
 }
 
@@ -1167,7 +1189,7 @@ footer.site {
 .wread {
     margin: 10px 0 0;
     padding: 9px 11px;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--w-cell);
     border-radius: 10px;
     font-size: 11px;
     line-height: 1.55;
