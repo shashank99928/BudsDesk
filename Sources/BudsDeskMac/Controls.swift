@@ -12,39 +12,128 @@ import BudsCore
 struct DeviceWindow: View {
     @ObservedObject var model: AppModel
 
+    /// Which section is showing. The window's own navigation owns this; nothing outside it reads
+    /// it, which is why it is not on `AppModel` — a redraw or a re-render should not reopen the
+    /// window on a different tab than the one a person was using.
+    @State private var section: WindowSection = .status
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                StatusHeader(model: model)
+        VStack(spacing: 0) {
+            navigation
 
-                if !model.hasRegistry {
-                    // A broken install. This is the one case that means the registry could not be
-                    // read, and it used to be drawn for "no earbuds found" as well — which told a
-                    // person on their first launch that the app was broken when it was not.
-                    RegistryMissingCard(model: model)
-                } else if let profile = model.profile {
-                    if model.isReady, let session = model.session {
-                        BatteryCard(session: session)
-                        if profile.offers(.noiseControl) { NoiseCard(model: model, session: session, profile: profile) }
-                        if profile.offers(.equalizer) { EqualizerCard(model: model, session: session, profile: profile) }
-                        if profile.offers(.bassWave) { BassWaveCard(model: model, session: session, profile: profile) }
-                        if profile.offers(.gestures) { GesturesCard(model: model, session: session, profile: profile) }
-                        if profile.offers(.multipoint) { LinkedDevicesCard(session: session, profile: profile) }
-                        DetailsCard(session: session)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    StatusHeader(model: model)
+
+                    if !model.hasRegistry {
+                        // A broken install. This is the one case that means the registry could not be
+                        // read, and it used to be drawn for "no earbuds found" as well — which told a
+                        // person on their first launch that the app was broken when it was not.
+                        RegistryMissingCard(model: model)
+                    } else if let profile = model.profile {
+                        if model.isReady, let session = model.session {
+                            content(profile: profile, session: session)
+                        } else {
+                            WaitingCard(model: model, profile: profile)
+                        }
                     } else {
-                        WaitingCard(model: model, profile: profile)
+                        NoEarbudsCard(model: model)
                     }
-                } else {
-                    NoEarbudsCard(model: model)
-                }
 
-                ActivityCard(model: model)
-                ProvenanceFooter(model: model)
+                    // The log is not a section: it is the only place a declined write is named, so
+                    // it stays reachable in every state, including before a link exists.
+                    if !model.isReady {
+                        ActivityCard(model: model)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 16)
             }
-            .padding(16)
+
+            ProvenanceFooter(model: model)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Theme.window)
+                .overlay(alignment: .top) {
+                    Rectangle().fill(Theme.cardStroke).frame(height: 1)
+                }
+                .overlay(alignment: .top) {
+                    // The scroll ends at the footer, so the last card is cut by the divider. A short
+                    // fade into the footer's ground says "there is more above" rather than looking
+                    // like a control that got sliced in half.
+                    LinearGradient(colors: [Theme.window.opacity(0), Theme.window],
+                                   startPoint: .top, endPoint: .bottom)
+                        .frame(height: 14)
+                        .offset(y: -14)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
         }
         .background(Theme.window)
         .frame(minWidth: 400, idealWidth: 440, minHeight: 460)
+    }
+
+    /// The notch appears with the link. Before there is a session there is nothing to navigate,
+    /// and four tabs over empty panels would be four dead ends. The reserved gap keeps the
+    /// heading clear of the window's traffic lights in both states.
+    @ViewBuilder
+    private var navigation: some View {
+        if model.isReady {
+            NotchTabBar(section: $section)
+                .padding(.horizontal, 16)
+                .padding(.top, 26)
+                .padding(.bottom, 2)
+        } else {
+            Color.clear.frame(height: 22)
+        }
+    }
+
+    /// The cards, split by what a person came to do rather than by the order they were written in.
+    /// No card is drawn twice: the noise control lives in Status because it is the state people
+    /// check, and the equalizer lives in Sound because it is the control people change.
+    @ViewBuilder
+    private func content(profile: DeviceProfile, session: Session) -> some View {
+        switch section {
+        case .status:
+            BatteryCard(session: session)
+            if profile.offers(.noiseControl) {
+                NoiseCard(model: model, session: session, profile: profile)
+            }
+
+        case .sound:
+            if profile.offers(.equalizer) {
+                EqualizerCard(model: model, session: session, profile: profile)
+            }
+            if profile.offers(.bassWave) {
+                BassWaveCard(model: model, session: session, profile: profile)
+            }
+            if !profile.offers(.equalizer), !profile.offers(.bassWave) {
+                UnmeasuredCard(
+                    title: "Sound",
+                    detail: "This model has no measured write path for the equalizer or BassWave, "
+                          + "so there is nothing here to change. What the earbuds do report is in "
+                          + "Status and Details.")
+            }
+
+        case .controls:
+            if profile.offers(.gestures) {
+                GesturesCard(model: model, session: session, profile: profile)
+            }
+            if profile.offers(.multipoint) {
+                LinkedDevicesCard(session: session, profile: profile)
+            }
+            if !profile.offers(.gestures), !profile.offers(.multipoint) {
+                UnmeasuredCard(
+                    title: "Controls",
+                    detail: "This model has no measured write path for touch gestures or "
+                          + "multi-connect, so there is nothing here to change.")
+            }
+
+        case .details:
+            DetailsCard(session: session)
+            ActivityCard(model: model)
+        }
     }
 }
 
@@ -79,10 +168,20 @@ private struct StatusHeader: View {
                 Text(model.device?.name ?? "BudsDesk")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(Theme.primaryText)
-                Text(model.status)
-                    .font(.system(size: 11))
-                    .foregroundStyle(model.problem == nil ? Theme.secondaryText : Theme.warning)
-                    .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: 6) {
+                    // The dot is an addition to the sentence, never a replacement for it: colour
+                    // alone is not a state (see `Theme`), and the word is still there to read.
+                    if model.isReady {
+                        Circle()
+                            .fill(Theme.good)
+                            .frame(width: 6, height: 6)
+                            .accessibilityHidden(true)
+                    }
+                    Text(model.status)
+                        .font(.system(size: 11))
+                        .foregroundStyle(model.problem == nil ? Theme.secondaryText : Theme.warning)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             Spacer(minLength: 8)
             if model.isReady || model.isOpening {
@@ -178,6 +277,25 @@ private struct RegistryMissingCard: View {
     }
 }
 
+/// A section the connected model has no measured controls for.
+///
+/// A fallback model reads but has no write path, so Sound and Controls would otherwise be blank
+/// panels under a tab that promised something. Saying so is the same rule the cards follow: a
+/// control that cannot work is labelled, not hidden and not faked.
+private struct UnmeasuredCard: View {
+    let title: String
+    let detail: String
+
+    var body: some View {
+        Card(title: title, subtitle: "Nothing measured for this model.") {
+            Text(detail)
+                .font(.system(size: 11))
+                .foregroundStyle(Theme.tertiaryText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
 // MARK: - Battery and wear
 
 private struct BatteryCard: View {
@@ -247,14 +365,20 @@ private struct NoiseCard: View {
     var body: some View {
         Card(title: "Noise control", subtitle: subtitle, note: note) {
             VStack(alignment: .leading, spacing: 8) {
-                ForEach(profile.noiseModes) { mode in
-                    Pill(label: mode.label,
-                         symbol: mode.symbol,
-                         detail: mode == .noiseCancellation ? "Cancellation at the last level used" : nil,
-                         isSelected: session.mode == mode,
-                         isPending: session.unconfirmedWrites.contains(.noiseControl),
-                         isEnabled: profile.canWrite(.noiseControl)) {
-                        model.set(mode: mode)
+                // Two columns: four modes as four full-width rows put the levels below the fold
+                // in a 620-point window, and the modes are short enough to pair. The selected
+                // pill still grows and gains a hairline, so the state is as legible as before.
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: 8),
+                                    GridItem(.flexible(), spacing: 8)],
+                          spacing: 8) {
+                    ForEach(profile.noiseModes) { mode in
+                        Pill(label: mode.label,
+                             symbol: mode.symbol,
+                             isSelected: session.mode == mode,
+                             isPending: session.unconfirmedWrites.contains(.noiseControl),
+                             isEnabled: profile.canWrite(.noiseControl)) {
+                            model.set(mode: mode)
+                        }
                     }
                 }
                 if !profile.ancLevels.isEmpty {
@@ -262,12 +386,16 @@ private struct NoiseCard: View {
                         .font(.system(size: 10, weight: .medium))
                         .foregroundStyle(Theme.tertiaryText)
                         .padding(.top, 2)
-                    ForEach(profile.ancLevels) { level in
-                        Pill(label: level.label,
-                             isSelected: session.mode == .noiseCancellation && session.ancLevel == level,
-                             isPending: session.unconfirmedWrites.contains(.noiseControl),
-                             isEnabled: profile.canWrite(.noiseControl)) {
-                            model.set(ancLevel: level)
+                    HStack(spacing: 6) {
+                        ForEach(profile.ancLevels) { level in
+                            CompactPill(
+                                label: level.label,
+                                context: "Cancellation level",
+                                isSelected: session.mode == .noiseCancellation && session.ancLevel == level,
+                                isPending: session.unconfirmedWrites.contains(.noiseControl),
+                                isEnabled: profile.canWrite(.noiseControl)) {
+                                    model.set(ancLevel: level)
+                                }
                         }
                     }
                 }
@@ -286,8 +414,8 @@ private struct NoiseCard: View {
 
     private var note: String? {
         profile.canWrite(.noiseControl)
-            ? "Each mode is one 16-bit mask, set and read back one at a time. A change made on the "
-              + "phone shows up here on the next poll."
+            ? "Each mode is one 16-bit mask, read back one at a time. Cancellation keeps its last "
+              + "level; a phone change shows on the next poll."
             : "This model has no measured write path for noise control, so the reported mode is "
               + "shown and cannot be changed here."
     }
@@ -722,7 +850,8 @@ private struct ProvenanceFooter: View {
                 .foregroundStyle(Theme.tertiaryText)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Provenance")
     }
 
     private func pdf(_ writable: [Capability]) -> String {

@@ -22,6 +22,60 @@
 
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // ---- The window's sections ---------------------------------------------
+    //
+    // The app's window groups its cards into four sections, and the page's rebuilt window
+    // does the same. These are real tabs: one selected at a time, arrow keys move between
+    // them, and the panel follows. A page with no window simply matches nothing.
+
+    [].slice.call(document.querySelectorAll(".wnotch")).forEach(function (bar) {
+        var tabs = [].slice.call(bar.querySelectorAll("[role='tab']"));
+        if (!tabs.length) {
+            return;
+        }
+
+        function select(tab, focus) {
+            tabs.forEach(function (other) {
+                var on = other === tab;
+                other.setAttribute("aria-selected", on ? "true" : "false");
+                other.tabIndex = on ? 0 : -1;
+                var panel = document.getElementById(other.getAttribute("aria-controls"));
+                if (panel) {
+                    panel.hidden = !on;
+                }
+            });
+            if (focus) {
+                tab.focus();
+            }
+        }
+
+        tabs.forEach(function (tab, index) {
+            tab.addEventListener("click", function () {
+                select(tab);
+            });
+            tab.addEventListener("keydown", function (event) {
+                var next = null;
+                if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+                    next = tabs[(index + 1) % tabs.length];
+                } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+                    next = tabs[(index - 1 + tabs.length) % tabs.length];
+                } else if (event.key === "Home") {
+                    next = tabs[0];
+                } else if (event.key === "End") {
+                    next = tabs[tabs.length - 1];
+                }
+                if (next) {
+                    event.preventDefault();
+                    select(next, true);
+                }
+            });
+        });
+
+        // The markup names the first tab selected; this makes the panels agree with it even
+        // if a script ever changes that.
+        select(tabs[0]);
+    });
+
     // ---- The bar and the appearance -----------------------------------------
     //
     // Light is the default whatever the system says; dark is used only when the reader picks

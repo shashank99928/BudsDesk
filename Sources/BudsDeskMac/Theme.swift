@@ -33,10 +33,27 @@ enum Theme {
     static let warning = Color(red: 0.98, green: 0.76, blue: 0.36)
     static let pending = Color(red: 0.98, green: 0.76, blue: 0.36)
 
+    // MARK: The notch
+
+    /// The island the window's sections sit in. Darker than the window rather than lighter: the
+    /// cards are raised off the ground, so the one surface that is chrome should read as cut into
+    /// it. The hairline and shadow are what keep it from disappearing into the page.
+    static let notch = Color(red: 0.055, green: 0.06, blue: 0.072)
+    static let notchStroke = Color.white.opacity(0.09)
+    /// The travel of the selected pill. `selection` would be invisible against a surface this
+    /// light, so the notch keeps its own fill and its own hairline.
+    static let notchSelection = Color.white.opacity(0.14)
+    static let notchSelectionStroke = Color.white.opacity(0.32)
+
     // MARK: Metrics
 
     static let selectedHeight: CGFloat = 36
     static let unselectedHeight: CGFloat = 30
+    /// The island's outline, and the pill inside it. The pill is the outline minus its 4-point
+    /// inset, so the two curves share a centre and the inset reads even all the way round.
+    static let notchCorner: CGFloat = 18
+    static let notchTabCorner: CGFloat = 14
+    static let notchTabHeight: CGFloat = 30
     /// The radius of the small controls inside a card.
     static let corner: CGFloat = 10
     /// The radius of the card itself: `corner` plus the card's own 14-point padding, so the inner
@@ -53,6 +70,13 @@ enum Theme {
     /// holds it.
     static func motion(_ reduceMotion: Bool) -> Animation? {
         reduceMotion ? nil : .easeOut(duration: 0.15)
+    }
+
+    /// The section pill's travel. A spring rather than the 150 ms ease: the pill changes place
+    /// rather than fading, and a spring is what makes the two tabs read as one control instead of
+    /// two states that happened to swap.
+    static func section(_ reduceMotion: Bool) -> Animation? {
+        reduceMotion ? nil : .spring(response: 0.32, dampingFraction: 0.84)
     }
 }
 
@@ -116,6 +140,70 @@ struct Card<Content: View>: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Theme.card, in: RoundedRectangle(cornerRadius: Theme.cardCorner))
         .overlay(RoundedRectangle(cornerRadius: Theme.cardCorner).stroke(Theme.cardStroke, lineWidth: 1))
+    }
+}
+
+/// A selectable pill that sits in a row rather than owning one.
+///
+/// The noise levels are four short words, and four full-width rows for four words is a column of
+/// air. The row is the same control as `Pill` with the same three signals — fill, hairline and
+/// weight — and the same accessibility contract; it simply shares its line.
+struct CompactPill: View {
+    let label: String
+    /// Said first in the accessibility label, because "High" on its own does not say high what.
+    /// The visible heading above the row is a heading, not part of each button's name.
+    var context: String?
+    let isSelected: Bool
+    var isPending: Bool = false
+    var isEnabled: Bool = true
+    let action: () -> Void
+
+    @State private var isHovering = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var pressAnimation: Animation? { Theme.motion(reduceMotion) }
+
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.system(size: 11, weight: isSelected ? .semibold : .regular))
+                .foregroundStyle(Theme.primaryText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .padding(.horizontal, 8)
+                .frame(maxWidth: .infinity)
+                .frame(height: Theme.unselectedHeight)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.corner)
+                        .fill(isSelected ? Theme.selection
+                                         : (isHovering && isEnabled ? Color.white.opacity(0.06)
+                                                                    : Color.white.opacity(0.02)))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.corner)
+                        .stroke(isSelected ? Theme.selectionStroke : Theme.cardStroke,
+                                lineWidth: isSelected ? 1.5 : 1)
+                )
+                .overlay(alignment: .topTrailing) {
+                    if isPending {
+                        Image(systemName: "clock")
+                            .font(.system(size: 8))
+                            .foregroundStyle(Theme.pending)
+                            .padding(3)
+                    }
+                }
+                .contentShape(RoundedRectangle(cornerRadius: Theme.corner))
+        }
+        .buttonStyle(PressButtonStyle(animation: pressAnimation))
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1 : 0.62)
+        .onHover { isHovering = isEnabled && $0 }
+        .animation(pressAnimation, value: isSelected)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel((context.map { "\($0): " } ?? "") + label)
+        .accessibilityValue(isSelected ? "selected" : "not selected")
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
+        .accessibilityHint(isEnabled ? "" : "Not available for this model yet.")
     }
 }
 

@@ -95,68 +95,122 @@ FOOTER = """<footer class="site">
 # "Verified write paths: none". Nothing here is written for the page.
 READ_ONLY_WINDOW = """<figure class="shot">
         <div class="window" data-ui>
+          <div class="wnotch" role="tablist" aria-label="Window sections">
+            <button class="wtab" type="button" role="tab" id="wtab-ro-status"
+                    aria-controls="wpanel-ro-status" aria-selected="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="15" height="8" rx="2"/><path d="M21 11v2"/></svg><span>Status</span>
+            </button>
+            <button class="wtab" type="button" role="tab" id="wtab-ro-sound"
+                    aria-controls="wpanel-ro-sound" aria-selected="false" tabindex="-1">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg><span>Sound</span>
+            </button>
+            <button class="wtab" type="button" role="tab" id="wtab-ro-controls"
+                    aria-controls="wpanel-ro-controls" aria-selected="false" tabindex="-1">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 8-6 1-3 6-5-15z"/></svg><span>Controls</span>
+            </button>
+            <button class="wtab" type="button" role="tab" id="wtab-ro-details"
+                    aria-controls="wpanel-ro-details" aria-selected="false" tabindex="-1">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span>Details</span>
+            </button>
+          </div>
+
           <div class="window-head">
             <div>
               <p class="window-title">{model}</p>
-              <p class="window-sub">Connected.</p>
+              <p class="window-sub"><span class="wdot" aria-hidden="true"></span>Connected.</p>
             </div>
             <button class="window-ghost" type="button">Disconnect</button>
           </div>
 
           <div class="window-scroll">
-            <div class="wcard">
-              <h3 class="wcard-title">Battery</h3>
-              <p class="wcard-sub">The buds have not reported a charge yet.</p>
-              <div class="wcells">
-                <div class="wcell">
-                  <span class="wcell-label">Left</span>
-                  <span class="wcell-value is-quiet">&mdash;</span>
-                  <span class="wcell-foot">unknown</span>
+            <div class="wpanel" id="wpanel-ro-status" role="tabpanel" tabindex="0" aria-labelledby="wtab-ro-status">
+              <div class="wcard">
+                <h3 class="wcard-title">Battery</h3>
+                <p class="wcard-sub">The buds have not reported a charge yet.</p>
+                <div class="wcells">
+                  <div class="wcell">
+                    <span class="wcell-label">Left</span>
+                    <span class="wcell-value is-quiet">&mdash;</span>
+                    <span class="wcell-foot">unknown</span>
+                  </div>
+                  <div class="wcell">
+                    <span class="wcell-label">Right</span>
+                    <span class="wcell-value is-quiet">&mdash;</span>
+                    <span class="wcell-foot">unknown</span>
+                  </div>
+                  <div class="wcell">
+                    <span class="wcell-label">Case</span>
+                    <span class="wcell-value is-quiet">&mdash;</span>
+                    <span class="wcell-foot">unknown</span>
+                  </div>
                 </div>
-                <div class="wcell">
-                  <span class="wcell-label">Right</span>
-                  <span class="wcell-value is-quiet">&mdash;</span>
-                  <span class="wcell-foot">unknown</span>
+              </div>
+
+              <div class="wcard">
+                <h3 class="wcard-title">Noise control</h3>
+                <p class="wcard-sub">The mode has not been reported yet. It is polled rather than
+                pushed: the notification that carries it is lossy on this hardware.</p>
+                <div class="wpills is-grid">
+                  <span class="wpill is-disabled">Off</span>
+                  <span class="wpill is-disabled">Noise cancellation</span>
+                  <span class="wpill is-disabled">Transparency</span>
+                  <span class="wpill is-disabled">Adaptive</span>
                 </div>
-                <div class="wcell">
-                  <span class="wcell-label">Case</span>
-                  <span class="wcell-value is-quiet">&mdash;</span>
-                  <span class="wcell-foot">unknown</span>
+                <p class="wcard-label">Cancellation level</p>
+                <div class="wpills is-row">
+                  <span class="wpill is-disabled">High</span>
+                  <span class="wpill is-disabled">Moderate</span>
+                  <span class="wpill is-disabled">Low</span>
+                  <span class="wpill is-disabled">Auto</span>
                 </div>
+                <p class="wcard-note">This model has no measured write path for noise control, so
+                the reported mode is shown and cannot be changed here.</p>
               </div>
             </div>
 
-            <div class="wcard">
-              <h3 class="wcard-title">Noise control</h3>
-              <p class="wcard-sub">The mode has not been reported yet. It is polled rather than
-              pushed: the notification that carries it is lossy on this hardware.</p>
-              <div class="wpills">
-                <span class="wpill is-disabled">Off</span>
-                <span class="wpill is-disabled">Noise cancellation<span class="wpill-detail">Cancellation at the last level used</span></span>
-                <span class="wpill is-disabled">Transparency</span>
-                <span class="wpill is-disabled">Adaptive</span>
+            <div class="wpanel" id="wpanel-ro-sound" role="tabpanel" tabindex="0" aria-labelledby="wtab-ro-sound" hidden>
+              <div class="wcard">
+                <h3 class="wcard-title">Equalizer</h3>
+                <p class="wcard-sub">The preset has not been reported yet.</p>
+                <div class="wpills">
+                  <span class="wpill is-disabled">Balanced</span>
+                  <span class="wpill is-disabled">Clear Vocals</span>
+                  <span class="wpill is-disabled">Bass</span>
+                  <span class="wpill is-disabled">Custom</span>
+                </div>
+                <p class="wcard-note">This model has no measured write path for the equalizer.</p>
               </div>
-              <p class="wcard-label">Cancellation level</p>
-              <div class="wpills">
-                <span class="wpill is-disabled">High</span>
-                <span class="wpill is-disabled">Moderate</span>
-                <span class="wpill is-disabled">Low</span>
-                <span class="wpill is-disabled">Auto</span>
-              </div>
-              <p class="wcard-note">This model has no measured write path for noise control, so the
-              reported mode is shown and cannot be changed here.</p>
             </div>
 
-            <div class="wcard">
-              <h3 class="wcard-title">Equalizer</h3>
-              <p class="wcard-sub">The preset has not been reported yet.</p>
-              <div class="wpills">
-                <span class="wpill is-disabled">Balanced</span>
-                <span class="wpill is-disabled">Clear Vocals</span>
-                <span class="wpill is-disabled">Bass</span>
-                <span class="wpill is-disabled">Custom</span>
+            <div class="wpanel" id="wpanel-ro-controls" role="tabpanel" tabindex="0" aria-labelledby="wtab-ro-controls" hidden>
+              <div class="wcard">
+                <h3 class="wcard-title">Controls</h3>
+                <p class="wcard-sub">Nothing measured for this model.</p>
+                <p class="wcard-note">This model has no measured write path for touch gestures or
+                multi-connect, so there is nothing here to change.</p>
               </div>
-              <p class="wcard-note">This model has no measured write path for the equalizer.</p>
+            </div>
+
+            <div class="wpanel" id="wpanel-ro-details" role="tabpanel" tabindex="0" aria-labelledby="wtab-ro-details" hidden>
+              <div class="wcard">
+                <h3 class="wcard-title">Device</h3>
+                <p class="wcard-sub">What the hardware reports, shown as it reports it.</p>
+                <p class="wrow"><span class="wrow-key">Firmware</span><span
+                  class="wrow-value">not reported</span></p>
+                <p class="wrow"><span class="wrow-key">Codec</span><span
+                  class="wrow-value">not reported</span></p>
+                <p class="wrow"><span class="wrow-key">Custom EQ</span><span
+                  class="wrow-value">not reported</span></p>
+              </div>
+
+              <div class="wcard">
+                <h3 class="wcard-title">Activity</h3>
+                <p class="wcard-sub">What happened, in order. A declined write says so here
+                &mdash; that is the only feedback a setter gets, because the firmware answers
+                before it acts.</p>
+                <p class="wread">Nothing yet. Commands and replies are listed here as they
+                happen.</p>
+              </div>
             </div>
           </div>
 
@@ -169,9 +223,10 @@ READ_ONLY_WINDOW = """<figure class="shot">
         <figcaption>
           The app's own window, rebuilt in the page. This is what it looks like on {brand}: the
           earbuds connect and everything they report is shown, and every control is drawn
-          disabled with the reason on the card, because {yet}. The window's own foot says so in
-          one line &mdash; <strong>Verified write paths: none</strong> &mdash; and the measured
-          model, where the same controls do write, is
+          disabled with the reason on the card, because {yet}. The notch switches between the
+          four sections of the window, and the window's own foot says so in one line &mdash;
+          <strong>Verified write paths: none</strong> &mdash; and the measured model, where the
+          same controls do write, is
           <a href="/BudsDesk/oneplus-buds-4.html">the OnePlus Buds 4</a>.
         </figcaption>
       </figure>"""

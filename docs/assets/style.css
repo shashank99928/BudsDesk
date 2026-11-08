@@ -38,6 +38,8 @@
     --w-accent: #0066cc;
     --w-select: rgba(0, 0, 0, 0.08);
     --w-select-stroke: rgba(0, 0, 0, 0.3);
+    --w-notch: #ebecee;
+    --w-notch-stroke: rgba(0, 0, 0, 0.12);
     --w-ghost: rgba(0, 0, 0, 0.06);
     --w-pill: #ffffff;
     --w-hover: rgba(0, 0, 0, 0.04);
@@ -93,6 +95,8 @@
     --w-accent: #59a8ff;
     --w-select: rgba(255, 255, 255, 0.16);
     --w-select-stroke: rgba(255, 255, 255, 0.38);
+    --w-notch: #090a0c;
+    --w-notch-stroke: rgba(255, 255, 255, 0.09);
     --w-ghost: rgba(255, 255, 255, 0.08);
     --w-pill: rgba(255, 255, 255, 0.02);
     --w-hover: rgba(255, 255, 255, 0.06);
@@ -568,6 +572,21 @@ a.button:active, button.button:active { transform: scale(0.97); }
     top: 92px;
 }
 
+/* The window now carries the equalizer, BassWave and device cards in its own sections,
+ * so the feature list takes the section's full width rather than leaving a column for a
+ * second copy of the window. */
+#features .feature-grid { grid-template-columns: minmax(0, 1fr); }
+#features .feature-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 48px;
+}
+#features .feature-list > li { max-width: none; }
+
+@media (max-width: 760px) {
+    #features .feature-list { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* A crop of the app's own window: the same file the hero shows, cut to the part the
  * paragraph beside it is talking about.
  *
@@ -915,6 +934,168 @@ footer.site {
 
 .window[data-ui] { border: 1px solid var(--w-stroke); }
 
+/* The notch takes the top of the window and the title sits under it, so the head loses the
+ * padding the notch has already given it. */
+.wnotch + .window-head { padding-top: 8px; }
+
+/* The notch: the app's section navigation, drawn as the island it is in the window.
+ * It is darker than the window ground, not another card, so the chrome reads as cut into
+ * the surface. The selected pill carries a fill and a hairline as well as its weight. */
+.wnotch {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2px;
+    margin: 10px 16px 0;
+    padding: 4px;
+    background: var(--w-notch);
+    border: 1px solid var(--w-notch-stroke);
+    border-radius: 18px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.wtab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 0;
+    height: 30px;
+    padding: 0 8px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--w-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    cursor: pointer;
+    transition-property: background-color, border-color, color;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+}
+
+.wtab svg { width: 13px; height: 13px; flex: none; }
+
+.wtab span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wtab[aria-selected="true"] {
+    color: var(--w-ink);
+    font-weight: 620;
+    background: var(--w-select);
+    border-color: var(--w-select-stroke);
+}
+
+.wtab[aria-selected="true"] svg { color: var(--w-accent); }
+
+.wtab:focus-visible {
+    outline: 2px solid var(--w-accent);
+    outline-offset: 2px;
+}
+
+.wtab:active { transform: scale(0.97); }
+
+/* Four labels on one row stop fitting before the window does. The icon is the first thing
+ * to go, and the label alone still names the section. */
+@media (max-width: 460px) {
+    .wnotch { margin-inline: 12px; }
+    .wtab svg { display: none; }
+    .wtab { padding-inline: 4px; font-size: 11px; }
+}
+
+@media (hover: hover) {
+    .wtab:hover:not([aria-selected="true"]) {
+        background: var(--w-hover);
+        color: var(--w-ink);
+    }
+}
+
+/* The window's sections. A hidden panel is hidden by us as well as by the attribute: an
+ * explicit display rule would otherwise win over the user agent's `hidden` one. */
+.wpanel { display: grid; gap: 16px; }
+.wpanel[hidden] { display: none; }
+
+/* The connection dot is an addition to the sentence, never a replacement for it. */
+.wdot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: var(--w-good);
+    vertical-align: 1px;
+}
+
+/* Four modes in two columns, four levels in one row: the app's density, at the page's
+ * scale. The modes are short enough to pair, and the levels are one word each. */
+[data-ui] .wpills.is-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+[data-ui] .wpills.is-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+[data-ui] .wpills.is-row .wpill {
+    padding-inline: 8px;
+    font-size: 11px;
+}
+
+/* Read-only tables: gesture rows and the multi-connect list. These are readings, not
+ * controls, so they are rows of text rather than pills that look pressable. */
+.wtable .wrow {
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--w-stroke);
+}
+
+.wtable .wrow:last-child { border-bottom: 0; }
+
+.wtable .wrow-key {
+    width: auto;
+    flex: 0 1 auto;
+    font-size: 12px;
+    color: var(--w-ink);
+}
+
+.wtable .wrow-value {
+    font-size: 12px;
+    color: var(--w-muted);
+    text-align: right;
+}
+
+.wrow-device .wrow-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wtags {
+    display: flex;
+    gap: 6px;
+    flex: none;
+}
+
+.wtag {
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: var(--w-hover);
+    color: var(--w-muted);
+    font-size: 9px;
+    font-weight: 540;
+}
+
+.wtag.is-good {
+    color: var(--w-good);
+    background: rgba(107, 209, 140, 0.14);
+}
+
 .window-head {
     display: flex;
     align-items: flex-start;
@@ -955,7 +1136,9 @@ footer.site {
     gap: 16px;
     align-content: start;
     padding: 0 16px 16px;
-    max-height: 520px;
+    /* The window keeps the app's proportions: the notch, the title and the foot take the
+     * height the old flat list gave to the cards. */
+    max-height: 440px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--w-scroll) transparent;
@@ -1254,4 +1437,11 @@ footer.site {
 
 @media (prefers-reduced-motion: reduce) {
     .js [data-reveal] { opacity: 1; transform: none; }
+}
+
+/* Four level words share one row, and "Moderate" is the one that starts to break when the
+ * window is narrow. This sits last on purpose: the row's own rule is more specific in intent
+ * but not in the cascade, and the type has to step down rather than split a word. */
+@media (max-width: 460px) {
+    [data-ui] .wpills.is-row .wpill { padding-inline: 5px; font-size: 10px; }
 }

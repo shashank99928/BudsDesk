@@ -10,6 +10,19 @@ unless that model was measured. What is listed as *not* included is as deliberat
 
 ### Changed
 
+- **The window is four sections behind a notch.** Battery and noise control share *Status*, the
+  equalizer and BassWave share *Sound*, the gesture table and the multi-connect list share
+  *Controls*, and the readings and the log share *Details* — so the two things people open the
+  window to change are one press from the top, and the reference material is where reference
+  material belongs. No card moved between sections and none gained or lost a control. The
+  navigation is a notch island, darker than the window and cut into it rather than laid on it,
+  with the selected pill carried by fill, hairline and weight; the pill moves on a spring, which
+  is dropped under Reduce Motion. The window on the site is the same window: its notch is real
+  `tablist`/`tab`/`tabpanel` markup, switched with the pointer or the arrow keys, and the brand
+  pages carry it too. The noise modes are now a 2×2 grid and the cancellation levels one row, so
+  the levels are no longer below the fold in a 620-point window. The site's Features section no
+  longer repeats the equalizer, BassWave and device cards beside the window, because the window
+  now carries them itself.
 - **The window on the site is the app's window, and you can press it.** The picture the app draws
   is still there and still verified by the build, but the page now shows the window itself,
   rebuilt in HTML and CSS with the app's own colours, labels and values: press a noise mode and it

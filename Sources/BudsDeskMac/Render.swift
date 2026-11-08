@@ -24,7 +24,8 @@ enum Render {
 
     /// The window a person gets. The app's window is 440 wide and the view has a 400pt floor, so a
     /// drawing has to be 440 wide or it is a drawing of a window nobody has; the height is the
-    /// window's own 620, which also proves the content fits without a scroll for the states drawn.
+    /// window's own 620. The drawing shows the section the window opens on — Status — so the
+    /// picture is the window as a person first sees it rather than every card stacked at once.
     static let size = CGSize(width: 440, height: 620)
 
     struct Surface {
